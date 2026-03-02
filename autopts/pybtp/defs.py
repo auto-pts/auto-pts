@@ -765,7 +765,6 @@ BTP_HAS_CMD_SET_PROPERTIES = 0x06
 HAS_TSPX_available_presets_indices = [1, 2, 4]
 HAS_TSPX_unavailable_presets_indices = [3]
 HAS_TSPX_writable_preset_indices = [1, 2]
-HAS_TSPX_unwritable_preset_indices = [4]
 
 BTP_CSIS_CMD_READ_SUPPORTED_COMMANDS = 0x01
 BTP_CSIS_CMD_SET_MEMBER_LOCK = 0x02

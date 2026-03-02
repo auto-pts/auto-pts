@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.11.0, 4" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.12.0, 6" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -138,13 +138,13 @@
           </Row>
           <Row>
             <Name>TSPC_AICS_4_3</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_AICS_4_4</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -433,7 +433,7 @@
           </Row>
           <Row>
             <Name>TSPC_ASCS_9_1</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -445,7 +445,7 @@
           </Row>
           <Row>
             <Name>TSPC_ASCS_9_3</Name>
-            <Description>Write Long Characteristic Values (M)</Description>
+            <Description>Write Long Characteristic Value (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -457,13 +457,13 @@
           </Row>
           <Row>
             <Name>TSPC_ASCS_9_5</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ASCS_9_6</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -2974,7 +2974,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_45_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3010,7 +3010,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_45_8</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -3022,7 +3022,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_45_10</Name>
-            <Description>Write Long Characteristic Values (M)</Description>
+            <Description>Write Long Characteristic Value (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -3034,13 +3034,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_45_12</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_45_13</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -4750,7 +4750,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_89_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4792,7 +4792,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_89_9</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -4804,13 +4804,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_89_11</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_12</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -5313,13 +5313,13 @@
           </Row>
           <Row>
             <Name>TSPX_VS_Company_ID</Name>
-            <Description>Company Id for vendor specific. This is a big-endian format. ex)0001 means 0x0001 (Default: 0000)</Description>
+            <Description>Company Id for vendor specific. This is a big-endian format. ex)0001 means 0x0001. Please Set TSPX_Codec_ID value to 0xFF to test VS related test case. (Default: 0000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0000</Value>
           </Row>
           <Row>
             <Name>TSPX_VS_Codec_ID</Name>
-            <Description>Codec Id for vendor specific. This is a big-endian format. ex)0001 means 0x0001 (Default: 0000)</Description>
+            <Description>Codec Id for vendor specific. This is a big-endian format. ex)0001 means 0x0001. Please Set TSPX_Codec_ID value to 0xFF to test VS related test case. (Default: 0000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0000</Value>
           </Row>
@@ -5529,9 +5529,9 @@
           </Row>
           <Row>
             <Name>TSPX_Broadcast_ID</Name>
-            <Description>Broadcast ID. When this value is used, PTS will search for the matching device. If it is non-zero value, it will search by Bluetooth address</Description>
+            <Description>Broadcast ID. Valid Range is 0 to 16777215 (0xFFFFFF). When this value is valid, PTS will search for the matching device. If it is -1 (0xFFFFFFFF), PTS will search by Bluetooth address</Description>
             <Type>INTEGER</Type>
-            <Value>0</Value>
+            <Value>-1</Value>
           </Row>
           <Row>
             <Name>TSPX_Broadcast_ID_2</Name>
@@ -6028,19 +6028,19 @@
           </Row>
           <Row>
             <Name>TSPC_BAS_3_5</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAS_3_6</Name>
-            <Description>Write Characteristic Descriptors (C.3)</Description>
+            <Description>Write Characteristic Descriptor (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAS_3_7</Name>
-            <Description>Indications (C.5)</Description>
+            <Description>Indication (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6293,7 +6293,7 @@
           </Row>
           <Row>
             <Name>TSPC_BASS_5_1</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -6311,19 +6311,19 @@
           </Row>
           <Row>
             <Name>TSPC_BASS_5_4</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BASS_5_5</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BASS_5_6</Name>
-            <Description>Write Long Characteristic Values (C.1)</Description>
+            <Description>Write Long Characteristic Value (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -7104,7 +7104,7 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_23a_3</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -7356,7 +7356,7 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_33a_3</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8597,7 +8597,7 @@
           </Row>
           <Row>
             <Name>TSPC_CCP_17_4</Name>
-            <Description>Discover Primary Services by Service UUID (C.3)</Description>
+            <Description>Discover Primary Service by Service UUID (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8639,7 +8639,7 @@
           </Row>
           <Row>
             <Name>TSPC_CCP_17_11</Name>
-            <Description>Read Long Characteristic Values (M)</Description>
+            <Description>Read Long Characteristic Value (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -8651,19 +8651,19 @@
           </Row>
           <Row>
             <Name>TSPC_CCP_17_13</Name>
-            <Description>Write without Response (C.5)</Description>
+            <Description>Write Without Response (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CCP_17_14</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CCP_17_15</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -9394,12 +9394,6 @@
             <Value>5F03</Value>
           </Row>
           <Row>
-            <Name>TSPX_set_size</Name>
-            <Description>Set of member size. (Default: 2)</Description>
-            <Type>INTEGER</Type>
-            <Value>2</Value>
-          </Row>
-          <Row>
             <Name>TSPX_sirk</Name>
             <Description>The 16 bytes SIRK value. (Default: 0X838E680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
@@ -9558,13 +9552,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIS_3_3</Name>
-            <Description>Read Characteristic Descriptors (C.1)</Description>
+            <Description>Read Characteristic Descriptor (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIS_3_4</Name>
-            <Description>Write Characteristic Descriptors (C.1)</Description>
+            <Description>Write Characteristic Descriptor (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9582,7 +9576,7 @@
           </Row>
           <Row>
             <Name>TSPC_CSIS_3_7</Name>
-            <Description>Read Long Characteristic Values (C.4)</Description>
+            <Description>Read Long Characteristic Value (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9683,7 +9677,7 @@
             <Value>FALSE</Value>
           </Row>
           <Row>
-            <Name>TSPX_Lock_Timeout_Seconds</Name>
+            <Name>TSPX_Lock_Timeout</Name>
             <Description>The Lock Timer in seconds. (Default: 30)</Description>
             <Type>INTEGER</Type>
             <Value>30</Value>
@@ -9716,7 +9710,7 @@
           </Row>
           <Row>
             <Name>TSPC_DFUM_0_1</Name>
-            <Description>Mesh Device Firmware Update Model v1.0 (M)</Description>
+            <Description>DFUM v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -9814,6 +9808,12 @@
             <Name>TSPC_DFUM_41_1</Name>
             <Description>Upload Firmware OOB procedure (O)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_50_1</Name>
+            <Description>MESH Low Power Feature (C.1)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -14343,7 +14343,7 @@
           <Row>
             <Name>TSPC_CORE_2a_61</Name>
             <Description>Host Core v6.1 or later (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -14525,7 +14525,7 @@
           </Row>
           <Row>
             <Name>TSPC_GMAP_1_6</Name>
-            <Description>GMA Server (C.3)</Description>
+            <Description>GMA Server (C.3, C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -16733,7 +16733,7 @@
           </Row>
           <Row>
             <Name>TSPC_GMAP_93_3</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -17184,9 +17184,9 @@
           </Row>
           <Row>
             <Name>TSPX_Broadcast_ID</Name>
-            <Description>Broadcast ID. When this value is used, PTS will search for the matching device. If it is non-zero value, it will search by Bluetooth address</Description>
+            <Description>Broadcast ID. Valid Range is 0 to 16777215 (0xFFFFFF). When this value is valid, PTS will search for the matching device. If it is -1 (0xFFFFFFFF), PTS will search by Bluetooth address</Description>
             <Type>INTEGER</Type>
-            <Value>0</Value>
+            <Value>-1</Value>
           </Row>
           <Row>
             <Name>TSPX_Connection_Interval</Name>
@@ -17544,7 +17544,7 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_50_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -17742,7 +17742,7 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_93_3</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18125,19 +18125,19 @@
           </Row>
           <Row>
             <Name>TSPC_HAS_5_3</Name>
-            <Description>Indications (C.1)</Description>
+            <Description>Indication (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAS_5_4</Name>
-            <Description>Read Characteristic Descriptors (C.1)</Description>
+            <Description>Read Characteristic Descriptor (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAS_5_5</Name>
-            <Description>Write Characteristic Descriptors (C.1)</Description>
+            <Description>Write Characteristic Descriptor (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18292,12 +18292,6 @@
             <Value>1,2,4,5,6,7</Value>
           </Row>
           <Row>
-            <Name>TSPX_unwritable_preset_index</Name>
-            <Description>Preset Record Index that is Not Writable. (Default: 3)</Description>
-            <Type>IA5STRING</Type>
-            <Value>3</Value>
-          </Row>
-          <Row>
             <Name>TSPX_deleted_preset_index</Name>
             <Description>Preset index to be deleted. (Default: 9)</Description>
             <Type>INTEGER</Type>
@@ -18408,13 +18402,13 @@
           </Row>
           <Row>
             <Name>TSPC_HRS_3_5</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HRS_3_6</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -18535,9 +18529,9 @@
           </Row>
           <Row>
             <Name>TSPC_IAS_1_2</Name>
-            <Description>Service supported over LE (M)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_IAS_2_1</Name>
@@ -18565,19 +18559,19 @@
           </Row>
           <Row>
             <Name>TSPC_IAS_2_5</Name>
-            <Description>Item no longer used</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_IAS_3_1</Name>
-            <Description>Generic Attribute Profile (GATT) Server (M)</Description>
+            <Description>GATT Server over LE (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_IAS_3_2</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -19881,6 +19875,30 @@
           <Row>
             <Name>TSPC_IOPT_2_65b</Name>
             <Description>Cookware Service (CWS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_66a</Name>
+            <Description>Generic Voice Assistant Service (GVAS) over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_66b</Name>
+            <Description>Generic Voice Assistant Service (GVAS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_67a</Name>
+            <Description>Voice Assistant Service (VAS) over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_67b</Name>
+            <Description>Voice Assistant Service (VAS) over LE (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22042,7 +22060,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCP_18a_4</Name>
-            <Description>Discover Primary Services by Service UUID (C.3)</Description>
+            <Description>Discover Primary Service by Service UUID (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -22090,19 +22108,19 @@
           </Row>
           <Row>
             <Name>TSPC_MCP_18a_12</Name>
-            <Description>Write without Response (C.5)</Description>
+            <Description>Write Without Response (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_18a_13</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_18a_14</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22600,7 +22618,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_5_1</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22612,13 +22630,13 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_5_3</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCS_5_4</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22972,7 +22990,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_25_1</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22984,13 +23002,13 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_25_3</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCS_25_4</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -23145,12 +23163,6 @@
             <Value>3</Value>
           </Row>
           <Row>
-            <Name>TSPX_Number_Tracks</Name>
-            <Description>Number of Tracks for a group</Description>
-            <Type>INTEGER</Type>
-            <Value>3</Value>
-          </Row>
-          <Row>
             <Name>TSPX_iut_GAP_connection_role</Name>
             <Description>Select a GAP role when operating over an physical transport.(Default: UsePredefined)  *UsePredefined - IUT will be Peripheral when it is GATT server role otherwise it will be Central.  *Central - IUT creates a connection  *Peripheral - IUT receives a connection</Description>
             <Type>IA5STRING</Type>
@@ -23224,9 +23236,9 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_1a_2</Name>
-            <Description>Profile supported over LE (M)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_2_1</Name>
@@ -23650,7 +23662,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_12_2</Name>
-            <Description>Generic Attribute Profile (GATT) Server (C.2)</Description>
+            <Description>GATT Server over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -23674,7 +23686,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_12_6</Name>
-            <Description>Generic Attribute Profile (GATT) Client (C.5)</Description>
+            <Description>GATT Client over LE (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -23734,13 +23746,13 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_14_2</Name>
-            <Description>Discover Primary Services by Service UUID (M)</Description>
+            <Description>Discover Primary Service by Service UUID (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_14_3</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -23752,7 +23764,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_14_5</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -23764,13 +23776,13 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_15_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_15_3</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -23782,7 +23794,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_15_5</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -23854,7 +23866,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_18_6</Name>
-            <Description>Generic Attribute Profile (GATT) Client (C.6)</Description>
+            <Description>GATT Client over LE (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -23926,13 +23938,13 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_20_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_20_3</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -23944,7 +23956,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_20_5</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -24575,7 +24587,7 @@
           </Row>
           <Row>
             <Name>TSPC_MICP_15_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -24623,13 +24635,13 @@
           </Row>
           <Row>
             <Name>TSPC_MICP_15_10</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MICP_15_11</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -24893,13 +24905,13 @@
           </Row>
           <Row>
             <Name>TSPC_MICS_3_3</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MICS_3_4</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -25518,7 +25530,7 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_9_5</Name>
-            <Description>Discover Primary Services by Service UUID (C.3)</Description>
+            <Description>Discover Primary Service by Service UUID (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25566,31 +25578,31 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_9_13</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_9_14</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_9_15</Name>
-            <Description>Indications (M)</Description>
+            <Description>Indication (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_9_16</Name>
-            <Description>Read Long Characteristic Values (C.5)</Description>
+            <Description>Read Long Characteristic Value (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_9_17</Name>
-            <Description>Write Long Characteristic Values (C.6)</Description>
+            <Description>Write Long Characteristic Value (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25747,19 +25759,19 @@
           </Row>
           <Row>
             <Name>TSPC_OTS_0_1</Name>
-            <Description>OTS 1.0 (M)</Description>
+            <Description>OTS v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_2_1</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.1, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_2_2</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.2, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26023,13 +26035,25 @@
           </Row>
           <Row>
             <Name>TSPC_OTS_8_1</Name>
-            <Description>Generic Attribute Profile (GATT) Server (M)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_OTS_8_1a</Name>
+            <Description>GATT Server over BR/EDR (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_OTS_8_1b</Name>
+            <Description>GATT Server over LE (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_8_2</Name>
-            <Description>Read Long Characteristic Values (C.1)</Description>
+            <Description>Read Long Characteristic Value (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26040,26 +26064,26 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_OTS_8_6</Name>
-            <Description>Write Long Characteristic Values (C.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_OTS_8_4</Name>
-            <Description>Indications (M)</Description>
+            <Description>Indication (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_OTS_8_6</Name>
+            <Description>Write Long Characteristic Value (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_OTS_8_7</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_8_8</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -26402,13 +26426,13 @@
           </Row>
           <Row>
             <Name>TSPC_PACS_6_1</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PACS_6_2</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -27046,8 +27070,8 @@
           <Row>
             <Name>TSPX_Program_Info</Name>
             <Description>Program Info metadata</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00112233445566778899AABBCCDDEEFF</Value>
+            <Type>IA5STRING</Type>
+            <Value>12345ABCDE</Value>
           </Row>
           <Row>
             <Name>TSPX_SQ_QoS_Configuration_Setting</Name>
@@ -27315,6 +27339,30 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CORE_1a_60</Name>
+            <Description>Controller Core v6.0 or later (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_1a_62</Name>
+            <Description>Controller Core v6.2 or later (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_1b_60</Name>
+            <Description>Controller Core v6.0 or later (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_1b_62</Name>
+            <Description>Controller Core v6.2 or later (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CORE_2a_53</Name>
             <Description>Host Core v5.3 or later (C.4)</Description>
             <Value>TRUE</Value>
@@ -27335,7 +27383,7 @@
           <Row>
             <Name>TSPC_CORE_2a_62</Name>
             <Description>Host Core v6.2 or later (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -27347,7 +27395,7 @@
           <Row>
             <Name>TSPC_CORE_2b_60</Name>
             <Description>Host Core v6.0 or earlier (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -27665,7 +27713,7 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_4_2</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -27677,13 +27725,13 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_4_4</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_4_5</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -27923,7 +27971,7 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_24_2</Name>
-            <Description>Write without Response (M)</Description>
+            <Description>Write Without Response (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -27935,13 +27983,13 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_24_4</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_24_5</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -28060,16 +28108,10 @@
             <Value>tel:+19991110011</Value>
           </Row>
           <Row>
-            <Name>TSPX_Outgoing_uri</Name>
-            <Description>Target Remote Call ID. The format is comprised of URI prefix like - tel: (Default: tel:+19991111234)</Description>
+            <Name>TSPX_Outgoing_Remote_Caller_URI</Name>
+            <Description>Outgoing Remote Caller-ID. The format is comprised of URI prefix like - tel: (Default: tel:+19991111234)</Description>
             <Type>IA5STRING</Type>
             <Value>tel:+19991111234</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_Outgoing_uri2</Name>
-            <Description>Target Remote Call ID. The format is comprised of URI prefix like -tel: (Default: tel:+19991111235)</Description>
-            <Type>IA5STRING</Type>
-            <Value>tel:+19991111235</Value>
           </Row>
           <Row>
             <Name>TSPX_Signal_Strength_Reporting_Interval</Name>
@@ -28151,7 +28193,7 @@
           </Row>
           <Row>
             <Name>TSPC_TMAP_1_8</Name>
-            <Description>TMA Server (C.3)</Description>
+            <Description>TMA Server (C.3, C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -29717,7 +29759,7 @@
           </Row>
           <Row>
             <Name>TSPC_TMAP_151_3</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30060,9 +30102,9 @@
           </Row>
           <Row>
             <Name>TSPX_Broadcast_ID</Name>
-            <Description>Broadcast ID. When this value is used, PTS will search for the matching device. If it is non-zero value, it will search by Bluetooth address</Description>
+            <Description>Broadcast ID. Valid Range is 0 to 16777215 (0xFFFFFF). When this value is valid, PTS will search for the matching device. If it is -1 (0xFFFFFFFF), PTS will search by Bluetooth address</Description>
             <Type>INTEGER</Type>
-            <Value>0</Value>
+            <Value>-1</Value>
           </Row>
           <Row>
             <Name>TSPX_Connection_Interval</Name>
@@ -30576,7 +30618,7 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_17_2</Name>
-            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Description>Discover Primary Service by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30624,13 +30666,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_17_10</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCP_17_11</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -30979,13 +31021,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCS_4_3</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCS_4_4</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -31202,13 +31244,13 @@
           </Row>
           <Row>
             <Name>TSPC_VOCS_3_3</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
+            <Description>Read Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VOCS_3_4</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
+            <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
