@@ -98,7 +98,7 @@ def test_cases(ptses):
     iut_device_name = get_unique_name(pts)
     timeout_base = 5
     transfer_ttl = 3
-    FD_timeout = 80
+    fd_timeout = 80
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),

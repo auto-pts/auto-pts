@@ -889,7 +889,7 @@ def _generic_pr_job(cron, cfg, pr_cfg, **kwargs):
     config = get_cron_config(cfg, **kwargs)
 
     # Path to the project
-    PROJECT_REPO = config['auto_pts']['project_path']
+    project_repo = config['auto_pts']['project_path']
 
     # Delete AutoPTS logs, tmp files, old bin directories, kill old PTS.exe, ...
     config['cron']['pre_cleanup'](config)
@@ -899,11 +899,11 @@ def _generic_pr_job(cron, cfg, pr_cfg, **kwargs):
     # to False in m['git']['repo_name']['update_repo'] of config.py
     pr_repo_name_in_config = config['cron']['pr_repo_name_in_config']
     config['git'][pr_repo_name_in_config]['update_repo'] = True
-    update_repos(PROJECT_REPO, config['git'])
+    update_repos(project_repo, config['git'])
 
     # Merge PR branch into local instance of tested repo
     if not os.path.isabs(config['git'][pr_repo_name_in_config]['path']):
-        repo_path = os.path.join(PROJECT_REPO, config['git'][pr_repo_name_in_config]['path'])
+        repo_path = os.path.join(project_repo, config['git'][pr_repo_name_in_config]['path'])
     else:
         repo_path = os.path.abspath(config['git'][pr_repo_name_in_config]['path'])
 
