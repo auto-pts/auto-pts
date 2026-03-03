@@ -394,6 +394,25 @@ iut_config = {
             'L2CAP/CLS/CID/BV-01-C',
         ]
     },
+
+    "ble_pawr.conf": {
+        "overlay": {
+            'CONFIG_BT_PER_ADV_RSP': 'y',
+            'CONFIG_BT_PER_ADV_SYNC_RSP': 'y',
+        },
+        "test_cases": [
+            'GAP/PADV/PASM/BV-02-C',
+            'GAP/PADV/PAM/BV-02-C',
+            'GAP/PADV/PAST/BV-03-C',
+            'GAP/PADV/PAST/BV-04-C',
+            'GAP/PADV/PASE/BV-07-C',
+            'GAP/PADV/PASE/BV-08-C',
+            'GAP/PADV/PASE/BV-09-C',
+            'GAP/PADV/PASE/BV-10-C',
+            'GAP/PADV/PASE/BV-11-C',
+            'GAP/PADV/PASE/BV-12-C',
+        ]
+    },
 }
 
 retry_config = {
