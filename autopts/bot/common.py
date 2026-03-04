@@ -22,6 +22,7 @@ import logging
 import os
 import shutil
 import subprocess
+import re
 import sys
 import time
 import traceback
@@ -143,6 +144,7 @@ class BotConfigArgs(Namespace):
         self.build_env_cmd = args.get('build_env_cmd', None)
         self.copy = args.get('copy', True)
         self.wid_usage = args.get('wid_usage', False)
+        self.dongle_map = args.get('dongle_map', [])
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser
@@ -413,12 +415,45 @@ class BotClient(Client):
 
                 self.apply_config(config_args, config, self.iut_config[config])
 
+                cfg_specs = getattr(config_args, "dongle_map", []) or []
+                cli_specs = getattr(self.args, "dongle_map", []) or []
+                all_specs = list(cfg_specs) + list(cli_specs)
+
+                rules = []
+                last = {}
+                for item in all_specs:
+                    left, dongle = item.split("=", 1)
+                    if ":" in left and left.split(":", 1)[0].isdigit():
+                        idx_s, pattern = left.split(":", 1)
+                        pts_idx = int(idx_s)
+                    else:
+                        pts_idx = 0
+                        pattern = left
+                    rules.append((pts_idx, re.compile(pattern), dongle))
+
+                rules_ = rules
+                last_ = last
+
+                def _pre_test_case_fn(config=None, test_case=None, stats=None,
+                                      rules=rules, last=last, **kwargs):
+                    self._backup_tc_stats(config=config, test_case=test_case, stats=stats,**kwargs)
+
+                    if not test_case:
+                        return
+                    for pts_idx, rx, dongle in rules_:
+                        if rx.search(test_case):
+                            if last_.get(pts_idx) != dongle:
+                                logging.debug("Switching dongle for %s: pts[%d] -> %s", test_case, pts_idx, dongle)
+                                self.ptses[pts_idx].switch_dongle(dongle, True)
+                                last_[pts_idx] = dongle
+                            break
+
                 stats = autoptsclient.run_test_cases(self.ptses,
                                                      self.test_cases,
                                                      config_args,
                                                      stats,
                                                      config=config,
-                                                     pre_test_case_fn=self._backup_tc_stats,
+                                                     pre_test_case_fn=_pre_test_case_fn,
                                                      file_paths=copy.deepcopy(self.file_paths))
 
             except BuildAndFlashException:

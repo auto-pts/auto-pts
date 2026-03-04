@@ -26,6 +26,7 @@ import logging
 import os
 import queue
 import random
+import re
 import shutil
 import signal
 import socket
@@ -1520,8 +1521,36 @@ class Client:
                                  self.args.retry, self.test_case_database,
                                  xml_results_file=self.file_paths['TC_STATS_RESULTS_XML_FILE'])
 
+        rules = []
+        last = {}
+        for item in getattr(self.args, "dongle_map", []) or []:
+            left, dongle = item.split("=", 1)
+
+            if ":" in left and left.split(":", 1)[0].isdigit():
+                idx_s, pattern = left.split(":", 1)
+                pts_idx = int(idx_s)
+            else:
+                pts_idx = 0
+                pattern = left
+
+            rules.append((pts_idx, re.compile(pattern), dongle))
+
+            def pre_test_case_fn(test_case, rules=rules, last=last, **_kwargs):
+                for pts_idx, rx, dongle in rules:
+                    if rx.search(test_case):
+                        if last.get(pts_idx) != dongle:
+                            logging.info(
+                                    "Switching dongle for %s: pts[%d] -> %s",
+                                    test_case, pts_idx, dongle,
+                            )
+                            self.ptses[pts_idx].switch_dongle(dongle, True)
+                            last[pts_idx] = dongle
+                        break
+
         return run_test_cases(self.ptses, self.test_cases, self.args, stats,
-                              file_paths=copy.deepcopy(self.file_paths))
+                              file_paths=copy.deepcopy(self.file_paths),
+                              pre_test_case_fn=pre_test_case_fn if rules else None,
+                              )
 
     def cleanup(self):
         log(f'{self.__class__.__name__}.{self.cleanup.__name__}')
