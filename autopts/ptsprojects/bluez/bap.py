@@ -19,8 +19,9 @@
 from autopts.client import get_unique_name
 from autopts.ptsprojects.bluez.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.bluez.btestcase import BTestCase
+from autopts.ptsprojects.bluez.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
-from autopts.ptsprojects.testcase import TestFunc
+from autopts.ptsprojects.testcase import TestFunc, TestFuncCleanUp
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 from autopts.utils import ResultWithFlag
@@ -91,12 +92,14 @@ def test_cases(ptses):
 
     stack.gap_init()
 
+    iut = get_iut()
     iut_addr = ResultWithFlag()
 
     def set_addr(addr):
         iut_addr.set(addr)
 
     pre_conditions = [
+        TestFunc(iut.start_audio),
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.gap_reset),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -110,14 +113,61 @@ def test_cases(ptses):
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
         TestFunc(btp.gap_set_conn),
+        TestFunc(btp.core_reg_svc_ascs),
         TestFunc(btp.core_reg_svc_bap),
+        TestFunc(stack.ascs_init),
         TestFunc(stack.bap_init),
         TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),
         TestFunc(lambda: set_addr(
             stack.gap.iut_addr_get_str())),
+        TestFuncCleanUp(iut.stop_audio),
         ]
 
     custom_test_cases = [
+        BTestCase("BAP", "BAP/UCL/SCC/BV-038-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-042-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-046-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-048-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-054-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-058-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-077-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-078-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-080-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-093-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-094-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
         ]
 
     test_case_name_list = pts.get_test_case_list('BAP')
