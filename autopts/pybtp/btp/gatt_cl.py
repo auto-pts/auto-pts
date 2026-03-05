@@ -578,6 +578,19 @@ def gatt_cl_write_rsp_ev_(gatt_cl, data, data_len):
     gatt_cl.write_status = status
 
 
+def gatt_cl_write_long_rsp_ev(gatt_cl, data, data_len):
+    logging.debug("%s %r", gatt_cl_write_long_rsp_ev.__name__, data)
+
+    fmt = '<B6sB'
+
+    addr_type, addr, status = \
+        struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
+    logging.debug("%s received addr_type=%r addr=%r status=%r",
+                  gatt_cl_write_long_rsp_ev.__name__,
+                  addr_type, addr, status)
+    gatt_cl.write_long_status = status
+
+
 def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
     logging.debug("%s %r", gatt_cl_notification_rxed_ev_.__name__, data)
 
@@ -613,7 +626,7 @@ GATTC_EV = {
     defs.BTP_GATTC_EV_READ_LONG_RP: gatt_cl_read_long_rsp_ev_,
     defs.BTP_GATTC_EV_READ_MULTIPLE_RP: gatt_cl_read_mult_rsp_ev_,
     defs.BTP_GATTC_EV_WRITE_RP: gatt_cl_write_rsp_ev_,
-    defs.BTP_GATTC_EV_WRITE_LONG_RP: gatt_cl_write_rsp_ev_,
+    defs.BTP_GATTC_EV_WRITE_LONG_RP: gatt_cl_write_long_rsp_ev,
     defs.BTP_GATTC_EV_RELIABLE_WRITE_RP: gatt_cl_write_rsp_ev_,
     defs.BTP_GATTC_EV_CFG_NOTIFY_RP: gatt_cl_write_rsp_ev_,
     defs.BTP_GATTC_EV_CFG_INDICATE_RP: gatt_cl_write_rsp_ev_,
@@ -1142,7 +1155,7 @@ def gatt_cl_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     iutctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
 
     stack = get_stack()
-    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_completed)
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_long_completed)
 
     gatt_cl_command_rsp_succ()
 

@@ -847,9 +847,9 @@ def hdl_wid_61(params: WIDParams):
     Invalid handle error when write a characteristic.
     """
     stack = get_stack()
-    stack.gatt_cl.wait_for_write_rsp()
+    stack.gatt_cl.wait_for_write_long_rsp()
 
-    status = stack.gatt_cl.write_status
+    status = stack.gatt_cl.write_long_status
 
     return GATTErrorCodes.invalid_handle == status
 
@@ -863,9 +863,9 @@ def hdl_wid_62(params: WIDParams):
     is not permitted error when write a characteristic.
     """
     stack = get_stack()
-    stack.gatt_cl.wait_for_write_rsp()
+    stack.gatt_cl.wait_for_write_long_rsp()
 
-    status = stack.gatt_cl.write_status
+    status = stack.gatt_cl.write_long_status
 
     return GATTErrorCodes.write_not_permitted == status
 
@@ -879,9 +879,9 @@ def hdl_wid_63(params: WIDParams):
     authorization error when write a characteristic.
     """
     stack = get_stack()
-    stack.gatt_cl.wait_for_write_rsp()
+    stack.gatt_cl.wait_for_write_long_rsp()
 
-    status = stack.gatt_cl.write_status
+    status = stack.gatt_cl.write_long_status
 
     return GATTErrorCodes.insufficient_authorization == status
 
@@ -895,9 +895,9 @@ def hdl_wid_64(params: WIDParams):
     authentication error when write a characteristic.
     """
     stack = get_stack()
-    stack.gatt_cl.wait_for_write_rsp()
+    stack.gatt_cl.wait_for_write_long_rsp()
 
-    status = stack.gatt_cl.write_status
+    status = stack.gatt_cl.write_long_status
 
     return GATTErrorCodes.insufficient_authentication == status
 
@@ -911,9 +911,9 @@ def hdl_wid_65(params: WIDParams):
     encryption key size error when write a characteristic.
     """
     stack = get_stack()
-    stack.gatt_cl.wait_for_write_rsp()
+    stack.gatt_cl.wait_for_write_long_rsp()
 
-    status = stack.gatt_cl.write_status
+    status = stack.gatt_cl.write_long_status
 
     return GATTErrorCodes.encryption_key_size_too_short == status
 
@@ -927,9 +927,9 @@ def hdl_wid_66(params: WIDParams):
     Invalid offset error when write a characteristic.
     """
     stack = get_stack()
-    stack.gatt_cl.wait_for_write_rsp()
+    stack.gatt_cl.wait_for_write_long_rsp()
 
-    status = stack.gatt_cl.write_status
+    status = stack.gatt_cl.write_long_status
 
     return GATTErrorCodes.invalid_offset == status
 
@@ -1158,8 +1158,9 @@ def hdl_wid_82(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     execute write request.
     """
-    # This is handled by host
-    return True
+    stack = get_stack()
+
+    return stack.gatt_cl.wait_for_write_long_rsp()
 
 
 def hdl_wid_90(params: WIDParams):
