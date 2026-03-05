@@ -121,4 +121,6 @@ ID  Name
  0x1e PBP Service
  0x1f SDP Service
  0x20 RFCOMM Service
+ 0x25 AVRCP Service
+ 0x26 AVCTP Service
  # GENERATOR append 1
