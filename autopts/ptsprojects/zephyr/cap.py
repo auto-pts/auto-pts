@@ -18,9 +18,9 @@
 import struct
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.cap_wid import cap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp.cap import announcements
@@ -28,6 +28,8 @@ from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL
 from autopts.pybtp.types import UUID, Addr, BAPAnnouncement, CAPAnnouncement, Context
 from autopts.utils import ResultWithFlag
+
+cap_wid_hdl = get_wid_handler("zephyr", "cap")
 
 
 def set_pixits(ptses):
