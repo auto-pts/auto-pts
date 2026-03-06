@@ -24,6 +24,7 @@ from .gtbs import gtbs_wid_hdl
 from .has import has_wid_hdl
 from .ias import ias_wid_hdl
 from .l2cap import l2cap_wid_hdl
+from .map import map_wid_hdl
 from .mcp import mcp_wid_hdl
 from .mesh import (
                    mesh_wid_hdl,
@@ -61,6 +62,7 @@ __all__ = [
     "has_wid_hdl",
     "ias_wid_hdl",
     "l2cap_wid_hdl",
+    "map_wid_hdl",
     "mcp_wid_hdl",
     "mesh_wid_hdl",
     "mesh_wid_hdl_rpr_2ptses",

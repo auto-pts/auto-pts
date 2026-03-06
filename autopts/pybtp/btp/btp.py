@@ -607,6 +607,10 @@ def core_reg_svc_rfcomm():
     core_reg_svc_univ("rfcomm_reg", "RFCOMM")
 
 
+def core_reg_svc_map():
+    core_reg_svc_univ("map_reg", "MAP")
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ(service_name):
@@ -700,6 +704,7 @@ def event_handler(hdr, data):
         HAP_EV,
         IAS_EV,
         L2CAP_EV,
+        MAP_EV,
         MCP_EV,
         MESH_EV,
         MICP_EV,
@@ -750,6 +755,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
         defs.BTP_SERVICE_ID_SDP: (SDP_EV, stack.sdp),
         defs.BTP_SERVICE_ID_RFCOMM: (RFCOMM_EV, stack.rfcomm),
+        defs.BTP_SERVICE_ID_MAP: (MAP_EV, stack.map),
         # GENERATOR append 3
     }
 
