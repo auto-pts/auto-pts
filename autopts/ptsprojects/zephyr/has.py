@@ -24,7 +24,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.defs import (
     HAS_TSPX_available_presets_indices,
     HAS_TSPX_unavailable_presets_indices,
-    HAS_TSPX_unwritable_preset_indices,
     HAS_TSPX_writable_preset_indices,
 )
 from autopts.pybtp.types import Addr
@@ -43,7 +42,6 @@ def set_pixits(ptses):
     available_presets_str = ','.join(str(_) for _ in HAS_TSPX_available_presets_indices)
     unavailable_presets_str = ','.join(str(_) for _ in HAS_TSPX_unavailable_presets_indices)
     writable_presets_str = ','.join(str(_) for _ in HAS_TSPX_writable_preset_indices)
-    unwritable_presets_str = ','.join(str(_) for _ in HAS_TSPX_unwritable_preset_indices)
 
     preset_indices = HAS_TSPX_available_presets_indices + HAS_TSPX_unavailable_presets_indices
     max_index = max([0] + preset_indices)
@@ -72,7 +70,6 @@ def set_pixits(ptses):
     pts.set_pixit("HAS", "TSPX_available_preset_index", available_presets_str)
     pts.set_pixit("HAS", "TSPX_unavailable_preset_index", unavailable_presets_str)
     pts.set_pixit("HAS", "TSPX_writable_preset_index", writable_presets_str)
-    pts.set_pixit("HAS", "TSPX_unwritable_preset_index", unwritable_presets_str)
 
 
 def test_cases(ptses):
