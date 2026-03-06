@@ -54,3 +54,29 @@ def hdl_wid_303(params: WIDParams):
     # and reply may occur after PTS has disconnected, which causes test case to fail.
     # So just return True here and let BlueZ handle QoS configuration internally.
     return True
+
+
+def hdl_wid_311(params: WIDParams):
+    """
+    Please configure 1 SOURCE ASE with Config Setting: IXIT.
+    After that, configure to streaming state.
+    """
+
+    if get_iut().external_audio is not None:
+        logging.debug("External audio supported, skipping WID 311 handling")
+        return True
+
+    return autopts.wid.bap.hdl_wid_311(params)
+
+
+def hdl_wid_313(params: WIDParams):
+    """
+    Please configure 1 SINK and 1 SOURCE ASE with Config Setting: IXIT.
+    After that, configure to streaming state.
+    """
+
+    if get_iut().external_audio is not None:
+        logging.debug("External audio supported, skipping WID 313 handling")
+        return True
+
+    return autopts.wid.bap.hdl_wid_313(params)

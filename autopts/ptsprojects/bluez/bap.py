@@ -117,6 +117,7 @@ def test_cases(ptses):
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
         TestFunc(btp.gap_set_conn),
+        TestFunc(btp.core_reg_svc_pacs),
         TestFunc(btp.core_reg_svc_ascs),
         TestFunc(btp.core_reg_svc_bap),
         TestFunc(stack.ascs_init),
