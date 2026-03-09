@@ -276,6 +276,9 @@ class BotClient(Client):
         if 'file_paths' in self.bot_config:
             generate_file_paths(self.bot_config['file_paths'])
 
+        if not bot_config_namespace.use_backup or os.path.exists(self.file_paths['BOT_STATE_DIR']):
+            self.bot_pre_cleanup()
+
         # Remove default root handler that was created at the first logging.debug
         logging.getLogger().handlers.clear()
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
@@ -284,10 +287,8 @@ class BotClient(Client):
         if errmsg:
             return errmsg
 
-        if self.args.use_backup and os.path.exists(self.file_paths['BOT_STATE_JSON_FILE']):
+        if self.args.use_backup and os.path.exists(self.file_paths['ALL_STATS_JSON_FILE']):
             self.load_backup_of_previous_run()
-        else:
-            self.bot_pre_cleanup()
 
         return errmsg
 
