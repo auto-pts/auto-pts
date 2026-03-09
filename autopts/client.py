@@ -1484,6 +1484,7 @@ class Client:
         self.cleanup()
 
         if self.args.store:
+            os.makedirs(os.path.dirname(self.args.database_file), exist_ok=True)
             shutil.move(self.file_paths['TEST_CASE_DB_FILE'], self.args.database_file)
 
         print("\nBye!")
