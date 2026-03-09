@@ -26,7 +26,6 @@ $ ssh-add path/to/id_rsa
 """
 import copy
 import functools
-import json
 import logging
 import mimetypes
 import os
@@ -632,6 +631,7 @@ def _await_test_run_start(config):
     timeguard = config['cron']['test_run_timeguard']
     check_interval = config['cron']['check_interval']
     startup_fail_count = config['cron'].get('startup_fail_max_count', 2)
+    final_bot_state_dir = config['file_paths']['BOT_STATE_DIR']
 
     srv_proc, bot_proc = _start_processes(config, checkout_repos=True)
     last_check = time()
@@ -649,6 +649,10 @@ def _await_test_run_start(config):
         critical_error = os.path.exists(error_file)
 
         if startup_timeout or bot_died or critical_error:
+            if _is_test_run_completed(final_bot_state_dir):
+                log("Bot state generated early.")
+                return srv_proc, bot_proc
+
             log("Bot failed before initialization complete.")
 
             if startup_fail_count <= 0:
@@ -668,25 +672,15 @@ def _await_test_run_start(config):
     return None, None
 
 
-def _is_test_run_completed(all_stats_file):
-    completed = False
-
-    if os.path.exists(all_stats_file):
-        try:
-            with open(all_stats_file) as f:
-                data = json.load(f)
-                completed = data.get('test_run_completed', False)
-        except BaseException as e:
-            log(e)
-
-    return completed
+def _is_test_run_completed(final_bot_state_dir):
+    return os.path.exists(final_bot_state_dir)
 
 
 def _await_test_run_end(config, srv_proc, bot_proc):
     cancel_job = config['cron']['cancel_job']
     results_file = config['file_paths']['TC_STATS_JSON_FILE']
     error_file = config['file_paths']['ERROR_TXT_FILE']
-    all_stats_file = config['file_paths']['ALL_STATS_JSON_FILE']
+    final_bot_state_dir = config['file_paths']['BOT_STATE_DIR']
     timeguard = config['cron']['test_run_timeguard']
     check_interval = config['cron']['check_interval']
     critical_error_max_count = config['cron'].get('critical_error_max_count', 2)
@@ -697,7 +691,7 @@ def _await_test_run_end(config, srv_proc, bot_proc):
 
         current_time = time()
 
-        if _is_test_run_completed(all_stats_file):
+        if _is_test_run_completed(final_bot_state_dir):
             log("Bot completed running the test cases. Waiting for the report to be generated ...")
             return srv_proc, bot_proc
 
@@ -716,7 +710,7 @@ def _await_test_run_end(config, srv_proc, bot_proc):
                 log("Test run results have not been updated for a while.")
 
             if bot_died:
-                if not os.path.exists(all_stats_file) and not os.path.exists(results_file):
+                if _is_test_run_completed(final_bot_state_dir):
                     log("Bot completed running the test cases.")
                     return srv_proc, bot_proc
 
@@ -761,13 +755,13 @@ def _run_test(config):
         return
 
     srv_proc, bot_proc = _await_test_run_start(config)
-    bot_died = bot_proc.poll() is not None
+    bot_died = bot_proc and bot_proc.poll() is not None
     srv_died = srv_proc and srv_proc.poll() is not None
     if srv_died or bot_died:
         return
 
     srv_proc, bot_proc = _await_test_run_end(config, srv_proc, bot_proc)
-    bot_died = bot_proc.poll() is not None
+    bot_died = bot_proc and bot_proc.poll() is not None
     srv_died = srv_proc and srv_proc.poll() is not None
     if srv_died or bot_died:
         return
