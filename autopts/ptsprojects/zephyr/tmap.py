@@ -16,10 +16,10 @@
 import struct
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.tmap_wid import tmap_wid_hdl
-from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.tbs import tbs_register_bearer
@@ -34,6 +34,7 @@ from autopts.pybtp.types import (
     OptionalOpcode,
     TMAPRole,
 )
+from autopts.utils import ResultWithFlag
 
 
 def set_pixits(ptses):
@@ -81,12 +82,18 @@ def test_cases(ptses):
 
     advData = {}
 
+    iut_addr = ResultWithFlag()
+
+    def set_addr(addr):
+        iut_addr.set(addr)
+
     # Generic preconditions for all test case in the profile
     opcodes = OptionalOpcode.ALL
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
         TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(lambda: set_addr(stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param("TMAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
@@ -212,6 +219,55 @@ def test_cases(ptses):
                         struct.pack('<H', TMAPRole.BROADCAST_MEDIA_SENDER))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
+        # 2-LT CG (Call Gateway) test cases
+        ZTestCase('TMAP', 'TMAP/CG/VRC/BV-02-C',
+            cmds=pre_conditions + [
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-02-C", 20100), SynchPoint("TMAP/CG/VRC/BV-02-C_LT2", 20100)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-02-C", 20106), SynchPoint("TMAP/CG/VRC/BV-02-C_LT2", 20106)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-02-C", 514), SynchPoint("TMAP/CG/VRC/BV-02-C_LT2", 514)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-02-C", 504), SynchPoint("TMAP/CG/VRC/BV-02-C_LT2", 504)]),
+            ],
+            generic_wid_hdl=tmap_wid_hdl,
+            lt2="TMAP/CG/VRC/BV-02-C_LT2",
+        ),
+        ZTestCase('TMAP', 'TMAP/CG/VRC/BV-03-C',
+            cmds=pre_conditions + [
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-03-C", 20100), SynchPoint("TMAP/CG/VRC/BV-03-C_LT2", 20100)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-03-C", 20106), SynchPoint("TMAP/CG/VRC/BV-03-C_LT2", 20106)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-03-C", 514), SynchPoint("TMAP/CG/VRC/BV-03-C_LT2", 514)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-03-C", 504), SynchPoint("TMAP/CG/VRC/BV-03-C_LT2", 504)]),
+            ],
+            generic_wid_hdl=tmap_wid_hdl,
+            lt2="TMAP/CG/VRC/BV-03-C_LT2",
+        ),
+        ZTestCase('TMAP', 'TMAP/CG/VRC/BV-09-C',
+            cmds=pre_conditions + [
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 20100), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20100)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 20106), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20106)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 514), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 514)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 504), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 504)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 20110), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20110)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 20110), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20110)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 503), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 503)]),
+            ],
+            generic_wid_hdl=tmap_wid_hdl,
+            lt2="TMAP/CG/VRC/BV-09-C_LT2",
+        ),
     ]
 
     test_case_name_list = pts.get_test_case_list('TMAP')
@@ -228,4 +284,21 @@ def test_cases(ptses):
 
         tc_list.append(instance)
 
-    return tc_list
+    if len(ptses) < 2:
+        return tc_list
+
+    pts2 = ptses[1]
+
+    pre_conditions_lt2 = [
+        TestFunc(lambda: pts2.update_pixit_param(
+            "TMAP", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
+        TestFunc(btp.set_lt2_addr, pts2.q_bd_addr, Addr.le_public),
+    ]
+
+    test_cases_lt2 = [
+        ZTestCaseSlave("TMAP", "TMAP/CG/VRC/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
+        ZTestCaseSlave("TMAP", "TMAP/CG/VRC/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
+        ZTestCaseSlave("TMAP", "TMAP/CG/VRC/BV-09-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
+    ]
+
+    return tc_list + test_cases_lt2

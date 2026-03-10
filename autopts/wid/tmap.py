@@ -411,26 +411,27 @@ def hdl_wid_503(params: WIDParams):
 
 
 wid_504_settings = {
-    # test_case_name: (lt count, iut as audio source: streams + channels,
-    # sink locations (0 - don't care), iut as audio sink streams, metadata)
-    "TMAP/CG/VRC/BV-01-C": (1, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-05-C": (1, 2, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-06-C": (1, 1, 2, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-07-C": (1, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-08-C": (1, 2, 1, 0, 2, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-11-C": (1, 2, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-12-C": (1, 2, 1, 0, 2, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/ASC/BV-01-C": (1, 1, 1, 1, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/ASC/BV-02-C": (1, 1, 1, 2, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/ASC/BV-03-C": (1, 1, 1, 3, 1, 1, pack_metadata(stream_context=0x0200)),
-    # According to TMAP.TS.p1 LT1 provides audio source and
-    # LT2 provides audio sink, however, PTS 8.5.3 seem to have this the other way round
-    "TMAP/CG/VRC/BV-02-C": (2, 1, 1, 0, 0, 0, pack_metadata(stream_context=0x0200)),
+    # test_case_name: (lt count, iut as audio source: streams, channels,
+    # sink locations (0 - don't care), iut as audio: sink streams, channels, metadata)
+    "TMAP/CG/VRC/BV-01-C":     (1, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-05-C":     (1, 2, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-06-C":     (1, 1, 2, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-07-C":     (1, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-08-C":     (1, 2, 1, 0, 2, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-11-C":     (1, 2, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-12-C":     (1, 2, 1, 0, 2, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/ASC/BV-01-C":     (1, 1, 1, 1, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/ASC/BV-02-C":     (1, 1, 1, 2, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/ASC/BV-03-C":     (1, 1, 1, 3, 1, 1, pack_metadata(stream_context=0x0200)),
+    # Config B: IUT sends audio to LT2, receives audio from LT1
+    "TMAP/CG/VRC/BV-02-C":     (2, 1, 1, 0, 0, 0, pack_metadata(stream_context=0x0200)),
     "TMAP/CG/VRC/BV-02-C_LT2": (2, 0, 0, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-03-C": (2, 1, 1, 0, 0, 0, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-03-C_LT2": (2, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-09-C": (2, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
-    "TMAP/CG/VRC/BV-09-C_LT2": (2, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    # Config C: IUT sends audio to LT1 and LT2, receives audio from LT1
+    "TMAP/CG/VRC/BV-03-C":     (2, 1, 1, 1, 0, 0, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-03-C_LT2": (2, 1, 1, 2, 1, 1, pack_metadata(stream_context=0x0200)),
+    # Config G: IUT sends audio to LT1 and LT2, receives audio from LT1 and LT2
+    "TMAP/CG/VRC/BV-09-C":     (2, 1, 1, 1, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-09-C_LT2": (2, 1, 1, 2, 1, 1, pack_metadata(stream_context=0x0200)),
 }
 
 
