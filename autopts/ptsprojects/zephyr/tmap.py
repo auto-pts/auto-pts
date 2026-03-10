@@ -39,29 +39,10 @@ from autopts.pybtp.types import (
 def set_pixits(ptses):
     pts = ptses[0]
 
-    pts.set_pixit("TMAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("TMAP", "TSPX_Public_bd_addr_LT2", "000000000000")
-    pts.set_pixit("TMAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("TMAP", "TSPX_time_guard", "180000")
-    pts.set_pixit("TMAP", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("TMAP", "TSPX_tester_database_file",
-                  r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_TMAP_db.xml")
-    pts.set_pixit("TMAP", "TSPX_mtu_size", "64")
-    pts.set_pixit("TMAP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("TMAP", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("TMAP", "TSPX_pin_code", "0000")
-    pts.set_pixit("TMAP", "TSPX_use_dynamic_pin", "FALSE")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("TMAP", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("TMAP", "TSPX_security_enabled", "TRUE")
-    pts.set_pixit("TMAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
-    pts.set_pixit("TMAP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
-    pts.set_pixit("TMAP", "TSPX_Connection_Interval", "120")
-    pts.set_pixit("TMAP", "TSPX_Extended_Adv_Interval_min", "1200")
-    pts.set_pixit("TMAP", "TSPX_Extended_Adv_Interval_max", "1200")
-    pts.set_pixit("TMAP", "TSPX_Periodic_Adv_Interval_min", "600")
-    pts.set_pixit("TMAP", "TSPX_Periodic_Adv_Interval_max", "600")
     pts.set_pixit("TMAP", "TSPX_TARGET_LATENCY", "TARGET_BALANCED_LATENCY_RELIABILITY")
-    pts.set_pixit("TMAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
 
 
 def adv_init(advData):

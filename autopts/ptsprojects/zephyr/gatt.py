@@ -104,19 +104,9 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("GATT", "TSPX_delete_link_key", "TRUE")
-    pts.set_pixit("GATT", "TSPX_time_guard", "180000")
-    pts.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
-    pts.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
-    pts.set_pixit("GATT", "TSPX_mtu_size", "23")
-    pts.set_pixit("GATT", "TSPX_pin_code", "0000")
-    pts.set_pixit("GATT", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("GATT", "TSPX_tester_appearance", "0000")
     pts.set_pixit("GATT", "TSPX_bearer_for_le", "EATT")
 
     if len(ptses) < 2:
@@ -124,19 +114,9 @@ def set_pixits(ptses):
 
     pts2 = ptses[1]
 
-    pts2.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts2.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts2.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_delete_link_key", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_time_guard", "180000")
-    pts2.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
+    """" Set only IXITs that require non-default value """
     pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_mtu_size", "23")
-    pts2.set_pixit("GATT", "TSPX_pin_code", "0000")
-    pts2.set_pixit("GATT", "TSPX_use_dynamic_pin", "FALSE")
     pts2.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_tester_appearance", "0000")
 
 
 def test_cases_server(ptses):

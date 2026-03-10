@@ -37,21 +37,8 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("TBS", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("TBS", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("TBS", "TSPX_time_guard", "180000")
-    pts.set_pixit("TBS", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("TBS", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("TBS", "TSPX_mtu_size", 23)
-    pts.set_pixit("TBS", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("TBS", "TSPX_pin_code", "0000")
-    pts.set_pixit("TBS", "TSPX_use_dynamic_pin", "FALSE")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("TBS", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("TBS", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("TBS", "TSPX_Signal_Strength_Reporting_Interval", 10)
-    pts.set_pixit("TBS", "TSPX_Incoming_Call_Target_Caller_ID", "tel:+19991111234")
-    pts.set_pixit("TBS", "TSPX_Incoming_friendly_name", "tel:+19991110011")
-    pts.set_pixit("TBS", "TSPX_Outgoing_Remote_Caller_URI", "tel:+19991111234")
 
 
 def test_cases(ptses):
