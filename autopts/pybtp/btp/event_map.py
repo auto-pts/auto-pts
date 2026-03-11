@@ -18,6 +18,7 @@ from .micp import MICP_EV
 from .mics import MICS_EV
 from .ots import OTS_EV
 from .pacs import PACS_EV
+from .pbap import PBAP_EV
 from .pbp import PBP_EV
 from .rfcomm import RFCOMM_EV
 from .sdp import SDP_EV
@@ -58,5 +59,6 @@ __all__ = [
     "VCP_EV",
     "VCS_EV",
     "VOCS_EV",
+    "PBAP_EV",
 # GENERATOR append 2
 ]
