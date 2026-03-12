@@ -268,6 +268,21 @@ def test_cases(ptses):
             generic_wid_hdl=tmap_wid_hdl,
             lt2="TMAP/CG/VRC/BV-09-C_LT2",
         ),
+        # 2-LT UMS (Unicast Media Sender) test cases
+        ZTestCase('TMAP', 'TMAP/UMS/VRC/BV-02-C',
+            cmds=pre_conditions + [
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/UMS/VRC/BV-02-C", 20100), SynchPoint("TMAP/UMS/VRC/BV-02-C_LT2", 20100)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/UMS/VRC/BV-02-C", 20106), SynchPoint("TMAP/UMS/VRC/BV-02-C_LT2", 20106)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/UMS/VRC/BV-02-C", 514), SynchPoint("TMAP/UMS/VRC/BV-02-C_LT2", 514)]),
+                TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/UMS/VRC/BV-02-C", 521), SynchPoint("TMAP/UMS/VRC/BV-02-C_LT2", 521)]),
+            ],
+            generic_wid_hdl=tmap_wid_hdl,
+            lt2="TMAP/UMS/VRC/BV-02-C_LT2",
+        ),
     ]
 
     test_case_name_list = pts.get_test_case_list('TMAP')
@@ -299,6 +314,7 @@ def test_cases(ptses):
         ZTestCaseSlave("TMAP", "TMAP/CG/VRC/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
         ZTestCaseSlave("TMAP", "TMAP/CG/VRC/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
         ZTestCaseSlave("TMAP", "TMAP/CG/VRC/BV-09-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
+        ZTestCaseSlave("TMAP", "TMAP/UMS/VRC/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=tmap_wid_hdl),
     ]
 
     return tc_list + test_cases_lt2
