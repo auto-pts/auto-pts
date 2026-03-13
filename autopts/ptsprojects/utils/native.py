@@ -25,6 +25,7 @@ class NativeIUT:
     def __init__(self):
         self._native_process = None
         self._log_file = None
+        self._ansi_log_proc = None
 
     def start(self, native_cmd, log_dir):
         try:
@@ -33,8 +34,14 @@ class NativeIUT:
             log(f"Starting native process: {native_cmd}")
             self._native_process = subprocess.Popen(shlex.split(native_cmd),
                                                     shell=False,
-                                                    stdout=self._log_file,
-                                                    stderr=self._log_file)
+                                                    stdout=subprocess.PIPE,
+                                                    stderr=subprocess.STDOUT)
+            self._ansi_log_proc = subprocess.Popen(
+                ["ansi2txt"],
+                stdin=self._native_process.stdout,
+                stdout=self._log_file
+            )
+
         except Exception:
             self.close()
             raise
@@ -44,6 +51,9 @@ class NativeIUT:
             self._native_process.terminate()
             self._native_process.wait()
             self._native_process = None
+            self._ansi_log_proc.terminate()
+            self._ansi_log_proc.wait()
+            self._ansi_log_proc = None
 
         if self._log_file:
             self._log_file.close()
