@@ -396,8 +396,11 @@ def l2cap_disconnected_ev(l2cap, data, data_len):
 
     hdr_fmt = '<HBHB6s'
     res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
-    result_str = l2cap_result_str[res]
+    result_str = l2cap_result_str.get(res, "Unknown Error")
     l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, result_str)
+    if result_str != "Success":
+        # L2CAP connection request failed
+        l2cap.conn_req_reject_reason = result_str
 
     logging.debug("id:%r on psm:%r, addr %r type %r, res %r",
                   chan_id, psm, bd_addr, bd_addr_type, result_str)

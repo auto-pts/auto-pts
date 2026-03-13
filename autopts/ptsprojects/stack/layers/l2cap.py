@@ -99,6 +99,7 @@ class L2cap:
     source_cid_already_used = 0x000a
     unacceptable_parameters = 0x000b
     invalid_parameters = 0x000c
+    conn_req_reject_reason = None
 
     def __init__(self, psm, initial_mtu):
         # PSM used for testing for Client role
@@ -171,6 +172,12 @@ class L2cap:
             return True
 
         return wait_for_event(timeout, lambda: not self.is_connected(chan_id))
+
+    def wait_for_conn_req_reject_ev(self, timeout):
+        if self.conn_req_reject_reason:
+            return True
+
+        return wait_for_event(timeout, lambda: self.conn_req_reject_reason)
 
     def wait_for_connection(self, chan_id, timeout=5):
         if self.is_connected(chan_id):
