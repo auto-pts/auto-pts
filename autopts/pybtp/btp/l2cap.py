@@ -19,7 +19,7 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import L2CapChannelStatusCodes, get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
@@ -400,11 +400,14 @@ def l2cap_disconnected_ev(l2cap, data, data_len):
 
     hdr_fmt = '<HBHB6s'
     res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
-    result_str = l2cap_result_str[res]
-    l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, result_str)
+    status = L2CapChannelStatusCodes(res)
+    l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, status)
+    if status != L2CapChannelStatusCodes.SUCCESS:
+        # L2CAP connection request failed
+        l2cap.conn_req_reject_reason = status
 
     logging.debug("id:%r on psm:%r, addr %r type %r, res %r",
-                  chan_id, psm, bd_addr, bd_addr_type, result_str)
+                  chan_id, psm, bd_addr, bd_addr_type, status.name)
 
 
 def l2cap_data_rcv_ev(l2cap, data, data_len):
