@@ -22,6 +22,7 @@ import logging
 import os
 import shutil
 import subprocess
+import re
 import sys
 import time
 import traceback
@@ -143,6 +144,8 @@ class BotConfigArgs(Namespace):
         self.build_env_cmd = args.get('build_env_cmd', None)
         self.copy = args.get('copy', True)
         self.wid_usage = args.get('wid_usage', False)
+        self.pts_addr_map = args.get('pts_addr_map', {})
+        self.restricted_pts_addrs = args.get('restricted_pts_addrs', [])
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser
@@ -414,12 +417,51 @@ class BotClient(Client):
 
                 self.apply_config(config_args, config, self.iut_config[config])
 
+                rules = autoptsclient.parse_test_case_pts_addr_map(
+                    getattr(self.args, "pts_addr_map", None))
+                restricted_pts_addrs = {
+                    autoptsclient.normalize_bd_addr(addr)
+                    for addr in getattr(self.args, "restricted_pts_addrs", []) or []
+                }
+
+                runtime_test_case_cache = {}
+
+                def _pre_test_case_fn(config=None, test_case=None, stats=None, **kwargs):
+                    self._backup_tc_stats(config=config, test_case=test_case, stats=stats, **kwargs)
+
+                    mapped_addr = rules.get(test_case) if test_case else None
+
+                    if test_case and mapped_addr:
+                        selected_ptses = autoptsclient.reorder_ptses_by_addr(self.ptses, test_case, rules)
+                    else:
+                        selected_ptses = [
+                            pts for pts in self.ptses
+                            if autoptsclient.normalize_bd_addr(pts.bd_addr()) not in restricted_pts_addrs]
+
+                    cache_key = tuple(
+                        autoptsclient.normalize_bd_addr(pts.bd_addr())
+                        for pts in selected_ptses
+                    )
+
+                    self.setup_project_pixits(selected_ptses)
+
+                    selected_test_cases = runtime_test_case_cache.get(cache_key)
+                    if selected_test_cases is None:
+                        selected_test_cases = autoptsclient.setup_test_cases(selected_ptses)
+                        runtime_test_case_cache[cache_key] = selected_test_cases
+
+                    return {
+                        'ptses': selected_ptses,
+                        'test_cases': selected_test_cases,
+                    }
+
+
                 stats = autoptsclient.run_test_cases(self.ptses,
                                                      self.test_cases,
                                                      config_args,
                                                      stats,
                                                      config=config,
-                                                     pre_test_case_fn=self._backup_tc_stats,
+                                                     pre_test_case_fn=_pre_test_case_fn,
                                                      file_paths=copy.deepcopy(self.file_paths))
 
             except BuildAndFlashException:
