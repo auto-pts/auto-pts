@@ -17,7 +17,7 @@ import logging
 import re
 import time
 
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import L2CapChannelStatusCode, get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import BTPError, WIDParams
 from autopts.wid.common import _l2cap_send_forever, _safe_l2cap_disconnect
@@ -502,23 +502,51 @@ def hdl_wid_138(_: WIDParams):
 
 
 def hdl_wid_251(_: WIDParams):
-    # TODO: Fix to actually verify result of 'Insufficient Encryption' 0x0008 error
-    return get_stack().l2cap.wait_for_disconnection(0, 30)
+    """
+        Did Implementation Under Test(IUT) receive Connection refused 'Insufficient Encryption' 0x0008 error?
+    """
+    stack = get_stack()
+    stack.l2cap.wait_for_conn_req_reject_ev()
+    reason = stack.l2cap.conn_req_reject_reason
+    if reason == L2CapChannelStatusCode.INSUFFICIENT_ENCRYPTION:
+        return True
+    return False
 
 
 def hdl_wid_252(_: WIDParams):
-    # TODO: Fix to actually verify result of 'Insufficient Authentication' 0x0005 error
-    return get_stack().l2cap.wait_for_disconnection(0, 30)
+    """
+        Did Implementation Under Test(IUT) receive Connection refused 'Insufficient Authentication' 0x0005 error
+    """
+    stack = get_stack()
+    stack.l2cap.wait_for_conn_req_reject_ev()
+    reason = stack.l2cap.conn_req_reject_reason
+    if reason == L2CapChannelStatusCode.INSUFFICIENT_AUTHENTICATION:
+        return True
+    return False
 
 
 def hdl_wid_253(_: WIDParams):
-    # TODO: Fix to actually verify result of 'Insufficient Authorization' 0x0006 error
-    return get_stack().l2cap.wait_for_disconnection(0, 30)
+    """
+        Did Implementation Under Test(IUT) receive Connection refused 'Insufficient Authorization' 0x0006 error
+    """
+    stack = get_stack()
+    stack.l2cap.wait_for_conn_req_reject_ev()
+    reason = stack.l2cap.conn_req_reject_reason
+    if reason == L2CapChannelStatusCode.INSUFFICIENT_AUTHORIZATION:
+        return True
+    return False
 
 
 def hdl_wid_254(_: WIDParams):
-    # TODO: Fix to actually verify result of 'Insufficient Encryption Key Size' 0x0007 error
-    return get_stack().l2cap.wait_for_disconnection(0, 30)
+    """
+        Did Implementation Under Test(IUT) receive Connection refused 'Insufficient Encryption Key Size' 0x0007 error
+    """
+    stack = get_stack()
+    stack.l2cap.wait_for_conn_req_reject_ev()
+    reason = stack.l2cap.conn_req_reject_reason
+    if reason == L2CapChannelStatusCode.INSUFFICIENT_ENCRYPTION_KEY_SIZE:
+        return True
+    return False
 
 
 def hdl_wid_255(params: WIDParams):
