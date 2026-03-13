@@ -26,6 +26,7 @@ import logging
 import os
 import queue
 import random
+import re
 import shutil
 import signal
 import socket
@@ -1279,6 +1280,73 @@ def get_test_cases(pts, test_cases, excluded):
     return _test_cases
 
 
+def normalize_bd_addr(address):
+    if address is None:
+        return None
+
+    stripped = re.sub(r'[^0-9A-Fa-f]', '', str(address))
+    if len(stripped) != 12:
+        raise ValueError(f"Invalid Bluetooth address: {address}")
+
+    stripped = stripped.upper()
+    return ':'.join(stripped[i:i + 2] for i in range(0, len(stripped), 2))
+
+
+def parse_test_case_pts_addr_map(specs):
+    if not specs:
+        return {}
+
+    if not isinstance(specs, dict):
+        raise TypeError("pts_addr_map must be a dictionary: {test_case: address}")
+
+    return {
+        str(test_case): normalize_bd_addr(address)
+        for test_case, address in specs.items()
+    }
+
+
+def reorder_ptses_by_addr(ptses, test_case, addr_map):
+    if not addr_map:
+        return ptses
+
+    address = addr_map.get(test_case)
+    if not address:
+        return ptses
+
+    addr_to_pts = {}
+    for pts in ptses:
+        addr = normalize_bd_addr(pts.bd_addr())
+        if addr in addr_to_pts:
+            raise Exception(f"Duplicate PTS Bluetooth address detected: {addr}")
+        addr_to_pts[addr] = pts
+
+    pts = addr_to_pts.get(address)
+    if pts is None:
+        available = ', '.join(sorted(addr_to_pts))
+        raise Exception(
+            f"No PTS instance with bluetooth address {address} for {test_case}. "
+            f"Available addresses: {available}"
+        )
+
+    selected = [pts]
+    selected.extend(other for other in ptses if other is not pts)
+
+    mapping = '. '.join(
+        f"LT{idx + 1}={normalize_bd_addr(pts.bd_addr())}" for idx, pts in enumerate(selected))
+    logging.info("Using PTS order for %s: %s", test_case, mapping)
+
+    return selected
+
+
+def print_pts_instances(ptses):
+    logger = logging.getLogger(__name__)
+    logger.info("Connected PTS instances")
+    for idx, pts in enumerate(ptses):
+        addr = getattr(pts, "q_bd_addr", None) or pts.bd_addr()
+        info = getattr(pts, "info", f"pts[{idx}]")
+        logger.info("  LT%s: %s  BD_ADDR=%s", idx + 1, info, addr)
+
+
 def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
     """Runs a list of test cases"""
     session_log_dir = stats.session_log_dir
@@ -1315,10 +1383,24 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
                 test_retry_count = retry_config[test_case]
 
         while True:
+            selected_ptses = ptses
+            selected_test_case_instances = test_case_instances
             if pre_test_case_fn:
-                pre_test_case_fn(test_case=test_case, stats=stats, **kwargs)
+                prepared = pre_test_case_fn(test_case=test_case, stats=stats, **kwargs)
 
-            status, duration = run_test_case(ptses, test_case_instances,
+                if isinstance(prepared, dict):
+                    selected_ptses = prepared.get('ptses') or ptses
+                    selected_test_case_instances = prepared.get('test_cases') or test_case_instances
+                else:
+                    selected_ptses = prepared or ptses
+
+            pts_mapping = ", ".join(
+                f"LT{idx + 1}={getattr(pts, 'info', f'pts[{idx}]')} [{pts.bd_addr()}]"
+                for idx, pts in enumerate(selected_ptses))
+
+            logging.getLogger(__name__).info("Running %s on %s", test_case, pts_mapping)
+
+            status, duration = run_test_case(selected_ptses, selected_test_case_instances,
                                              test_case, stats, session_log_dir,
                                              exceptions, args.superguard)
 
@@ -1476,9 +1558,13 @@ class Client:
 
         stack.init_stack()
 
+        stack.get_stack().pts_addr_map = self.args.pts_addr_map
+        logging.getLogger(__name__).info("pts_addr_map=%r", stack.get_stack().pts_addr_map)
+
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
 
+        print_pts_instances(self.ptses)
         stats = self.run_test_cases()
 
         self.cleanup()
@@ -1520,8 +1606,31 @@ class Client:
                                  self.args.retry, self.test_case_database,
                                  xml_results_file=self.file_paths['TC_STATS_RESULTS_XML_FILE'])
 
+        rules = parse_test_case_pts_addr_map(
+                getattr(self.args, "pts_addr_map", None))
+
+        runtime_test_case_cache = {}
+
+        def pre_test_case_fn(test_case, rules=rules, runtime_test_case_cache=runtime_test_case_cache, **_kwargs):
+            selected_ptses = reorder_ptses_by_addr(self.ptses, test_case, rules)
+            cache_key = tuple(normalize_bd_addr(pts.bd_addr()) for pts in selected_ptses)
+
+            self.setup_project_pixits(selected_ptses)
+
+            selected_test_cases = runtime_test_case_cache.get(cache_key)
+            if selected_test_cases is None:
+                selected_test_cases = setup_test_cases(selected_ptses)
+                runtime_test_case_cache[cache_key] = selected_test_cases
+
+            return {
+                'ptses': selected_ptses,
+                'test_cases': selected_test_cases,
+            }
+
         return run_test_cases(self.ptses, self.test_cases, self.args, stats,
-                              file_paths=copy.deepcopy(self.file_paths))
+                      file_paths=copy.deepcopy(self.file_paths),
+                      pre_test_case_fn=pre_test_case_fn if rules else None,
+                      )
 
     def cleanup(self):
         log(f'{self.__class__.__name__}.{self.cleanup.__name__}')
