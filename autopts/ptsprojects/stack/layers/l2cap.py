@@ -110,6 +110,7 @@ class L2cap:
         self.channels = []
         self.hold_credits = 0
         self.num_channels = 2
+        self.conn_req_reject_reason = None
 
     def chan_lookup_id(self, chan_id):
         """ lookup L2CAP channel with specified channel ID"""
@@ -210,6 +211,22 @@ class L2cap:
             return True
 
         return wait_for_event(timeout, lambda: not self.is_connected(chan_id) and not self.is_connecting(chan_id))
+
+    def wait_for_conn_req_reject_ev(self, timeout: int = 30):
+        """
+        Waits for a L2CAP connection request to be rejected.
+
+        Args:
+            timeout (int): The maximum time to wait for the event in seconds.
+
+        Returns:
+            bool: True if the event occurred within the timeout, False otherwise.
+        """
+
+        if self.conn_req_reject_reason:
+            return True
+
+        return wait_for_event(timeout, lambda: self.conn_req_reject_reason is not None)
 
     def wait_for_connection(self, chan_id, timeout=5):
         """ Wait for channel connection """
