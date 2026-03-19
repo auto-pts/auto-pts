@@ -217,7 +217,7 @@ def hdl_wid_20142(params: WIDParams):
     elif "Name" in params.description:
         btp.tbs_set_bearer_name(inst_index, ovs_friendly)
     elif "URI Schemes" in params.description:
-        btp.tbs_set_uri_scheme_list(inst_index, 'telteltelteltelteltelteltel')
+        btp.tbs_set_uri_scheme_list(inst_index, 'teltelteltelteltelteltelskype')
     elif "Current Calls" in params.description:
         btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Call Target" in params.description:
