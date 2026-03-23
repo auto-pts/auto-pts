@@ -270,7 +270,8 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                         logger.debug(f"Waiting for response from callback.on_implicit_send, wid {wid}")
                         return not self._end
 
-                    result = self._response.get(timeout=90, predicate=wait_until)
+                    # TODO make this timeout configurable from config
+                    result = self._response.get(timeout=900, predicate=wait_until)
 
                 if result is not None:
                     rsp = result
