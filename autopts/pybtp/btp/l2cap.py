@@ -96,6 +96,8 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
     chan_ids = l2cap_conn_rsp()
     logging.debug("id %r", chan_ids)
 
+    return chan_ids
+
 
 def l2cap_conn_v2_rsp():
     logging.debug("%s", l2cap_conn_v2_rsp.__name__)
@@ -148,6 +150,8 @@ def l2cap_conn_v2(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=
 
     chan_ids = l2cap_conn_v2_rsp()
     logging.debug("id %r", chan_ids)
+
+    return chan_ids
 
 
 l2cap_result_str = {0: "Success",
