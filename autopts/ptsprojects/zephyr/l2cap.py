@@ -260,6 +260,10 @@ def test_cases(ptses):
                   pre_conditions_success +
                   [TestFunc(lambda: stack.l2cap.hold_credits_set(1))],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/COS/CED/BI-29-C",
+                  pre_conditions_success +
+                  [TestFunc(lambda: pts.set_pixit("L2CAP", "TSPX_time_guard", "360000"))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/TIM/BV-03-C",
                   pre_conditions_success +
                   [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "False")),
