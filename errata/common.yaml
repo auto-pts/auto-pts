@@ -18,5 +18,9 @@ GATT/SR/GAI/BV-01-C: ES-27410
 
 L2CAP/COS/CED/BI-29-C: ES-28495
 
+GTBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
+GTBS/SR/CP/BV-11-C: https://bluetooth.atlassian.net/browse/ES-29033
 GTBS/SR/SPE/BI-05-C: https://support.bluetooth.com/hc/en-us/requests/183919
+TBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
+TBS/SR/CP/BV-11-C: https://bluetooth.atlassian.net/browse/ES-29033
 TBS/SR/SPE/BI-05-C: https://support.bluetooth.com/hc/en-us/requests/183919
