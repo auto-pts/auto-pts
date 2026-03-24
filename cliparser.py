@@ -168,6 +168,9 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("--tester_app_dir", type=Path, default=Path('tests', 'bluetooth', 'tester'),
                           help=argparse.SUPPRESS)
 
+        self.add_argument("--pts_addr_map", default={}, help=argparse.SUPPRESS)
+        self.add_argument("--restricted_pts_addrs", default=[], help=argparse.SUPPRESS)
+
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
 
