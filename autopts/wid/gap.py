@@ -542,9 +542,10 @@ def hdl_wid_78(params: WIDParams):
 
 
 def hdl_wid_79(_: WIDParams):
+    """ Please send non-connectable undirected advertising report with non-resolvable private address. """
     stack = get_stack()
     btp.gap_set_nonconn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_non_resolvable_private_address)
     return True
 
 
