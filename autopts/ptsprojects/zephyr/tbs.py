@@ -103,14 +103,20 @@ def test_cases(ptses):
 
     for tc_name in test_case_name_list:
         opcodes = get_optional_opcodes(tc_name)
+        # Set technology for GTBS only for GTBS/SR/SPN/BV-02-C
+        if tc_name == "GTBS/SR/SPN/BV-02-C":
+            gtbs_tech = BearerTech.CELL_4G
+        else:
+            gtbs_tech = BearerTech.LTE
+
         cmds = pre_conditions + [
-            TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+            TestFunc(lambda opcodes=opcodes, gtbs_tech=gtbs_tech: tbs_register_bearer(
                 provider_name="Generic TBS",
                 uci="un000",
                 uri_scheme_list="tel,skype",
                 optional_opcodes=opcodes,
                 gtbs=True,
-                technology=BearerTech.LTE
+                technology=gtbs_tech
             )),
             TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
                 provider_name="TBS",
