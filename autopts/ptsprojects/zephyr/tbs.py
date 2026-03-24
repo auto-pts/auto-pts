@@ -110,7 +110,7 @@ def test_cases(ptses):
                 uri_scheme_list="tel,skype",
                 optional_opcodes=opcodes,
                 gtbs=True,
-                technology=BearerTech.LTE
+                technology=BearerTech.CELL_4G
             )),
             TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
                 provider_name="TBS",
