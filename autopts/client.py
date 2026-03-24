@@ -1558,8 +1558,9 @@ class Client:
 
         stack.init_stack()
 
-        stack.get_stack().pts_addr_map = self.args.pts_addr_map
-        logging.getLogger(__name__).info("pts_addr_map=%r", stack.get_stack().pts_addr_map)
+        if self.args.pts_addr_map:
+            stack.get_stack().pts_addr_map = self.args.pts_addr_map
+            logging.getLogger(__name__).info("pts_addr_map=%r", stack.get_stack().pts_addr_map)
 
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
