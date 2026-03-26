@@ -48,6 +48,7 @@ from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp
+from autopts.pybtp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, BTPFatalError, BTPInitError, MissingWIDError, SynchError
 from autopts.utils import (
     CounterWithFlag,
@@ -973,6 +974,13 @@ class LTThread(InterruptableThread):
         finish_count = self._args[3]
         try:
             self.locked = self.interrupt_lock.acquire()
+
+            # Use by default the IUT1 in this thread
+            from autopts.pybtp.btp import get_iut_method as get_iut
+            iutctl = get_iut()
+            if hasattr(iutctl, 'select_iut'):
+                iutctl.select_iut(0)
+
             self._run_test_case(*self._args)
         except Exception as exc:
             logging.exception(exc)
@@ -983,8 +991,14 @@ class LTThread(InterruptableThread):
                 self.interrupt_lock.release()
 
     def cancel_sync_points(self):
-        stack_inst = stack.get_stack()
-        stack_inst.synch.cancel_synch()
+        iut = get_iut()
+        if hasattr(iut, 'select_iut'):
+            for iut_id in iut.get_iut_map().keys():
+                iut.select_iut(iut_id)
+                iut.stack.synch.cancel_synch()
+            iut.select_iut(0)
+        else:
+            iut.stack.synch.cancel_synch()
 
     def interrupt(self):
         self.cancel_sync_points()
@@ -1171,6 +1185,12 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
             log(f'Not enough PTS instances configured. At least {i}'
                 f'instances are required for this test case!')
             return f'LT{i}_NOT_AVAILABLE'
+
+    iut = get_iut()
+    if test_case_lts[0].iut_count > 1 and (not hasattr(iut, 'get_iut_map') or
+            len(iut.get_iut_map().keys()) < test_case_lts[0].iut_count):
+        log('Not enough IUT instances configured.')
+        return 'IUT2_NOT_AVAILABLE'
 
     test_case_lts[0].initialize_logging(session_log_dir)
     file_handler = logging.FileHandler(test_case_lts[0].log_filename)
@@ -1488,7 +1508,7 @@ class Client:
         if not self.args.store or self.test_case_database:
             return
 
-        tc_db_table_name = self.store_tag + str(self.args.board_name)
+        tc_db_table_name = self.store_tag + str(next(iter(self.args.iut_targets_args.values())).board_name)
 
         if os.path.exists(self.args.database_file) and \
                 not os.path.exists(self.file_paths['TEST_CASE_DB_FILE']):
@@ -1556,7 +1576,11 @@ class Client:
         btp.init(self.get_iut)
         self.init_iutctl(self.args)
 
-        stack.init_stack()
+        # This is a part of a workaround that allows threads to receive
+        # a right IUT instance (and its stack) from get_iut() and get_stack().
+        iutctl = self.get_iut()
+        if hasattr(iutctl, 'select_iut'):
+            iutctl.select_iut(0)
 
         if self.args.pts_addr_map:
             stack.get_stack().pts_addr_map = self.args.pts_addr_map
@@ -1699,13 +1723,19 @@ def recover_at_exception(func):
 def run_recovery(args, ptses):
     log('Running recovery')
 
-    iut = autoprojects.iutctl.get_iut()
-    iut.stop()
+    iut = get_iut()
+    for iut_id in args.iut_map.keys():
+        if hasattr(iut, 'select_iut'):
+            iut.select_iut(iut_id)
+        iut.stop()
 
-    if args.usb_replug_available:
-        iut.btattach_stop()
-        replug_usb(args)
-        iut.btattach_start()
+        if args.usb_replug_available:
+            iut.btattach_stop()
+            replug_usb(args, iut)
+            iut.btattach_start()
+
+    if hasattr(iut, 'select_iut'):
+        iut.select_iut(0)
 
     for pts in ptses:
         req_sent = False
@@ -1736,13 +1766,18 @@ def run_recovery(args, ptses):
             log('Server is still resetting. Wait a little more.')
             time.sleep(1)
 
-    stack_inst = stack.get_stack()
-    stack_inst.cleanup()
+    for iut_id in args.iut_map.keys():
+        if hasattr(iut, 'select_iut'):
+            iut.select_iut(iut_id)
+        iut.cleanup_stack()
+
+    if hasattr(iut, 'select_iut'):
+        iut.select_iut(0)
 
     log('Recovery finished')
 
 
-def replug_usb(args):
+def replug_usb(args, iut):
     log(f'{replug_usb.__name__}')
     if args.ykush:
         if sys.platform == 'win32':
@@ -1764,7 +1799,6 @@ def replug_usb(args):
             time.sleep(1)
 
         args.tty_file = os.path.realpath(args.tty_alias)
-        iut = autoprojects.iutctl.get_iut()
         if iut:
             iut.tty_file = args.tty_file
         log(f'TTY {args.tty_alias} mounted as {args.tty_file}\n')

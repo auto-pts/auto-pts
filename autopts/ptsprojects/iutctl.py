@@ -22,12 +22,13 @@ import socket
 import subprocess
 import sys
 import time
+from contextvars import ContextVar
 
 import serial
 
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.boards import Board, tty_to_com
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
 from autopts.pybtp.types import BTPInitError
@@ -81,11 +82,13 @@ class IutCtl:
         log(f"{self.__class__}.{self.__init__.__name__} kernel_image={args.kernel_image} "
             f"tty_file={args.tty_file} board_name={args.board_name}")
 
+        self.iut_target_name = args.iut_target_name
         self.iut_mode = args.iut_mode
         self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
+        self.kernel_cpu = args.kernel_cpu
         self.tty_file = args.tty_file
         self._net_tty_file = args.net_tty_file
         self.tty_baudrate = args.tty_baudrate
@@ -160,6 +163,9 @@ class IutCtl:
         else:
             raise Exception(f"Mode {self.iut_mode} is not supported.")
 
+        self.stack = Stack()
+        self.stack.synch_init()
+
     def start(self, test_case):
         """Starts the IUT"""
 
@@ -199,8 +205,7 @@ class IutCtl:
     def _start_tty_mode(self, test_case):
         do_reset = not self.gdb
 
-        stack = get_stack()
-        if do_reset and len(stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
+        if do_reset and len(self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
             # For HW, the IUT ready event is triggered at its reset.
             # Since the board.reset() is called at the end of each
             # test case, to avoid double reset let's use board.reset()
@@ -213,9 +218,9 @@ class IutCtl:
         # Flush serial to ignore it.
         self.flush_serial(self.rtscts)
 
-        self.socket_srv = BTPSocketSrv(test_case.log_dir)
+        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
         self.socket_srv.open(self.btp_address)
-        self.btp_socket = BTPWorker(self.socket_srv)
+        self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
         flow_control = "crtscts" if self.rtscts else ""
 
         if sys.platform == "win32":
@@ -251,15 +256,15 @@ class IutCtl:
 
         self.btp_socket.accept()
 
-        if do_reset and len(stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
+        if do_reset and len(self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
             # Reset the board here to capture the IUT Ready event at
             # the beginning of the first test case.
             self.board.reset()
 
     def _start_qemu_mode(self, test_case):
-        self.socket_srv = BTPSocketSrv(test_case.log_dir)
+        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
         self.socket_srv.open(self.btp_address)
-        self.btp_socket = BTPWorker(self.socket_srv)
+        self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
 
         if self._btattach and self._btattach_at_every_test_case:
             self.btattach_start(test_case.log_dir)
@@ -288,9 +293,9 @@ class IutCtl:
         self.btp_socket.accept()
 
     def _start_native_mode(self, test_case):
-        self.socket_srv = BTPSocketSrv(test_case.log_dir)
+        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
         self.socket_srv.open(self.btp_address)
-        self.btp_socket = BTPWorker(self.socket_srv)
+        self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
 
         if self._btattach and self._btattach_at_every_test_case:
             self.btattach_start(test_case.log_dir)
@@ -342,7 +347,7 @@ class IutCtl:
         if self._btmon:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
-                                    '_btmon.log')
+                                    f'_{self.iut_target_name}_btmon.log')
             self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr, self.hci)
 
     def btmon_stop(self):
@@ -353,7 +358,7 @@ class IutCtl:
         if self._rtt_logger:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
-                                    '_iutctl.log')
+                                    f'_{self.iut_target_name}_iutctl.log')
             self._rtt_logger.start(self._rtt_logger_name, log_file, self.device_core,
                                    self.debugger_snr)
 
@@ -367,24 +372,22 @@ class IutCtl:
         if self.gdb:
             return
 
-        stack = get_stack()
-
         if reset:
             # Some test cases require the IUT to be reset during the test.
             if self.iut_mode == "tty":
                 # For HW, the IUT ready event is triggered at board.reset().
                 # There is no need to reopen the BTP socket.
-                stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
+                self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
                 self.board.reset()
             else:
                 # For QEMU, the IUT ready event is sent at startup of the process.
                 self.stop()
                 self.start(self.test_case)
 
-        ev = stack.core.wait_iut_ready_ev(30)
+        ev = self.stack.core.wait_iut_ready_ev(30)
         # Clear, because if the board has reset unexpectedly in the middle
         # of a test case, two IUT events may be received because of cleanup.
-        stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
+        self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
         if not ev:
             self.stop()
             raise BTPInitError('IUT ready event NOT received!')
@@ -422,14 +425,13 @@ class IutCtl:
         self.rtt_logger_stop()
         self.btmon_stop()
 
-        stack = get_stack()
-        if not self.gdb and stack.core and not get_global_end():
+        if not self.gdb and self.stack.core and not get_global_end():
 
-            stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
+            self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
             self.board.reset()
 
             # We have to wait for IUT ready event before we close socket
-            ev = stack.core.wait_iut_ready_ev(30, False)
+            ev = self.stack.core.wait_iut_ready_ev(30, False)
             if ev:
                 log("IUT ready event received OK")
             else:
@@ -481,3 +483,70 @@ class IutCtl:
 
         if self._btmon:
             self.btmon_stop()
+
+    def get_stack(self):
+        return self.stack
+
+    def cleanup_stack(self):
+        self.stack.cleanup()
+
+
+class IutCtlWrapper:
+    def __init__(self, args):
+        object.__setattr__(self, '_iut_target_selection', None)
+        object.__setattr__(self, '_iut_targets', None)
+        object.__setattr__(self, '_active_iut_target', None)
+        object.__setattr__(self, '_active_iut_target_name', None)
+        object.__setattr__(self, '_iut_map', {'0': 'iut0', '1': 'iut1'})
+
+        self._iut_target_selection = args.iut_target_selection \
+            if args.iut_target_selection else None
+
+        self._iut_targets = {}
+
+        for target_name in args.iut_targets_args:
+            iutctl = IutCtl(args.iut_targets_args[target_name])
+            self._iut_targets[target_name] = iutctl
+
+        iut_target_name = next(iter(self._iut_targets))
+        self._active_iut_target = ContextVar("active_iut_target")
+        self._active_iut_target.set(self._iut_targets[iut_target_name])
+        self._active_iut_target_name = ContextVar("active_iut_target_name")
+        self._active_iut_target_name.set(iut_target_name)
+
+    def select_iut(self, iut_id=None, iut_name=None):
+        """
+        Select which IUT instance will be used by the calling thread.
+        This is a part of a workaround that allows threads to receive
+        a right IUT instance (and its stack) from get_iut() and get_stack().
+        """
+        if iut_id is not None:
+            name = self._iut_map[str(iut_id)]
+        else:
+            name = iut_name
+        self._active_iut_target.set(self._iut_targets[name])
+        self._active_iut_target_name.set(name)
+        log(f"Selected IUT controller: {iut_id}->{name}")
+
+    def set_iut_map(self, iut_map):
+        log(f"IUT updated: {iut_map}")
+        self._iut_map = {}
+        for iut_id in iut_map:
+            self._iut_map[str(iut_id)] = iut_map[iut_id]
+
+    def get_iut_map(self):
+        return self._iut_map
+
+    def __getattribute__(self, name):
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            return getattr(self._active_iut_target.get(), name)
+
+    def __setattr__(self, name, value):
+        target = object.__getattribute__(self, '_active_iut_target')
+
+        if target and hasattr(target.get(), name):
+            setattr(target.get(), name, value)
+        else:
+            object.__setattr__(self, name, value)

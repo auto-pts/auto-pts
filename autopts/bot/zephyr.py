@@ -148,6 +148,21 @@ class ZephyrBotClient(BotClient):
         self.fail_info_parser = zephyr_get_assertion_info
 
     def apply_config(self, args, config, value):
+        iutctl = self.get_iut()
+
+        if hasattr(iutctl, 'select_iut'):
+            iutctl.set_iut_map(args.iut_map)
+
+            for i in args.iut_map.keys():
+                iut_args = args.iut_targets_args[args.iut_map[i]]
+                iutctl.select_iut(i)
+                self._apply_config(iut_args, config, value)
+
+            iutctl.select_iut(0)
+        else:
+            self._apply_config(args, config, value)
+
+    def _apply_config(self, args, config, value):
         pre_overlay = value.get('pre_overlay', [])
         if isinstance(pre_overlay, str):
             pre_overlay = [pre_overlay]

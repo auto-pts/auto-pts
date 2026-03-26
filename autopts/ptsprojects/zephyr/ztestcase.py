@@ -15,9 +15,8 @@
 
 """Test case that manages Zephyr IUT"""
 
-from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestCaseLT3, TestFunc, TestFuncCleanUp
-from autopts.ptsprojects.zephyr.iutctl import get_iut
+from autopts.pybtp.btp import get_iut
 
 
 class ZTestCase(TestCaseLT1):
@@ -28,25 +27,45 @@ class ZTestCase(TestCaseLT1):
 
         super().__init__(*args, ptsproject_name="zephyr", **kwargs)
 
-        self.stack = get_stack()
-        self.zephyrctl = get_iut()
+        self.cmds.insert(0, TestFunc(self._test_case_start))
+        self.cmds.append(TestFuncCleanUp(self._test_case_cleanup))
 
-        # Init stack.core to be able to receive IUT ready event
-        self.cmds.insert(0, TestFunc(self.stack.core_init))
-        # Open BTP socket and start IUT
-        self.cmds.insert(1, TestFunc(self.zephyrctl.start, self))
-        # Await IUT ready event
-        self.cmds.insert(2, TestFunc(self.zephyrctl.wait_iut_ready_event, False))
+    def _test_case_start(self):
+        iut = get_iut()
 
-        if self.zephyrctl.iut_mode == "native":
-            self.cmds.insert(0, TestFunc(self.zephyrctl.remove_flash_bin))
+        for iut_id in range(self.iut_count):
+            if hasattr(iut, 'select_iut'):
+                iut.select_iut(iut_id)
 
-        self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
+            # Init stack.core to be able to receive IUT ready event
+            iut.get_stack().core_init()
+            # Open BTP socket and start IUT
+            iut.start(self)
+            # Await IUT ready event
+            iut.wait_iut_ready_event(False)
 
-        # Last command is to stop QEMU or HW.
-        # For HW, this will trigger the HW reset and the IUT ready event.
-        # The event will be used in the next test case, to skip double reset.
-        self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))
+            if iut.iut_mode == "native":
+                iut.remove_flash_bin()
+
+        if hasattr(iut, 'select_iut'):
+            iut.select_iut(0)
+
+    def _test_case_cleanup(self):
+        iut = get_iut()
+
+        for iut_id in range(self.iut_count):
+            if hasattr(iut, 'select_iut'):
+                iut.select_iut(iut_id)
+
+            iut.stack.cleanup()
+
+            # Last command is to stop QEMU or HW.
+            # For HW, this will trigger the HW reset and the IUT ready event.
+            # The event will be used in the next test case, to skip double reset.
+            iut.stop()
+
+        if hasattr(iut, 'select_iut'):
+            iut.select_iut(0)
 
 
 class ZTestCaseSlave(TestCaseLT2):

@@ -340,10 +340,11 @@ class TestCase(PTSCallback):
         return TestCase(self.project_name, self.name, self.cmds,
                         self.ptsproject_name, self.no_wid, self.edit1_wids,
                         self.verify_wids, self.ok_cancel_wids,
-                        self.generic_wid_hdl, self.log_filename, self.log_dir)
+                        self.generic_wid_hdl, self.log_filename, self.log_dir, self.iut_count)
 
     def __init__(self, project_name, test_case_name, cmds=None, ptsproject_name=None, no_wid=None, edit1_wids=None,
-                 verify_wids=None, ok_cancel_wids=None, generic_wid_hdl=None, log_filename=None, log_dir=None):
+                 verify_wids=None, ok_cancel_wids=None, generic_wid_hdl=None, log_filename=None, log_dir=None,
+                 iut_count=1, **kwargs):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -377,6 +378,9 @@ class TestCase(PTSCallback):
 
         """
         super().__init__()
+        from autopts.pybtp.btp import get_iut_method
+        self.get_iut = get_iut_method
+        self.iut_count = iut_count
         if cmds is None:
             cmds = []
         self.project_name = project_name
@@ -674,6 +678,9 @@ class TestCase(PTSCallback):
          PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
 
+        if self.iut_count > 1 and "For IUT2" in description:
+            self.get_iut().select_iut(1)
+
         synch_elem = None
         stack = get_stack()
 
@@ -707,6 +714,10 @@ class TestCase(PTSCallback):
         if synch_elem:
             def wait_for_end(): return stack.synch.wait_for_end(synch_elem)
             self.add_next_step(wait_for_end)
+
+        iutctl = self.get_iut()
+        if hasattr(iutctl, 'select_iut'):
+            iutctl.select_iut(0)
 
         log("Sending response %r to wid %d test case %s", my_response, wid, test_case_name)
         return my_response

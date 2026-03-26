@@ -21,7 +21,7 @@ import re
 import struct
 from collections import namedtuple
 
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import get_stack, set_get_stack_method
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import defs
 from autopts.pybtp.common import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, reg_unreg_service, supported_svcs_cmds
@@ -681,6 +681,14 @@ def init(get_iut_method):
 
     get_iut = get_iut_method
     set_event_handler(event_handler)
+
+
+def _get_stack():
+    return get_iut().get_stack()
+
+
+# Omitting cyclical imports.
+set_get_stack_method(_get_stack)
 
 
 def event_handler(hdr, data):

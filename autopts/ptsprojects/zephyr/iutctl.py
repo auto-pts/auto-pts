@@ -18,7 +18,7 @@ import logging
 import os
 
 from autopts.config import AUTOPTS_ROOT_DIR
-from autopts.ptsprojects.iutctl import IutCtl
+from autopts.ptsprojects.iutctl import IutCtl, IutCtlWrapper
 
 log = logging.debug
 ZEPHYR = None
@@ -26,21 +26,23 @@ ZEPHYR = None
 CLI_SUPPORT = ['tty', 'hci', 'qemu']
 
 
-class ZephyrCtl(IutCtl):
-    """Zephyr OS Control Class"""
+def create_zephyr_ctl_class(use_wrapper: bool):
+    base = IutCtlWrapper if use_wrapper else IutCtl
 
-    def __init__(self, args):
-        super().__init__(args)
-        self._rtt_logger_name = "Logger"
-        self.boot_log = "Booting Zephyr OS build"
+    class ZephyrCtl(base):
+        """Zephyr OS Control Class"""
 
-    def stop(self):
-        super().stop()
+        def __init__(self, args):
+            super().__init__(args)
+            self._rtt_logger_name = "Logger"
+            self.boot_log = "Booting Zephyr OS build"
 
-    def remove_flash_bin(self):
-        flash_bin = os.path.join(AUTOPTS_ROOT_DIR, 'flash.bin')
-        if os.path.exists(flash_bin):
-            os.remove(flash_bin)
+        def remove_flash_bin(self):
+            flash_bin = os.path.join(AUTOPTS_ROOT_DIR, 'flash.bin')
+            if os.path.exists(flash_bin):
+                os.remove(flash_bin)
+
+    return ZephyrCtl
 
 
 def get_iut():
@@ -54,7 +56,15 @@ def init(args):
     """
     global ZEPHYR
 
-    ZEPHYR = ZephyrCtl(args)
+    if len(args.iut_targets_args) == 1:
+        use_wrapper = False
+        args = next(iter(args.iut_targets_args.values()))
+    else:
+        use_wrapper = True
+
+    zephyr_ctl_class = create_zephyr_ctl_class(use_wrapper)
+
+    ZEPHYR = zephyr_ctl_class(args)
 
 
 def cleanup():

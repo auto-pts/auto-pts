@@ -21,6 +21,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.csip_wid import csip_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave, ZTestCaseSlave2
 from autopts.pybtp import btp
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
@@ -130,6 +131,27 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
     ]
 
+    pre_conditions_iut2 = []
+    if hasattr(get_iut(), 'get_iut_map'):
+        pre_conditions_iut2 = [
+            TestFunc(get_iut().select_iut, 1),
+            TestFunc(btp.core_reg_svc_gap),
+            TestFunc(get_stack().gap_init, iut_device_name + b"_IUT2"),
+            TestFunc(btp.gap_read_ctrl_info),
+            TestFunc(lambda: pts.update_pixit_param("CSIP", "TSPX_bd_addr_iut",
+                     get_stack().gap.iut_addr_get_str())),
+            TestFunc(btp.core_reg_svc_gatt),
+            TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
+            TestFunc(btp.gap_set_conn),
+            TestFunc(btp.gap_set_gendiscov),
+            TestFunc(btp.core_reg_svc_csip),
+            TestFunc(btp.core_reg_svc_csis),
+            TestFunc(get_stack().csip_init),
+            TestFunc(lambda: set_addr(
+                get_stack().gap.iut_addr_get_str())),
+            TestFunc(get_iut().select_iut, 0),
+        ]
+
     custom_test_cases = [
         ZTestCase("CSIP", "CSIP/CL/SP/BV-07-C", cmds=pre_conditions +
                   [
@@ -199,6 +221,9 @@ def test_cases(ptses):
                   generic_wid_hdl=csip_wid_hdl,
                   lt2="CSIP/CL/SPE/BI-01-C_LT2",
                   lt3="CSIP/CL/SPE/BI-01-C_LT3"),
+        ZTestCase("CSIP", "CSIP/SR/SP/BV-06-C",
+                  cmds=pre_conditions + pre_conditions_iut2,
+                  generic_wid_hdl=csip_wid_hdl, iut_count=2)
     ]
 
     test_case_name_list = pts.get_test_case_list('CSIP')

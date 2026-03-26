@@ -31,7 +31,7 @@ from pathlib import Path
 
 from autopts import client as autoptsclient
 from autopts.bot.common_features import github, google_drive, mail, report
-from autopts.client import Client, CliParser, TestCaseRunStats, init_logging
+from autopts.client import Client, CliParser, TestCaseRunStats, init_logging, run_recovery
 from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths, SERIAL_BAUDRATE
 from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
@@ -114,7 +114,7 @@ class BotConfigArgs(Namespace):
         self.hid_vid = args.get('hid_vid', None)
         self.hid_pid = args.get('hid_pid', None)
         self.hid_serial = args.get('hid_serial', None)
-        self.kernel_cpu = args.get('kernel_cpu', 'qemu_cortex_m3')
+        self.kernel_cpu = args.get('kernel_cpu', None)
         self.setcap_cmd = args.get('setcap_cmd', None)
         self.hci = args.get('hci', None)
         self.test_cases = args.get('test_cases', [])
@@ -146,6 +146,14 @@ class BotConfigArgs(Namespace):
         self.wid_usage = args.get('wid_usage', False)
         self.pts_addr_map = args.get('pts_addr_map', {})
         self.restricted_pts_addrs = args.get('restricted_pts_addrs', [])
+        self.iut_targets = args.get('iut_targets', None)
+        self.iut_target_selection = args.get('iut_target_selection', None)
+
+        if self.iut_targets:
+            for iut_target in self.iut_targets:
+                if 'board' in iut_target:
+                    # For backward compatibility
+                    iut_target['board_name'] = iut_target['board']
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser
@@ -222,50 +230,39 @@ class BotClient(Client):
                 continue_config = self.backup['tc_stats'].pending_config
                 continue_test_case = self.backup['tc_stats'].pending_test_case
 
-        if not continue_config:
+        if continue_config is None:
             return
 
         with open(self.file_paths['TEST_CASES_JSON_FILE']) as f:
             data = f.read()
-            test_cases_per_config = json.loads(data)
-            run_order = list(test_cases_per_config.keys())
+            run_config = json.loads(data)
 
         # Skip already completed configs
-        config_index = run_order.index(continue_config)
         if continue_test_case:
             # Skip already completed test cases and the faulty one
-            tc_index = test_cases_per_config[continue_config].index(continue_test_case)
-            test_cases_per_config[continue_config] = test_cases_per_config[continue_config][tc_index + 1:]
+            config = run_config[continue_config]
+            tc_index = config['test_cases'].index(continue_test_case)
+            config['test_cases'] = config['test_cases'][tc_index + 1:]
             self.backup['tc_stats'].index += 1
             self.backup['tc_stats'].update(continue_test_case, 0, 'TIMEOUT')
 
-            if not test_cases_per_config[continue_config]:
+            if not config['test_cases']:
                 # The faulty test case was the last one in the config. Move to the next config
                 self._merge_stats(self.backup['all_stats'], self.backup['tc_stats'])
                 self.backup['all_stats'].save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
                 self.backup['tc_stats'] = None
-                config_index += 1
-                continue_test_case = None
+                continue_config += 1
 
-        _args = {}
-        self.backup['args_per_config'] = _args
+        run_config = run_config[continue_config:]
         self.backup['available'] = True
-        self.backup['run_order'] = run_order[config_index:]
+        self.backup['run_config'] = run_config
 
-        if not self.backup['run_order']:
+        if not run_config:
             # All test cases done, the last one was faulty
             self.backup['all_stats'].test_run_completed = True
             return
 
-        continue_config = self.backup['run_order'][0]
-
-        for config in self.backup['run_order']:
-            _args[config] = copy.deepcopy(self.args)
-            _args[config].test_cases = test_cases_per_config[config]
-
-        # Skip build and flash for the pending config as it has been
-        # already done in previous test run.
-        _args[continue_config].no_build = True
+        self.backup['skip_build'] = True
 
     def parse_config_and_args(self, bot_config_dict=None):
         if self.bot_config is not None:
@@ -332,45 +329,47 @@ class BotClient(Client):
                 # All test cases have been completed before termination
                 return
 
-            _args = self.backup['args_per_config']
-            run_order = self.backup['run_order']
+            run_config = self.backup['run_config']
         else:
-            _run_order, _args = get_filtered_test_cases(self.iut_config, self.args,
-                                                        self.config_default, self.ptses[0])
+            _run_order, config_testcases_map = get_filtered_test_cases(
+                self.iut_config, self.args, self.config_default, self.ptses[0])
 
-            run_order = []
-            test_cases = {}
-            for config in _run_order:
-                if _args.get(config) is None:
-                    test_case_number = 0
-                else:
-                    test_case_number = len(_args[config].test_cases)
+            run_config = split_test_cases_per_iut_target(_run_order, config_testcases_map,
+                                                         self.args.iut_target_selection)
 
-                if test_case_number == 0:
-                    log(f'No test cases for {config} config, ignored.')
-                    continue
+            new_run_config = []
+            for entry in run_config:
+                tcs = entry['test_cases']
+                config = entry['config_file']
+                test_case_number = len(tcs)
+                assert test_case_number != 0
 
                 if self.args.test_case_limit:
                     limit = self.args.test_case_limit - limit_counter
-                    if limit == 0:
-                        log('Limit of test cases reached. No more test cases will be run.')
+                    if test_case_number >= limit:
+                        entry['test_cases'] = entry['test_cases'][:limit]
                         break
+                    else:
+                        limit_counter += test_case_number
 
-                    if test_case_number > limit:
-                        _args[config].test_cases = _args[config].test_cases[:limit]
-                        test_case_number = limit
+                new_run_config.append(entry)
 
-                    limit_counter += test_case_number
+            self.run_config = new_run_config
 
-                test_cases[config] = _args[config].test_cases
-                run_order.append(config)
+        if self.args.use_backup:
+            with open(self.file_paths['TEST_CASES_JSON_FILE'], 'w') as file:
+                file.write(json.dumps(run_config, indent=4))
 
-            if self.args.use_backup:
-                with open(self.file_paths['TEST_CASES_JSON_FILE'], 'w') as file:
-                    file.write(json.dumps(test_cases, indent=4))
+        for i, entry in enumerate(run_config):
+            run_args = copy.deepcopy(self.args)
+            run_args.test_cases = entry['test_cases']
+            run_args.iut_map = entry['iut_map']
+            run_args.iut_config_file = entry['config_file']
 
-        for config in run_order:
-            yield config, _args[config]
+            if i == 0 and self.args.use_backup and self.backup.get('skip_build', False):
+                run_args.no_build = True
+
+            yield i, run_args
 
     def _backup_tc_stats(self, config=None, test_case=None, stats=None, **kwargs):
         if not self.backup or not stats:
@@ -388,6 +387,19 @@ class BotClient(Client):
 
         if os.path.exists(self.file_paths['TC_STATS_JSON_FILE']):
             os.remove(self.file_paths['TC_STATS_JSON_FILE'])
+
+    def _ensure_ptses_ready(self, args):
+        while True:
+            try:
+                for pts in self.ptses:
+                    pts.ready()
+                break
+            except Exception:
+                traceback.print_exc()
+                if self.args.recovery:
+                    run_recovery(args, self.ptses)
+                else:
+                    raise
 
     def run_test_cases(self):
         all_stats = self.backup['all_stats']
@@ -415,7 +427,8 @@ class BotClient(Client):
                     if self.args.use_backup:
                         self._backup_tc_stats(config=config, test_case=None, stats=stats)
 
-                self.apply_config(config_args, config, self.iut_config[config])
+                self.apply_config(config_args, config_args.iut_config_file,
+                                  self.iut_config[config_args.iut_config_file])
 
                 rules = autoptsclient.parse_test_case_pts_addr_map(
                     getattr(self.args, "pts_addr_map", None))
@@ -430,6 +443,8 @@ class BotClient(Client):
                     self._backup_tc_stats(config=config, test_case=test_case, stats=stats, **kwargs)
 
                     mapped_addr = rules.get(test_case) if test_case else None
+
+                    self._ensure_ptses_ready(config_args)
 
                     if test_case and mapped_addr:
                         selected_ptses = autoptsclient.reorder_ptses_by_addr(self.ptses, test_case, rules)
@@ -465,7 +480,7 @@ class BotClient(Client):
                                                      file_paths=copy.deepcopy(self.file_paths))
 
             except BuildAndFlashException:
-                log(f'Build and flash step failed for config {config}')
+                log(f'Build and flash step failed for config {self.run_config[config]["config_file"]}')
                 for tc in config_args.test_cases:
                     status = 'BUILD_OR_FLASH ERROR'
                     stats.update(tc, time.time(), status)
@@ -561,7 +576,8 @@ class BotClient(Client):
             self.error_txt_content += traceback.format_exc() + "\n"
             raise
         finally:
-            release_device(self.args.tty_file)
+            for iuts_args in self.args.iut_targets_args.values():
+                release_device(iuts_args.tty_file)
             if self.error_txt_content:
                 report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
 
@@ -876,15 +892,9 @@ class BotClient(Client):
 
 
 def get_filtered_test_cases(iut_config, bot_args, config_default, pts):
-    _args = {}
-    config_default = config_default
-    _args[config_default] = bot_args
-
     # These contain values passed with -c and -e options
-    included = sort_and_reduce_prefixes(_args[config_default].test_cases)
-    excluded = sort_and_reduce_prefixes(_args[config_default].excluded)
-    _args[config_default].excluded = []
-    _args[config_default].test_cases = []
+    included = sort_and_reduce_prefixes(bot_args.test_cases)
+    excluded = sort_and_reduce_prefixes(bot_args.excluded)
 
     # Ask the PTS about test cases available in the workspace
     filtered_test_cases = autoptsclient.get_test_cases(pts, included, excluded)
@@ -900,6 +910,7 @@ def get_filtered_test_cases(iut_config, bot_args, config_default, pts):
 
     # Distribute test cases among .conf files
     remaining_test_cases = copy.deepcopy(filtered_test_cases)
+    config_testcases_map = {config_default: []}
     for config in distribution_order:
         value = iut_config[config]
 
@@ -910,24 +921,63 @@ def get_filtered_test_cases(iut_config, bot_args, config_default, pts):
             # with the default config.
             continue
 
-        _args[config] = copy.deepcopy(_args[config_default])
+        config_testcases_map[config] = []
 
         for prefix in value['test_cases']:
             for tc in filtered_test_cases:
                 if tc.startswith(prefix):
-                    _args[config].test_cases.append(tc)
+                    config_testcases_map[config].append(tc)
                     remaining_test_cases.remove(tc)
 
             filtered_test_cases = copy.deepcopy(remaining_test_cases)
 
     # Remaining test cases will be run with the default .conf file
     # if default .conf doesn't have already defined test cases
-    if len(_args[config_default].test_cases) == 0 and \
+    if len(config_testcases_map[config_default]) == 0 and \
             config_default in iut_config and \
             len(iut_config[config_default].get('test_cases', [])) == 0:
-        _args[config_default].test_cases = filtered_test_cases
+        config_testcases_map[config_default] = filtered_test_cases
 
-    return run_order, _args
+    return run_order, config_testcases_map
+
+
+def split_test_cases_per_iut_target(run_order, config_testcases_map, iut_target_selection):
+
+    def select_iut_map(tc):
+        for rule in iut_target_selection.get('rules', []):
+            if tc in rule.get('test_cases', []):
+                return rule.get(
+                    'iut_map',
+                    iut_target_selection.get('default_iut_map', {'0': 'iut0'})
+                )
+
+        return iut_target_selection.get('default_iut_map')
+
+    grouped = {}
+
+    for config in run_order:
+        tcs = config_testcases_map.get(config, [])
+
+        if not tcs:
+            log(f'No test cases for {config} config, ignored.')
+            continue
+
+        for tc in tcs:
+            iut_map = select_iut_map(tc)
+
+            iut_key = tuple(sorted(iut_map.items()))
+            group_key = (config, iut_key)
+
+            if group_key not in grouped:
+                grouped[group_key] = {
+                    'config_file': config,
+                    'iut_map': copy.deepcopy(iut_map),
+                    'test_cases': []
+                }
+
+            grouped[group_key]['test_cases'].append(tc)
+
+    return list(grouped.values())
 
 
 def sort_and_reduce_prefixes(prefixes):

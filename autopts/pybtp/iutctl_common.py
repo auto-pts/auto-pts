@@ -48,11 +48,11 @@ def set_event_handler(event_handler):
 
 class BTPSocket:
 
-    def __init__(self, log_dir=None):
+    def __init__(self, log_dir=None, log_file="autopts-iutctl.log"):
         self.conn = None
         self.addr = None
         self.btp_service_id_dict = None
-        self.log_file = open(os.path.join(log_dir, "autopts-iutctl.log"), "a")
+        self.log_file = open(os.path.join(log_dir, log_file), "a")
         self.btp_service_id_dict = self.get_svc_id()
 
     @abstractmethod
@@ -216,8 +216,8 @@ class BTPSocket:
 
 class BTPSocketSrv(BTPSocket):
 
-    def __init__(self, log_dir=None):
-        super().__init__(log_dir)
+    def __init__(self, log_dir=None, log_file=None):
+        super().__init__(log_dir, log_file)
         self.sock = None
 
     def open(self, addres=BTP_ADDRESS, port=0):
@@ -281,10 +281,11 @@ class BTPSocketCli(BTPSocket):
 
 
 class BTPWorker:
-    def __init__(self, sock):
+    def __init__(self, sock, iut_name=None):
         super().__init__()
 
         self._socket = sock
+        self._iut_name = iut_name
         self._rx_queue = queue.Queue()
         self._running = threading.Event()
         self._lock = threading.Lock()
@@ -296,6 +297,14 @@ class BTPWorker:
 
     def _rx_task(self):
         log(f'{threading.current_thread().name} started')
+
+        if self._iut_name is not None:
+            from autopts.pybtp.btp import get_iut_method as get_iut
+            iutctl = get_iut()
+            if hasattr(iutctl, 'select_iut'):
+                # Select which IUT instance will be used by this thread
+                iutctl.select_iut(iut_name=self._iut_name)
+
         socket_ok = True
         while self._running.is_set() and not get_global_end():
             try:
