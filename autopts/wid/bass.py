@@ -62,15 +62,6 @@ def hdl_wid_100(param: WIDParams):
         log(f'BIS not found, broadcast ID {broadcast_id}')
         return False
 
-    # Workaround for BASS/SR/SPE/BI-06-C: This test case validates invalid length handling
-    # and doesn't require PA or BIS sync. However, PTS sends Add Source requesting only PA sync,
-    # then sends WID 100 (which expects BIS sync per its description "synchronize with Broadcast
-    # ISO"). This mismatch causes the BIS sync wait to timeout. Skip BIS sync wait for this test
-    # case until PTS is fixed (e.g., by using a different WID, requesting BIS sync in Add Source,
-    # or not sending WID 100 for this test).
-    if param.test_case_name in ['BASS/SR/SPE/BI-06-C']:
-        return True
-
     bis_id = ev['bis_id']
     broadcast_id = ev['broadcast_id']
     ev = stack.bap.wait_bis_synced_ev(broadcast_id, bis_id, 10, False)
@@ -86,7 +77,7 @@ def hdl_wid_101(param: WIDParams):
     Wait for the Broadcast Receive State Characteristic to get the state of PA Sync.
     """
 
-    if param.test_case_name in ['BASS/SR/CP/BV-16-C']:
+    if param.test_case_name in ['BASS/SR/SPE/BI-06-C', 'BASS/SR/CP/BV-16-C']:
         stack = get_stack()
         ev = stack.bap.wait_pa_sync_req_ev(WildCard(), WildCard(), 30, False)
         if ev is None:
