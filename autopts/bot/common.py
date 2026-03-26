@@ -562,7 +562,8 @@ class BotClient(Client):
             raise
         finally:
             release_device(self.args.tty_file)
-            report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
+            if self.error_txt_content:
+                report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
 
         if self.fail_info_parser:
             stats.fail_info_cb = self.fail_info_parser
