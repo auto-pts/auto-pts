@@ -81,6 +81,7 @@ class IutCtl:
         log(f"{self.__class__}.{self.__init__.__name__} kernel_image={args.kernel_image} "
             f"tty_file={args.tty_file} board_name={args.board_name}")
 
+        self.iut_target_name = args.iut_target_name
         self.iut_mode = args.iut_mode
         self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
@@ -481,3 +482,47 @@ class IutCtl:
 
         if self._btmon:
             self.btmon_stop()
+
+
+class IutCtlWrapper:
+    def __init__(self, args):
+        object.__setattr__(self, '_iut_target_selection', None)
+        object.__setattr__(self, '_iut_targets', None)
+        object.__setattr__(self, '_active_iut_target', None)
+        object.__setattr__(self, '_active_iut_target_name', None)
+
+        self._iut_target_selection = args.iut_target_selection \
+            if args.iut_target_selection else None
+
+        self._iut_targets = {}
+
+        if args.iut_targets:
+            for target_name in args.iut_targets_args:
+                iutctl = IutCtl(args.iut_targets_args[target_name])
+                self._iut_targets[target_name] = iutctl
+        else:
+            self._iut_targets['iut0'] = IutCtl(args)
+
+        iut_target_name = next(iter(self._iut_targets))
+        self._active_iut_target = self._iut_targets[iut_target_name]
+        self._active_iut_target_name = iut_target_name
+
+    def select_iut_target(self, name):
+        log(f"{self.__class__}.{self.flush_serial.__name__}")
+        self._active_iut_target = self._iut_targets[name]
+        self._active_iut_target_name = name
+        log(f"Selected IUT controller: {self._active_iut_target_name}")
+
+    def __getattribute__(self, name):
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            return getattr(self._active_iut_target, name)
+
+    def __setattr__(self, name, value):
+        target = object.__getattribute__(self, '_active_iut_target')
+
+        if target and hasattr(target, name):
+            setattr(target, name, value)
+        else:
+            object.__setattr__(self, name, value)
