@@ -16,6 +16,7 @@
 # more details.
 #
 import argparse
+import copy
 import logging
 import os
 import shutil
@@ -170,6 +171,9 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--pts_addr_map", default={}, help=argparse.SUPPRESS)
         self.add_argument("--restricted_pts_addrs", default=[], help=argparse.SUPPRESS)
+
+        self.add_argument("--iut_targets", default=[], help=argparse.SUPPRESS)
+        self.add_argument("--iut_targets_args", default={}, help=argparse.SUPPRESS)
 
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
@@ -367,7 +371,7 @@ class CliParser(argparse.ArgumentParser):
         if not args.board_name:
             return 'TTY IUT mode: specify board_name\n'
 
-        return self.find_tty(args)
+        return ''
 
     def check_args_qemu(self, args):
         if not args.qemu_bin:
@@ -390,9 +394,6 @@ class CliParser(argparse.ArgumentParser):
                 return f'Native IUT mode: kernel_image {repr(args.kernel_image)} is not a file!\n'
         elif not args.project_path:
             return 'Native IUT mode: specify kernel_image or project_path to use this IUT mode\n'
-
-        if args.tty_file or args.tty_alias or args.debugger_snr:
-            return self.find_tty(args)
 
         return ''
 
@@ -444,6 +445,7 @@ class CliParser(argparse.ArgumentParser):
                   command line arguments
             errmsg: an error message if parsing failed, otherwise empty string
         """
+        errmsg = ''
         args = self.parse_args(None, arg_ns)
 
         from autopts.client import init_logging
@@ -456,11 +458,6 @@ class CliParser(argparse.ArgumentParser):
         if args.btattach_bin and not is_executable(args.btattach_bin):
             return args, f'The btattach_bin={args.btattach_bin} is not an executable file'
 
-        if args.ykush or args.active_hub_server:
-            args.usb_replug_available = True
-        else:
-            args.usb_replug_available = False
-
         args.superguard = 60 * args.superguard
 
         if not args.ip_addr:
@@ -469,13 +466,40 @@ class CliParser(argparse.ArgumentParser):
         if not args.local_addr:
             args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
-        args.iut_mode = self.get_iut_mode(args)
-        if sys.platform == "win32" and args.iut_mode in ['qemu', 'native']:
-            errmsg = f'The {args.iut_mode} mode is not supported under Windows!'
-            return args, errmsg
+        iut_targets_args = {}
+        if args.iut_targets:
+            for iut_target in args.iut_targets:
+                args_copy = copy.deepcopy(args)
+                for k, v in iut_target.items():
+                    if hasattr(args_copy, k):
+                        setattr(args_copy, k, v)
+                iut_targets_args[iut_target['name']] = args_copy
+                iut_targets_args[iut_target['name']].iut_target_name = iut_target['name']
+        else:
+            iut_targets_args['iut0'] = args
+            iut_targets_args['iut0'].iut_target_name = 'iut0'
 
-        check_method = getattr(self, f'check_args_{args.iut_mode}')
-        errmsg = check_method(args)
+        args.iut_targets_args = iut_targets_args
+
+        for iut_name in args.iut_targets_args:
+            _args = args.iut_targets_args[iut_name]
+            _args.iut_mode = self.get_iut_mode(_args)
+
+            if _args.ykush or _args.active_hub_server:
+                _args.usb_replug_available = True
+            else:
+                _args.usb_replug_available = False
+
+            if sys.platform == "win32" and _args.iut_mode in ['qemu', 'native']:
+                errmsg = f'The {_args.iut_mode} mode is not supported under Windows!'
+                return args, errmsg
+
+            if _args.iut_mode == 'tty' or (_args.iut_mode == 'native'
+                                           and _args.tty_file or _args.tty_alias or _args.debugger_snr):
+                self.find_tty(_args)
+
+            check_method = getattr(self, f'check_args_{_args.iut_mode}')
+            errmsg = check_method(_args)
 
         if args.wid_run:
             self.wid_run_tcs(args)
