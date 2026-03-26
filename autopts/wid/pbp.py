@@ -16,12 +16,10 @@
 
 import logging
 import re
-import struct
 
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.btp.audio import pack_metadata
-from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO
 from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, WIDParams, create_lc3_ltvs_bytes, hex_str_to_le_bytes
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
 from autopts.wid.common import _safe_bap_send
@@ -202,13 +200,8 @@ def hdl_wid_552(params: WIDParams):
 
     # default PTS program info, see TSPX_Program_Info
     stack = get_stack()
-    # The following should be replaced with
-    # metadata = pack_metadata(program_info=stack.pbp.program_info)
-    # But cannot due to a PTS bug that treats program_info as an OCTETSTRING instead of a human-readable string (IA5STRING)
-    # https://support.bluetooth.com/hc/en-us/requests/181645
-    program_info = bytes.fromhex(stack.pbp.program_info)
-    program_info_len = len(program_info)
-    metadata = struct.pack("<BB", program_info_len + 1, AUDIO_METADATA_PROGRAM_INFO) + program_info
+
+    metadata = pack_metadata(program_info=stack.pbp.program_info)
 
     btp.pbp.pbp_set_public_broadcast_announcement(features, metadata)
     btp.pbp.pbp_set_broadcast_name(stack.pbp.broadcast_name)
