@@ -425,6 +425,10 @@ def start_vm(config, checkout_repos=False):
             vm_commit = vm_yaml[config['pts_ver']]
             git_checkout(vm_commit, config['vm']['path'])
 
+        if 'vm_options_append' in config['vm']:
+            with open(config['vm']['vm_options_file'], mode='a') as file:
+                file.write(config['vm']['vm_options_append'])
+
     log(f"Starting VM with: {config['vm']['vm_start_cmd']}")
     subprocess.Popen(shlex.split(config['vm']['vm_start_cmd']),
                      shell=False,
