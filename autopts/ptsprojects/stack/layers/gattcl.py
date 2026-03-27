@@ -42,6 +42,7 @@ class GattCl:
         self.dscs = []
         self.notifications = []
         self.write_status = None
+        self.write_long = False
         self.event_to_await = None
 
     def set_event_to_await(self, event):
@@ -100,6 +101,12 @@ class GattCl:
 
     def wait_for_write_rsp(self, timeout=30):
         return wait_for_event(timeout, self.is_write_completed)
+
+    def is_write_long_completed(self, *args):
+        return self.write_long
+
+    def wait_for_write_long_rsp(self, timeout=30):
+        return wait_for_event(timeout, self.is_write_long_completed)
 
     def is_verified_val_rxed(self, expected_count):
         if expected_count > 0:
