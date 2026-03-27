@@ -26,12 +26,6 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
-def mmdl_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{mmdl_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 def iut_reset():
     # Wait a few seconds before resetting so that all settings are stored on the flash
     # Some models save from a callback that is triggered after a few seconds.
@@ -46,6 +40,7 @@ def iut_reset():
     btp.mesh_start()
 
 
+# wid handlers section begin
 def hdl_wid_13(_: WIDParams):
     """
     Implements: RE_PROVISIONING_PROVISIONER
