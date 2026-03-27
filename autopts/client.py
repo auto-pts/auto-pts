@@ -1386,7 +1386,16 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
             selected_ptses = ptses
             selected_test_case_instances = test_case_instances
             if pre_test_case_fn:
-                prepared = pre_test_case_fn(test_case=test_case, stats=stats, **kwargs)
+                while True:
+                    try:
+                        prepared = pre_test_case_fn(test_case=test_case, stats=stats, **kwargs)
+                        break
+                    except Exception:
+                        traceback.print_exc()
+                        if args.recovery:
+                            run_recovery(args, ptses)
+                        else:
+                            raise
 
                 if isinstance(prepared, dict):
                     selected_ptses = prepared.get('ptses') or ptses
