@@ -43,6 +43,7 @@ class GattCl:
         self.notifications = []
         self.write_status = None
         self.event_to_await = None
+        self.att_timeout = False
 
     def set_event_to_await(self, event):
         self.event_to_await = event
@@ -108,3 +109,9 @@ class GattCl:
 
     def wait_for_verify_values(self, timeout=30, expected_count=0):
         return wait_for_event(timeout, self.is_verified_val_rxed, expected_count)
+
+    def is_att_timeout(self):
+        return self.att_timeout
+
+    def wait_for_att_timeout(self, timeout=30):
+        return wait_for_event(timeout, self.is_att_timeout)
