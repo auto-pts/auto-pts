@@ -37,6 +37,7 @@ class ZTestCase(TestCaseLT1):
         self.cmds.insert(1, TestFunc(self.zephyrctl.start, self))
         # Await IUT ready event
         self.cmds.insert(2, TestFunc(self.zephyrctl.wait_iut_ready_event, False))
+        self.cmds.insert(3, TestFunc(self.zephyrctl.get_supported_svcs))
 
         if self.zephyrctl.iut_mode == "native":
             self.cmds.insert(0, TestFunc(self.zephyrctl.remove_flash_bin))

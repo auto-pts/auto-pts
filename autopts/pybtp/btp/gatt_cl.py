@@ -39,6 +39,11 @@ def gatt_cl_mtu_exchanged_ev_(gatt_cl, data, data_len):
     logging.debug("%s %r", gatt_cl_mtu_exchanged_ev_.__name__, data)
 
     fmt = '<B6sB'
+    read_mult_var_fmt = '<B6sBBH'
+
+    if data_len >= struct.calcsize(read_mult_var_fmt):
+        gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len)
+        return
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
     addr = le_bytes_to_hex_str(addr)
@@ -429,8 +434,8 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_read_uuid_rsp_ev_.__name__,
                   addr_type, addr, status, data_length, value_length)
 
-    if status != 0:
-        add_to_verify_values(att_rsp_str[status])
+    if status != 0 and data_length == 0:
+        add_to_verify_values(att_rsp_str.get(status, f"ATT error 0x{status:02x}"))
         return
 
     data_fmt = f">H{value_length}s"
@@ -534,32 +539,53 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
 def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("%s %r", gatt_cl_read_mult_var_rsp_ev_.__name__, data)
 
-    fmt = '<B6sBH'
+    # Legacy format: <addr_type, addr, att_status, data_length>
+    legacy_fmt = '<B6sBH'
+    # Migrated Zephyr format: <addr_type, addr, btp_status, att_status, data_length>
+    migrated_fmt = '<B6sBBH'
 
-    addr_type, addr, status, data_length = \
-        struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
+    if data_len >= struct.calcsize(migrated_fmt):
+        addr_type, addr, status, att_status, data_length = \
+            struct.unpack_from(migrated_fmt, data[:struct.calcsize(migrated_fmt)])
+        rp_data = data[struct.calcsize(migrated_fmt):]
+    else:
+        addr_type, addr, att_status, data_length = \
+            struct.unpack_from(legacy_fmt, data[:struct.calcsize(legacy_fmt)])
+        status = 0
+        rp_data = data[struct.calcsize(legacy_fmt):]
+
+    logging.debug("%s received addr_type=%r addr=%r status=%r att_status=%r data_len=%r",
                   gatt_cl_read_mult_var_rsp_ev_.__name__,
-                  addr_type, addr, status, data_length)
+                  addr_type, addr, status, att_status, data_length)
 
-    rp_data = data[struct.calcsize(fmt):]
+    if status != 0:
+        add_to_verify_values(f"BTP status 0x{status:02x}")
+        logging.debug("Set verify values to: %r", get_verify_values())
+        return
 
     if data_length == 0:
         logging.debug("No data in response")
-        add_to_verify_values(att_rsp_str[status])
+        status_str = att_rsp_str.get(att_status, f"ATT error 0x{att_status:02x}")
+        add_to_verify_values(status_str)
+        logging.debug("Set verify values to: %r", get_verify_values())
+        return
+
+    if len(rp_data) < data_length:
+        add_to_verify_values("Malformed READ_MULTIPLE_VAR response")
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
     (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
-    logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
+    logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, att_status, value)
 
     if (len(get_verify_values()) > 0 and not
     (isinstance(get_verify_values()[0][0], str) and
      isinstance(get_verify_values()[0][1], bytes))):
         clear_verify_values()
 
-    add_to_verify_values((att_rsp_str[status],
+    status_str = att_rsp_str.get(att_status, f"ATT error 0x{att_status:02x}")
+    add_to_verify_values((status_str,
                           (binascii.hexlify(value)).upper()))
 
     logging.debug("Set verify values to: %r", get_verify_values())
@@ -1001,6 +1027,22 @@ def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
 
     stack = get_stack()
     stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
+
+    gatt_cl_command_rsp_succ()
+
+
+def gatt_cl_eatt_connect(bd_addr, bd_addr_type, num=1):
+    logging.debug("%s %r %r %r", gatt_cl_eatt_connect.__name__, bd_addr, bd_addr_type, num)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('B', num))
+
+    iutctl.btp_socket.send(*GATTC['eatt_connect'], data=data_ba)
 
     gatt_cl_command_rsp_succ()
 

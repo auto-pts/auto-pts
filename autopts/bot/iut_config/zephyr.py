@@ -128,6 +128,26 @@ iut_config = {
         ]
     },
 
+    "gatt_cl_gar_bv10.conf": {
+        "overlay": {
+            'CONFIG_BT_EATT_MAX': '1',
+        },
+        "test_cases": [
+            'GATT/CL/GAR/BV-10-C',
+        ]
+    },
+
+    "gatt_cl_gar_bv11.conf": {
+        "overlay": {
+            'CONFIG_BT_EATT_MAX': '5',
+            'CONFIG_BT_EATT_AUTO_CONNECT': 'n',
+            'CONFIG_BTTESTER_GATTC_FORCE_EATT_READ_MULT_VAR': 'y',
+        },
+        "test_cases": [
+            'GATT/CL/GAR/BV-11-C',
+        ]
+    },
+
     "ots_no_dir_list.conf": {
         "overlay": {
             'CONFIG_BT_OTS_DIR_LIST_OBJ': 'n',
