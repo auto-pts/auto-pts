@@ -137,6 +137,15 @@ iut_config = {
         ]
     },
 
+    "l2cap_short_rtx.conf": {
+        "overlay": {
+            'CONFIG_BT_L2CAP_CONN_RTX_TIMEOUT': '1',
+        },
+        "test_cases": [
+            'L2CAP/COS/CED/BI-29-C',
+        ]
+    },
+
     "overlay-le-audio.conf": {
         "overlay": {
             # The overlay file exists in zephyr repo. Leave this empty.

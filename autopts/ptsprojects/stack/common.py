@@ -67,6 +67,8 @@ def wait_for_event(timeout, test, *args, **kwargs):
             t.cancel()
             return result
 
+        sleep(0.1)
+
     return False
 
 
@@ -95,6 +97,6 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
 
         # TODO: Use wait() and notify() from threading.Condition
         #  instead of sleep()
-        sleep(0.5)
+        sleep(0.1)
 
     return None

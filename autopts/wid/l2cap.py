@@ -183,7 +183,13 @@ def hdl_wid_41(params: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
 
-    if params.test_case_name in ['L2CAP/LE/CFC/BV-02-C']:
+    if params.test_case_name == "L2CAP/COS/CED/BI-29-C":
+        chans = btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1)
+        l2cap.connect(chans)
+        # specification allows for maximum of 60 seconds timeout
+        if not l2cap.wait_for_disconnection(chans[0], 65):
+            return False
+    elif params.test_case_name in ['L2CAP/LE/CFC/BV-02-C']:
         if not l2cap.is_connected(0):
             btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
         else:
@@ -669,6 +675,24 @@ def hdl_wid_275(params: WIDParams):
         return True
 
     return False
+
+
+def hdl_wid_280(params: WIDParams):
+    # Please send the L2CAP LE Credit Based Connection Request 253 times.
+
+    l2cap = get_stack().l2cap
+
+    # TODO could make this more concurrent by allowing up to IUT supported pending connections
+
+    for _i in range(253):
+        chans = btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1)
+        l2cap.connect(chans)
+
+        # specification allows for maximum of 60 seconds timeout
+        if not l2cap.wait_for_disconnection(chans[0], 65):
+            return False
+
+    return True
 
 
 def hdl_wid_2000(_: WIDParams):
