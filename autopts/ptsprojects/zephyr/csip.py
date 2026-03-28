@@ -36,67 +36,24 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("CSIP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("CSIP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("CSIP", "TSPX_time_guard", "180000")
-    pts.set_pixit("CSIP", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("CSIP", "TSPX_tester_database_file",
-                  r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_CSIP_db.xml")
-    pts.set_pixit("CSIP", "TSPX_mtu_size", "23")
-    pts.set_pixit("CSIP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("CSIP", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("CSIP", "TSPX_pin_code", "0000")
-    pts.set_pixit("CSIP", "TSPX_use_dynamic_pin", "FALSE")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("CSIP", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("CSIP", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("CSIP", "TSPX_target_service", "5F03")
-    pts.set_pixit("CSIP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
-    pts.set_pixit("CSIP", "TSPX_private_addr_int", "120000")
-    pts.set_pixit("CSIP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
 
     if len(ptses) < 2:
         return
 
     pts2 = ptses[1]
-    pts2.set_pixit("CSIP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts2.set_pixit("CSIP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts2.set_pixit("CSIP", "TSPX_time_guard", "180000")
-    pts2.set_pixit("CSIP", "TSPX_use_implicit_send", "TRUE")
-    pts2.set_pixit("CSIP", "TSPX_tester_database_file",
-                   r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_CSIP_db.xml")
-    pts2.set_pixit("CSIP", "TSPX_mtu_size", "23")
-    pts2.set_pixit("CSIP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts2.set_pixit("CSIP", "TSPX_delete_link_key", "FALSE")
-    pts2.set_pixit("CSIP", "TSPX_pin_code", "0000")
-    pts2.set_pixit("CSIP", "TSPX_use_dynamic_pin", "FALSE")
+
+    """" Set only IXITs that require non-default value """
     pts2.set_pixit("CSIP", "TSPX_delete_ltk", "TRUE")
-    pts2.set_pixit("CSIP", "TSPX_security_enabled", "FALSE")
-    pts2.set_pixit("CSIP", "TSPX_target_service", "5F03")
-    pts2.set_pixit("CSIP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
-    pts2.set_pixit("CSIP", "TSPX_private_addr_int", "120000")
-    pts2.set_pixit("CSIP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
 
     if len(ptses) < 3:
         return
 
     pts3 = ptses[2]
-    pts3.set_pixit("CSIP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts3.set_pixit("CSIP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts3.set_pixit("CSIP", "TSPX_time_guard", "180000")
-    pts3.set_pixit("CSIP", "TSPX_use_implicit_send", "TRUE")
-    pts3.set_pixit("CSIP", "TSPX_tester_database_file",
-                   r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_CSIP_db.xml")
-    pts3.set_pixit("CSIP", "TSPX_mtu_size", "23")
-    pts3.set_pixit("CSIP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts3.set_pixit("CSIP", "TSPX_delete_link_key", "FALSE")
-    pts3.set_pixit("CSIP", "TSPX_pin_code", "0000")
-    pts3.set_pixit("CSIP", "TSPX_use_dynamic_pin", "FALSE")
+
+    """" Set only IXITs that require non-default value """
     pts3.set_pixit("CSIP", "TSPX_delete_ltk", "TRUE")
-    pts3.set_pixit("CSIP", "TSPX_security_enabled", "FALSE")
-    pts3.set_pixit("CSIP", "TSPX_target_service", "5F03")
-    pts3.set_pixit("CSIP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
-    pts3.set_pixit("CSIP", "TSPX_private_addr_int", "120000")
-    pts3.set_pixit("CSIP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
 
 
 def test_cases(ptses):

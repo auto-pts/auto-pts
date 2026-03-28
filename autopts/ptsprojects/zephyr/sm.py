@@ -35,16 +35,9 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("SM", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("SM", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("SM", "TSPX_time_guard", "180000")
-    pts.set_pixit("SM", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("SM", "TSPX_new_key_failed_count", "0")
-    pts.set_pixit("SM", "TSPX_Bonding_Flags", "00")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("SM", "TSPX_ATTR_HANDLE", "0000")
     pts.set_pixit("SM", "TSPX_ATTR_VALUE", "0000000000000000")
-    pts.set_pixit("SM", "TSPX_Min_Encryption_Key_Length", "07")
-    pts.set_pixit("SM", "TSPX_OOB_Data", "0000000000000000FE12036E5A889F4D")
     pts.set_pixit("SM", "TSPX_tester_role_optional", "L2CAP_ROLE_INITIATOR")
 
 
