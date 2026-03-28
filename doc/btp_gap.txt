@@ -529,6 +529,7 @@ Commands and responses:
                 Command parameters:     Flags (1 octet)
                                         Interval Min (2 octets)
                                         Interval Max (2 octets)
+
                 Return Parameters:      Current_Settings (4 Octets)
 
                 This command is used to configure Periodic Advertising instance.
@@ -889,6 +890,29 @@ Commands and responses:
                 This command decrypts data extracted from the encrypted portion
                 of a received advertisement. It uses the session key and IV
                 previously set via command 'Set EAD keymaterial'
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x34 - Configure Periodic Advertising with Responses command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Flags (1 octet)
+                                        Interval Min (2 octets)
+                                        Interval Max (2 octets)
+                                        Number of Subevents (1 octet)
+                                        Subevent Interval (1 octet)
+                                        Response Slot Delay (1 octet)
+                                        Response Slot Spacing (1 octet)
+                                        Number of Response Slots (1 octet)
+                Return Parameters:      Current_Settings (4 octets)
+
+                This command is used to configure Periodic Advertising instance with
+                Responses (PAwR).
+                IUT is expected to have 1 Periodic Advertising instance.
+
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits:
+                        0 = Include TX Power
 
                 In case of an error, the error response will be returned.
 

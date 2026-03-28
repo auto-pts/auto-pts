@@ -1722,8 +1722,17 @@ def hdl_wid_267(_: WIDParams):
 def hdl_wid_300(params: WIDParams):
     # Please send non-connectable advertise with periodic info.
     stack = get_stack()
-    btp.gap_padv_configure(0, 150, 200)
-    if stack.gap.periodic_data:
+
+    test_cases_with_responses = [
+        'GAP/PADV/PASM/BV-02-C',
+        'GAP/PADV/PAM/BV-02-C'
+    ]
+
+    with_responses = params.test_case_name in test_cases_with_responses
+
+    btp.gap_padv_configure(0, 150, 200, with_responses=with_responses)
+
+    if stack.gap.periodic_data and not with_responses:
         btp.gap_padv_set_data((chr(len(stack.gap.periodic_data[1]) + 1) +
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
@@ -1763,7 +1772,7 @@ def hdl_wid_302(_: WIDParams):
     # Periodic Advertising Synchronization Information.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 100, 0)
+    btp.gap_padv_create_sync(0, 0, 500, 0)
     return stack.gap.wait_periodic_established(10)
 
 
@@ -1774,7 +1783,7 @@ def hdl_wid_303(_: WIDParams):
     # Periodic Advertising Synchronization Information.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 100, 1)
+    btp.gap_padv_create_sync(0, 0, 500, 1)
     return stack.gap.wait_periodic_established(10)
 
 
@@ -1784,12 +1793,20 @@ def hdl_wid_304(_: WIDParams):
     return not stack.gap.wait_periodic_report(10)
 
 
-def hdl_wid_305(_: WIDParams):
+def hdl_wid_305(params: WIDParams):
     # Please enter Periodic Advertising Synchronizability mode,
     # and then perform Periodic Advertising Synchronization Transfer Procedure
+
+    test_cases_with_responses = [
+        'GAP/PADV/PAST/BV-03-C',
+        'GAP/PADV/PAST/BV-04-C'
+    ]
+
+    with_responses = params.test_case_name in test_cases_with_responses
+
     stack = get_stack()
-    btp.gap_padv_configure(0, 150, 200)
-    if stack.gap.periodic_data:
+    btp.gap_padv_configure(0, 150, 200, with_responses=with_responses)
+    if stack.gap.periodic_data and not with_responses:
         btp.gap_padv_set_data((chr(len(stack.gap.periodic_data[1]) + 1) +
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
@@ -1802,7 +1819,7 @@ def hdl_wid_307(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
     # Establishment Procedure without listening for periodic advertising events.
 
-    btp.gap_padv_sync_transfer_recv(0, 10, 1)
+    btp.gap_padv_sync_transfer_recv(0, 500, 1)
     return True
 
 
@@ -1810,7 +1827,10 @@ def hdl_wid_308(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
     # Establishment Procedure with listening for periodic advertising events.
 
-    btp.gap_padv_sync_transfer_recv(0, 10, 0)
+    # PTS uses 600x1.25 ms = 750 ms for Periodic Advertising Interval (0x0258)
+    # It must be at least 750 ms sync timeout. (skip + 1) * interval.
+    # Therefore we use 5 seconds for sync timeout for test stability.
+    btp.gap_padv_sync_transfer_recv(0, 500, 0)
     return True
 
 
@@ -1819,6 +1839,38 @@ def hdl_wid_309(_: WIDParams):
     # information.
     stack = get_stack()
     return stack.gap.wait_periodic_transfer_received(10)
+
+
+def hdl_wid_312(params: WIDParams):
+    # description: Please click OK when IUT is ready to receive periodic
+    # advertising subevent data.
+    stack = get_stack()
+
+    # WID 303 will be called after this WID. WID 303 should start synchronization
+    # procedure as for GAP/PADV/PASE/BV-01-C "without listening for Periodic Advertising".
+    # Otherwise we need to add exception here for flags parameter.
+    if params.test_case_name in ['GAP/PADV/PASE/BV-07-C']:
+        return True
+
+    btp.gap_padv_create_sync(0, 0, 500, 0)
+    return stack.gap.wait_periodic_established(20)
+
+
+def hdl_wid_313(params: WIDParams):
+    # description: Please confirm IUT received following data.
+    data = params.description.split('\n')[-1]
+    data = data.replace('-', '')
+    # Convert the hex data string to a byte array to compare with received data
+    expected_bytes = bytes.fromhex(data)
+    log(f'Expected data: {data}')
+
+    stack = get_stack()
+
+    if not stack.gap.wait_periodic_report(10, expected_bytes):
+        log(f'Failed to receive periodic advertising data: {expected_bytes}')
+        return False
+
+    return True
 
 
 def hdl_wid_400(_: WIDParams):
@@ -2744,7 +2796,7 @@ def hdl_wid_352(params: WIDParams):
             return False
 
         log('Synchronizing to broadcast')
-        btp.gap_padv_create_sync(0, 0, 0x200, 0)
+        btp.gap_padv_create_sync(0, 0, 500, 0)
         if not stack.gap.wait_periodic_established(10):
             log('Failed to periodic sync established')
             return False
