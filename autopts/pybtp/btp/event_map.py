@@ -1,5 +1,7 @@
+from .a2dp import A2DP_EV
 from .aics import AICS_EV
 from .ascs import ASCS_EV
+from .avdtp import AVDTP_EV
 from .bap import BAP_EV
 from .cap import CAP_EV
 from .ccp import CCP_EV
@@ -58,5 +60,7 @@ __all__ = [
     "VCP_EV",
     "VCS_EV",
     "VOCS_EV",
+    "A2DP_EV",
+    "AVDTP_EV",
 # GENERATOR append 2
 ]
