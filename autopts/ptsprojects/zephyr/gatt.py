@@ -385,8 +385,11 @@ def test_cases_client(pts):
     ]
 
     custom_test_cases = [
-        # PTS issue #15965
-        # ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
+        # TODO Temporary workaround until PTS Support Request ID 184148 is fixed
+        ZTestCase("GATT", "GATT/CL/GAS/BV-01-C",
+                  cmds=pre_conditions +
+                  [TestFunc(lambda: pts.update_pixit_param("GATT", "TSPX_bearer_for_le", "ATT"))],
+                  generic_wid_hdl=gatt_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GATT')
