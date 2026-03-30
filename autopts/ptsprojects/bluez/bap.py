@@ -103,6 +103,7 @@ def test_cases(ptses):
         iut.stop_audio()
 
     pre_conditions = [
+        TestFunc(btp.core_reg_svc_vendor),
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.gap_reset),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
