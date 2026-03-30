@@ -25,8 +25,17 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
+from autopts.pybtp.btp.tbs import tbs_register_bearer
 from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL
-from autopts.pybtp.types import UUID, Addr, BAPAnnouncement, CAPAnnouncement, Context
+from autopts.pybtp.types import (
+    UUID,
+    Addr,
+    BAPAnnouncement,
+    BearerTech,
+    CAPAnnouncement,
+    Context,
+    OptionalOpcode,
+)
 from autopts.utils import ResultWithFlag
 
 
@@ -105,6 +114,8 @@ def test_cases(ptses):
     def set_addr(addr):
         iut_addr.set(addr)
 
+    # Generic preconditions for all test case in the profile
+    opcodes = OptionalOpcode.ALL
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
@@ -143,6 +154,22 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_micp),
         TestFunc(btp.core_reg_svc_vcp),
         TestFunc(btp.gap_set_extended_advertising_on),
+                TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+                provider_name="Generic TBS",
+                uci="un000",
+                uri_scheme_list="tel,skype",
+                optional_opcodes=opcodes,
+                gtbs=True,
+                technology=BearerTech.LTE
+        )),
+        TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+                provider_name="TBS",
+                uci="un000",
+                uri_scheme_list="tel,skype",
+                optional_opcodes=opcodes,
+                gtbs=False,
+                technology=BearerTech.WIFI
+        )),
         # Gives a signal to the LT2 to continue its preconditions
         TestFunc(lambda: set_addr(stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param("CAP", "TSPX_bd_addr_iut",
