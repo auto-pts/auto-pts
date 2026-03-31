@@ -1,0 +1,1741 @@
+MAP Service (ID 39)
+==================
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x02 - MCE MAS RFCOMM Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Channel (1 octet)
+                Response parameters:    <none>
+
+                This command is used to create an RFCOMM connection to a
+                MAP MAS (Message Access Server) instance.
+                Instance_ID identifies the MAS instance (0x00-0xFF).
+                Channel is the RFCOMM server channel number.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - MCE MAS RFCOMM Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to disconnect an RFCOMM connection to a
+                MAP MAS instance.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x04 - MCE MAS L2CAP Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        PSM (2 octets)
+                Response parameters:    <none>
+
+                This command is used to create an L2CAP connection to a
+                MAP MAS instance.
+                PSM is the L2CAP Protocol Service Multiplexer.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x05 - MCE MAS L2CAP Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to disconnect an L2CAP connection to a
+                MAP MAS instance.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x06 - MCE MAS Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Send_Supp_Feat (1 octet)
+                Response parameters:    <none>
+
+                This command is used to establish an OBEX connection to a
+                MAP MAS instance over an existing transport connection.
+                Send_Supp_Feat indicates whether to send supported features
+                in the OBEX CONNECT request.
+
+                MCE MAS Connected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x07 - MCE MAS Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to disconnect an OBEX connection to a
+                MAP MAS instance.
+
+                MCE MAS Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x08 - MCE MAS Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to abort an ongoing OBEX operation on a
+                MAP MAS connection.
+
+                MCE MAS Abort Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x09 - MCE MAS Set Folder command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Flags (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to navigate the folder hierarchy on a
+                MAP MAS instance.
+                Flags control the navigation operation.
+                Buf contains the folder name or is empty for special operations.
+
+                MCE MAS Set Folder Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0a - MCE MAS Set Notification Registration command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to enable/disable notifications from a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the notification registration parameters.
+
+                MCE MAS Set Notification Registration Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0b - MCE MAS Get Folder Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve the folder listing from a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters for the request.
+
+                MCE MAS Get Folder Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0c - MCE MAS Get Message Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve the message listing from a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters for the request.
+
+                MCE MAS Get Message Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0d - MCE MAS Get Message command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve a message from a MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the message handle and application parameters.
+
+                MCE MAS Get Message Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0e - MCE MAS Set Message Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to modify the status of a message on a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the message handle and status parameters.
+
+                MCE MAS Set Message Status Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0f - MCE MAS Push Message command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to push a message to a MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains folder name, application parameters, and message.
+
+                MCE MAS Push Message Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x10 - MCE MAS Update Inbox command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to update the inbox on a MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters.
+
+                MCE MAS Update Inbox Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x11 - MCE MAS Get MAS Instance Info command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve MAS instance information.
+                Final indicates if this is the final packet.
+                Buf contains application parameters.
+
+                MCE MAS Get MAS Instance Info Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x12 - MCE MAS Set Owner Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to set the owner status on a MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the owner status parameters.
+
+                MCE MAS Set Owner Status Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x13 - MCE MAS Get Owner Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve the owner status from a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters.
+
+                MCE MAS Get Owner Status Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x14 - MCE MAS Get Conversation Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve the conversation listing from a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters for the request.
+
+                MCE MAS Get Conversation Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x15 - MCE MAS Set Notification Filter command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to set the notification filter on a
+                MAP MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the notification filter parameters.
+
+                MCE MAS Set Notification Filter Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x16 - MCE MNS RFCOMM Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an RFCOMM connection to a
+                MAP MNS (Message Notification Server).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x17 - MCE MNS L2CAP Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an L2CAP connection to a
+                MAP MNS.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x18 - MCE MNS Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to respond to an OBEX CONNECT request
+                from a MAP MNS.
+                Rsp_Code is the OBEX response code to send.
+
+                MCE MNS Connected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x19 - MCE MNS Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to respond to an OBEX DISCONNECT request
+                from a MAP MNS.
+                Rsp_Code is the OBEX response code to send.
+
+                MCE MNS Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1a - MCE MNS Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to respond to an OBEX ABORT request
+                from a MAP MNS.
+                Rsp_Code is the OBEX response code to send.
+
+                MCE MNS Abort Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1b - MCE MNS Send Event command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Send Event request
+                from a MAP MNS.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MCE MNS Send Event Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1c - MSE MAS RFCOMM Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to disconnect an RFCOMM connection from a
+                MAP MCE (Message Access Client) to a MAS instance.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1d - MSE MAS L2CAP Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to disconnect an L2CAP connection from a
+                MAP MCE to a MAS instance.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1e - MSE MAS Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to respond to an OBEX CONNECT request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+
+                MSE MAS Connected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1f - MSE MAS Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to respond to an OBEX DISCONNECT request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+
+                MSE MAS Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x20 - MSE MAS Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to respond to an OBEX ABORT request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+
+                MSE MAS Abort Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x21 - MSE MAS Set Folder command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Set Folder request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MSE MAS Set Folder Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x22 - MSE MAS Set Notification Registration command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Set Notification Registration
+                request from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MSE MAS Set Notification Registration Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x23 - MSE MAS Get Folder Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Get Folder Listing request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the folder listing data.
+
+                MSE MAS Get Folder Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x24 - MSE MAS Get Message Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Get Message Listing request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the message listing data.
+
+                MSE MAS Get Message Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x25 - MSE MAS Get Message command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Get Message request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the message data.
+
+                MSE MAS Get Message Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x26 - MSE MAS Set Message Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Set Message Status request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MSE MAS Set Message Status Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x27 - MSE MAS Push Message command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Push Message request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the message handle and response data.
+
+                MSE MAS Push Message Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x28 - MSE MAS Update Inbox command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to an Update Inbox request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MSE MAS Update Inbox Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x29 - MSE MAS Get MAS Instance Info command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Get MAS Instance Info request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the MAS instance information.
+
+                MSE MAS Get MAS Instance Info Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2a - MSE MAS Set Owner Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Set Owner Status request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MSE MAS Set Owner Status Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2b - MSE MAS Get Owner Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Get Owner Status request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the owner status data.
+
+                MSE MAS Get Owner Status Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2c - MSE MAS Get Conversation Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Get Conversation Listing request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the conversation listing data.
+
+                MSE MAS Get Conversation Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2d - MSE MAS Set Notification Filter command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to respond to a Set Notification Filter request
+                from a MAP MCE to a MAS instance.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the response data.
+
+                MSE MAS Set Notification Filter Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2e - MSE MNS RFCOMM Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Channel (1 octet)
+                Response parameters:    <none>
+
+                This command is used to create an RFCOMM connection to a
+                MAP MNS (Message Notification Server).
+                Channel is the RFCOMM server channel number.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2f - MSE MNS RFCOMM Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an RFCOMM connection to a
+                MAP MNS.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x30 - MSE MNS L2CAP Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        PSM (2 octets)
+                Response parameters:    <none>
+
+                This command is used to create an L2CAP connection to a
+                MAP MNS.
+                PSM is the L2CAP Protocol Service Multiplexer.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x31 - MSE MNS L2CAP Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an L2CAP connection to a
+                MAP MNS.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x32 - MSE MNS Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to establish an OBEX connection to a
+                MAP MNS over an existing transport connection.
+
+                MSE MNS Connected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x33 - MSE MNS Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an OBEX connection to a
+                MAP MNS.
+
+                MSE MNS Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x34 - MSE MNS Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to abort an ongoing OBEX operation on a
+                MAP MNS connection.
+
+                MSE MNS Abort Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x35 - MSE MNS Send Event command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to send an event notification to a
+                MAP MNS.
+                Final indicates if this is the final packet.
+                Buf contains the event report data.
+
+                MSE MNS Send Event Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x36 - SDP Discover command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        UUID (2 octets)
+                Response parameters:    <none>
+
+                This command is used to perform SDP discovery for MAP services
+                on a remote device.
+                UUID specifies the service UUID to search for.
+
+                SDP Record Event(s) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+Events:
+        Opcode 0x80 - MCE MAS RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an RFCOMM connection to a MAP MAS
+                instance has been established.
+
+        Opcode 0x81 - MCE MAS RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an RFCOMM connection to a MAP MAS
+                instance has been disconnected.
+
+        Opcode 0x82 - MCE MAS L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an L2CAP connection to a MAP MAS
+                instance has been established.
+
+        Opcode 0x83 - MCE MAS L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an L2CAP connection to a MAP MAS
+                instance has been disconnected.
+
+        Opcode 0x84 - MCE MAS Connect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that an OBEX connect response to a MAP MAS
+                instance has been received.
+                Rsp_Code is the OBEX response code received.
+                Version is the MAP version supported by the server.
+                MOPL is the Maximum OBEX Packet Length.
+                Buf contains connection ID and other connection parameters.
+
+        Opcode 0x85 - MCE MAS Disconnect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that an OBEX disconnect response to a MAP MAS
+                instance has been received.
+                Rsp_Code is the OBEX response code received.
+                Buf contains additional disconnect information.
+
+        Opcode 0x86 - MCE MAS Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that an OBEX abort response on a MAP MAS
+                connection has been received.
+                Rsp_Code is the OBEX response code received.
+                Buf contains additional abort information.
+
+        Opcode 0x87 - MCE MAS Set Notification Registration Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Set Notification
+                Registration request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0x88 - MCE MAS Set Folder Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Set Folder request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0x89 - MCE MAS Get Folder Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Get Folder Listing request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the folder listing data in XML format.
+
+        Opcode 0x8a - MCE MAS Get Message Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Get Message Listing request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the message listing data in XML format.
+
+        Opcode 0x8b - MCE MAS Get Message Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Get Message request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the message data.
+
+        Opcode 0x8c - MCE MAS Set Message Status Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Set Message Status request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0x8d - MCE MAS Push Message Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Push Message request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the message handle and response data.
+
+        Opcode 0x8e - MCE MAS Update Inbox Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to an Update Inbox request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0x8f - MCE MAS Get MAS Instance Info Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Get MAS Instance Info request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the MAS instance information.
+
+        Opcode 0x90 - MCE MAS Set Owner Status Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Set Owner Status request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0x91 - MCE MAS Get Owner Status Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Get Owner Status request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the owner status data.
+
+        Opcode 0x92 - MCE MAS Get Conversation Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Get Conversation Listing request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the conversation listing data in XML format.
+
+        Opcode 0x93 - MCE MAS Set Notification Filter Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Set Notification Filter request.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0x94 - MCE MNS RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection from a MAP MSE
+                to the MNS has been established.
+
+        Opcode 0x95 - MCE MNS RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection from a MAP MSE
+                to the MNS has been disconnected.
+
+        Opcode 0x96 - MCE MNS L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection from a MAP MSE
+                to the MNS has been established.
+
+        Opcode 0x97 - MCE MNS L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection from a MAP MSE
+                to the MNS has been disconnected.
+
+        Opcode 0x98 - MCE MNS Connect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming OBEX CONNECT request from a
+                MAP MSE to the MNS.
+                Version is the MAP version supported by the client.
+                MOPL is the Maximum OBEX Packet Length.
+                Buf contains supported features and other connection parameters.
+
+        Opcode 0x99 - MCE MNS Disconnect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming OBEX DISCONNECT request from a
+                MAP MSE to the MNS.
+                Buf contains additional disconnect information.
+
+        Opcode 0x9a - MCE MNS Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming OBEX ABORT request from a
+                MAP MSE to the MNS.
+                Buf contains additional abort information.
+
+        Opcode 0x9b - MCE MNS Send Event Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Send Event request from a
+                MAP MSE to the MNS.
+                Final indicates if this is the final packet.
+                Buf contains the event report data.
+
+        Opcode 0x9c - MSE MAS RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an RFCOMM connection from a MAP MCE
+                to a MAS instance has been established.
+
+        Opcode 0x9d - MSE MAS RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an RFCOMM connection from a MAP MCE
+                to a MAS instance has been disconnected.
+
+        Opcode 0x9e - MSE MAS L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an L2CAP connection from a MAP MCE
+                to a MAS instance has been established.
+
+        Opcode 0x9f - MSE MAS L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+
+                This event indicates that an L2CAP connection from a MAP MCE
+                to a MAS instance has been disconnected.
+
+        Opcode 0xa0 - MSE MAS Connect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming OBEX CONNECT request from a
+                MAP MCE to a MAS instance.
+                Version is the MAP version supported by the client.
+                MOPL is the Maximum OBEX Packet Length.
+                Buf contains supported features and other connection parameters.
+
+        Opcode 0xa1 - MSE MAS Disconnect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming OBEX DISCONNECT request from a
+                MAP MCE to a MAS instance.
+                Buf contains additional disconnect information.
+
+        Opcode 0xa2 - MSE MAS Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming OBEX ABORT request from a
+                MAP MCE to a MAS instance.
+                Buf contains additional abort information.
+
+        Opcode 0xa3 - MSE MAS Set Notification Registration Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Set Notification Registration
+                request from a MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the notification registration parameters.
+
+        Opcode 0xa4 - MSE MAS Set Folder Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Flags (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Set Folder request from a
+                MAP MCE to a MAS instance.
+                Flags control the navigation operation.
+                Buf contains the folder name or is empty for special operations.
+
+        Opcode 0xa5 - MSE MAS Get Folder Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Get Folder Listing request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters for the request.
+
+        Opcode 0xa6 - MSE MAS Get Message Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Get Message Listing request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters for the request.
+
+        Opcode 0xa7 - MSE MAS Get Message Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Get Message request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the message handle and application parameters.
+
+        Opcode 0xa8 - MSE MAS Set Message Status Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Set Message Status request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the message handle and status parameters.
+
+        Opcode 0xa9 - MSE MAS Push Message Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Push Message request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains folder name, application parameters, and message.
+
+        Opcode 0xaa - MSE MAS Update Inbox Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Update Inbox request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters.
+
+        Opcode 0xab - MSE MAS Get MAS Instance Info Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Get MAS Instance Info request
+                from a MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters.
+
+        Opcode 0xac - MSE MAS Set Owner Status Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Set Owner Status request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the owner status parameters.
+
+        Opcode 0xad - MSE MAS Get Owner Status Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Get Owner Status request from a
+                MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters.
+
+        Opcode 0xae - MSE MAS Get Conversation Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Get Conversation Listing request
+                from a MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains application parameters for the request.
+
+        Opcode 0xaf - MSE MAS Set Notification Filter Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Instance_ID (1 octet)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates an incoming Set Notification Filter request
+                from a MAP MCE to a MAS instance.
+                Final indicates if this is the final packet.
+                Buf contains the notification filter parameters.
+
+        Opcode 0xb0 - MSE MNS RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection to a MAP MNS
+                has been established.
+
+        Opcode 0xb1 - MSE MNS RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection to a MAP MNS
+                has been disconnected.
+
+        Opcode 0xb2 - MSE MNS L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection to a MAP MNS
+                has been established.
+
+        Opcode 0xb3 - MSE MNS L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection to a MAP MNS
+                has been disconnected.
+
+        Opcode 0xb4 - MSE MNS Connect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that an OBEX connect response to a MAP MNS
+                has been received.
+                Rsp_Code is the OBEX response code received.
+                Version is the MAP version supported by the server.
+                MOPL is the Maximum OBEX Packet Length.
+                Buf contains connection ID and other connection parameters.
+
+        Opcode 0xb5 - MSE MNS Disconnect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that an OBEX disconnect response to a MAP MNS
+                has been received.
+                Rsp_Code is the OBEX response code received.
+                Buf contains additional disconnect information.
+
+        Opcode 0xb6 - MSE MNS Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that an OBEX abort response on a MAP MNS
+                connection has been received.
+                Rsp_Code is the OBEX response code received.
+                Buf contains additional abort information.
+
+        Opcode 0xb7 - MSE MNS Send Event Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates the response to a Send Event request
+                to a MAP MNS.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the response data.
+
+        Opcode 0xb8 - SDP Record Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        UUID (2 octets)
+                                        Instance_ID (1 octet)
+                                        RFCOMM_Channel (1 octet)
+                                        L2CAP_PSM (2 octets)
+                                        Version (2 octets)
+                                        Supported_Features (4 octets)
+                                        Msg_Types (1 octet)
+                                        Service_Name_Len (1 octet)
+                                        Service_Name (Service_Name_Len octets)
+
+                This event provides SDP record information for a MAP service
+                discovered on a remote device.
+                Final indicates if this is the last SDP record in the response.
+                UUID is the service UUID (e.g., 0x1132 for MAS, 0x1133 for MNS).
+                Instance_ID identifies the MAS instance (0x00-0xFF for MAS,
+                not applicable for MNS, always return 0x00).
+                RFCOMM_Channel is the RFCOMM server channel number (if available).
+                L2CAP_PSM is the L2CAP Protocol Service Multiplexer (if available).
+                Version is the MAP profile version supported.
+                Supported_Features is a bitmask of supported MAP features.
+                Msg_Types is a bitmask of supported message types.
+                Service_Name_Len is the length of the service name string.
+                Service_Name is the human-readable service name.
