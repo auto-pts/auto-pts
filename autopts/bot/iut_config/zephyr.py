@@ -168,7 +168,7 @@ iut_config = {
             'MESH/SR/RPR/PDU/BI-01-C',
             'MESH/SR/RPR/PDU/BI-02-C',
             'MESH/SR/RPR/PDU/BI-03-C',
-            'MESH/NODE/CFG/COMP/BV-01-C'
+            'MESH/NODE/CFG/COMP/BV-01-C',
             'MESH/SR/RPR/LNK/BI-05-C',
             'MESH/NODE/TNPT/BV-13-C',
         ]
