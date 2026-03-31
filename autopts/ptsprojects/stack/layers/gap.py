@@ -170,7 +170,11 @@ class Gap:
 
         # if IUT doesn't support it, it should be disabled in preconditions
         self.pair_user_interaction = True
-        self.periodic_report_rxed = False
+
+        # Periodic Advertising events and periodic advertising data.
+        self.periodic_adv_report_data = None
+        self.periodic_adv_report_rxed = False
+
         self.periodic_sync_established_rxed = False
         self.periodic_transfer_received = False
         self.periodic_biginfo = []
@@ -220,12 +224,38 @@ class Gap:
     def car_received(self):
         return self.peer_car.data['received']
 
-    def wait_periodic_report(self, timeout):
-        if self.periodic_report_rxed:
+    def periodic_adv_event_received(self, data=None):
+        '''
+        Periodic Advertising event received.
+        With or without periodic advertising data.
+        '''
+        # Due to race condition, we might receive the data before we start waiting for the data.
+        # And in between, we might receivce another event without data.
+        # PTS is not expected to send different data so we don't need such mechanism to handle this.
+        if data is not None:
+            self.periodic_adv_report_data = data
+
+        self.periodic_adv_report_rxed = True
+
+    def wait_periodic_report(self, timeout, data=None):
+        '''
+        Wait for periodic advertising report. If data is provided, waits for a report that
+        includes periodic advertising data that matches the provided one.
+
+        Data might arrive before calling this function, then it returns immediately.
+        '''
+        def condition():
+            if data is not None:
+                return self.periodic_adv_report_rxed and self.periodic_adv_report_data == data
+
+            return self.periodic_adv_report_rxed
+
+        if condition():
             return True
 
-        if wait_for_event(timeout, lambda: self.periodic_report_rxed):
-            self.periodic_report_rxed = False
+        if wait_for_event(timeout, lambda: condition()):
+            self.periodic_adv_report_rxed = False
+            self.periodic_adv_report_data = None
             return True
 
         return False
