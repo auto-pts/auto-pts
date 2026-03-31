@@ -26,7 +26,6 @@ from autopts.pybtp.types import addr_str_to_le_bytes, le_bytes_to_hex_str, uuid_
 
 log = logging.debug
 
-
 SDP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_SDP,
                             defs.BTP_SDP_CMD_READ_SUPPORTED_COMMANDS,
@@ -38,7 +37,6 @@ SDP = {
     "search_attr_req": (defs.BTP_SERVICE_ID_SDP, defs.BTP_SDP_CMD_SEARCH_ATTR_REQ,
                   CONTROLLER_INDEX),
 }
-
 
 def sdp_search_req(bd_addr=None, bd_addr_type=None, uuid=0x0100):
     logging.debug("%s %r %r", sdp_search_req.__name__, bd_addr, uuid)
