@@ -36,7 +36,7 @@ CAS = {
 
 
 def cas_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", cas_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -58,7 +58,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def cas_set_member_lock(lock, force, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{cas_set_member_lock.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('BB', lock, force)
@@ -70,7 +70,7 @@ def cas_set_member_lock(lock, force, bd_addr_type=None, bd_addr=None):
 
 
 def cas_get_member_rsi(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{cas_get_member_rsi.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 

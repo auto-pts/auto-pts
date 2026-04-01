@@ -102,7 +102,7 @@ MCP = {
 
 
 def mcp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", mcp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -123,7 +123,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -134,7 +134,7 @@ def mcp_discover(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_track_duration_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_track_duration_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -145,7 +145,7 @@ def mcp_track_duration_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_track_position_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_track_position_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -156,7 +156,7 @@ def mcp_track_position_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_track_position_set(position, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_track_position_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -168,7 +168,7 @@ def mcp_track_position_set(position, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playback_speed_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playback_speed_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -179,7 +179,7 @@ def mcp_playback_speed_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playback_speed_set(speed, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playback_speed_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -192,7 +192,7 @@ def mcp_playback_speed_set(speed, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_seeking_speed_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_seeking_speed_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -203,7 +203,7 @@ def mcp_seeking_speed_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_icon_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_icon_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -214,7 +214,7 @@ def mcp_icon_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_next_track_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_next_track_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -225,7 +225,7 @@ def mcp_next_track_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_next_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_next_track_obj_id_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     obj_id_bytes = obj_id.to_bytes(6, 'little')
@@ -238,7 +238,7 @@ def mcp_next_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_parent_group_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_parent_group_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -249,7 +249,7 @@ def mcp_parent_group_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_group_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_group_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -260,7 +260,7 @@ def mcp_current_group_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_group_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_group_obj_id_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     obj_id_bytes = obj_id.to_bytes(6, 'little')
@@ -273,7 +273,7 @@ def mcp_current_group_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playing_order_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playing_order_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -284,7 +284,7 @@ def mcp_playing_order_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playing_order_set(order, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playing_order_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack("b", order))
@@ -296,7 +296,7 @@ def mcp_playing_order_set(order, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playing_orders_supported_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playing_orders_supported_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -307,7 +307,7 @@ def mcp_playing_orders_supported_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_media_state_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_media_state_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -318,7 +318,7 @@ def mcp_media_state_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_content_control_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_content_control_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -329,7 +329,7 @@ def mcp_content_control_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_segments_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_segments_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -340,7 +340,7 @@ def mcp_segments_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_track_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_track_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -351,7 +351,7 @@ def mcp_current_track_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_track_obj_id_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     obj_id_bytes = obj_id.to_bytes(6, 'little')
@@ -364,7 +364,7 @@ def mcp_current_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_opcodes_supported_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_opcodes_supported_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -375,7 +375,7 @@ def mcp_opcodes_supported_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_control_point_cmd(opcode, use_param, param, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_control_point_cmd.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack("b", opcode))
@@ -389,7 +389,7 @@ def mcp_control_point_cmd(opcode, use_param, param, bd_addr_type=None, bd_addr=N
 
 
 def mcp_search_control_point_cmd(search_type, param, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_search_control_point_cmd.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack("b", search_type))
@@ -406,7 +406,7 @@ def mcp_search_control_point_cmd(search_type, param, bd_addr_type=None, bd_addr=
 
 
 def mcp_ev_discovery_completed(mcp, data, data_len):
-    logging.debug('%s %r', mcp_ev_discovery_completed.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -454,7 +454,7 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
 
 
 def mcp_track_duration_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_track_duration_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -472,7 +472,7 @@ def mcp_track_duration_ev(mcp, data, data_len):
 
 
 def mcp_track_position_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_track_position_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -490,7 +490,7 @@ def mcp_track_position_ev(mcp, data, data_len):
 
 
 def mcp_playback_speed_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_playback_speed_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -508,7 +508,7 @@ def mcp_playback_speed_ev(mcp, data, data_len):
 
 
 def mcp_seeking_speed_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_seeking_speed_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -526,7 +526,7 @@ def mcp_seeking_speed_ev(mcp, data, data_len):
 
 
 def mcp_icon_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_icon_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -545,7 +545,7 @@ def mcp_icon_obj_id_ev(mcp, data, data_len):
 
 
 def mcp_next_track_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_next_track_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -564,7 +564,7 @@ def mcp_next_track_obj_id_ev(mcp, data, data_len):
 
 
 def mcp_parent_group_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_parent_group_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -583,7 +583,7 @@ def mcp_parent_group_obj_id_ev(mcp, data, data_len):
 
 
 def mcp_current_group_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_current_group_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -602,7 +602,7 @@ def mcp_current_group_obj_id_ev(mcp, data, data_len):
 
 
 def mcp_playing_order_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_playing_order_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -620,7 +620,7 @@ def mcp_playing_order_ev(mcp, data, data_len):
 
 
 def mcp_playing_orders_supported_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_playing_orders_supported_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbB'
     if len(data) < struct.calcsize(fmt):
@@ -638,7 +638,7 @@ def mcp_playing_orders_supported_ev(mcp, data, data_len):
 
 
 def mcp_media_state_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_media_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -656,7 +656,7 @@ def mcp_media_state_ev(mcp, data, data_len):
 
 
 def mcp_opcodes_supported_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_opcodes_supported_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -674,7 +674,7 @@ def mcp_opcodes_supported_ev(mcp, data, data_len):
 
 
 def mcp_content_control_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_content_control_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -692,7 +692,7 @@ def mcp_content_control_id_ev(mcp, data, data_len):
 
 
 def mcp_segments_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_segments_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -711,7 +711,7 @@ def mcp_segments_obj_id_ev(mcp, data, data_len):
 
 
 def mcp_current_track_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_current_track_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -730,7 +730,7 @@ def mcp_current_track_obj_id_ev(mcp, data, data_len):
 
 
 def mcp_control_point_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_control_point_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbbI'
     if len(data) < struct.calcsize(fmt):
@@ -749,7 +749,7 @@ def mcp_control_point_ev(mcp, data, data_len):
 
 
 def mcp_search_control_point_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_search_control_point_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbb'
 
@@ -772,7 +772,7 @@ def mcp_search_control_point_ev(mcp, data, data_len):
 
 
 def mcp_cmd_ntf_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_cmd_ntf_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbb'
     if len(data) < struct.calcsize(fmt):
@@ -792,7 +792,7 @@ def mcp_cmd_ntf_ev(mcp, data, data_len):
 
 
 def mcp_search_ntf_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_search_ntf_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):

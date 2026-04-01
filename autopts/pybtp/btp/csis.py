@@ -45,7 +45,7 @@ CSIS = {
 
 
 def csis_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", csis_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -67,7 +67,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def csis_set_member_lock(lock, force, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{csis_set_member_lock.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('BB', lock, force)
@@ -79,7 +79,7 @@ def csis_set_member_lock(lock, force, bd_addr_type=None, bd_addr=None):
 
 
 def csis_get_member_rsi(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{csis_get_member_rsi.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -91,7 +91,7 @@ def csis_get_member_rsi(bd_addr_type=None, bd_addr=None):
 
 
 def csis_set_sirk_type(sirk_type):
-    logging.debug(f"{csis_set_sirk_type.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack('<b', sirk_type))
@@ -104,7 +104,7 @@ def csis_set_sirk_type(sirk_type):
 
 
 def csis_set_sirk(sirk):
-    logging.debug(f"{csis_set_sirk.__name__}")
+    logging.debug("")
 
     data = bytearray()
     # Send SIRK as 16 bytes hex string
@@ -118,7 +118,7 @@ def csis_set_sirk(sirk):
 
 
 def csis_set_set_size(size, rank):
-    logging.debug(f"{csis_set_set_size.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack('<BB', size, rank))

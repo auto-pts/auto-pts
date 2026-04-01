@@ -44,7 +44,7 @@ VOCS = {
 
 
 def vocs_command_rsp_succ(op=None):
-    logging.debug("%s", vocs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -66,7 +66,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def vocs_audio_desc(string):
-    logging.debug("%s", vocs_audio_desc.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     string_len = len(string)
@@ -79,7 +79,7 @@ def vocs_audio_desc(string):
 
 
 def vocs_audio_loc(location, bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", vocs_audio_loc.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -91,7 +91,7 @@ def vocs_audio_loc(location, bd_addr_type=None, bd_addr=None):
 
 
 def vocs_offset_state_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vocs_offset_state_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -102,7 +102,7 @@ def vocs_offset_state_get(bd_addr_type=None, bd_addr=None):
 
 
 def vocs_offset_state_set(offset, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vocs_offset_state_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -114,7 +114,7 @@ def vocs_offset_state_set(offset, bd_addr_type=None, bd_addr=None):
 
 
 def vocs_audio_location_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vocs_audio_location_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -125,7 +125,7 @@ def vocs_audio_location_get(bd_addr_type=None, bd_addr=None):
 
 
 def vocs_state_ev(vocs, data, data_len):
-    logging.debug('%s %r', vocs_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbh'
     if len(data) < struct.calcsize(fmt):
@@ -142,7 +142,7 @@ def vocs_state_ev(vocs, data, data_len):
 
 
 def vocs_audio_loc_ev(vocs, data, data_len):
-    logging.debug('%s %r', vocs_audio_loc_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -160,7 +160,7 @@ def vocs_audio_loc_ev(vocs, data, data_len):
 
 
 def vocs_procedure_ev(vocs, data, data_len):
-    logging.debug('%s %r', vocs_procedure_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):

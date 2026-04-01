@@ -51,7 +51,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def csip_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", csip_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -64,7 +64,7 @@ def csip_command_rsp_succ(timeout=20.0):
 
 
 def csip_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{csip_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -75,7 +75,7 @@ def csip_discover(bd_addr_type=None, bd_addr=None):
 
 
 def csip_set_coordinator_lock(addr_list=None):
-    logging.debug(f"{csip_set_coordinator_lock.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -97,7 +97,7 @@ def csip_set_coordinator_lock(addr_list=None):
 
 
 def csip_set_coordinator_release(addr_list=None):
-    logging.debug(f"{csip_set_coordinator_release.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -119,7 +119,7 @@ def csip_set_coordinator_release(addr_list=None):
 
 
 def csip_start_ordered_access(flags=0x00):
-    logging.debug(f"{csip_start_ordered_access.__name__}")
+    logging.debug("")
 
     # RFU
     data = struct.pack('B', flags)
@@ -131,7 +131,7 @@ def csip_start_ordered_access(flags=0x00):
 
 
 def csip_ev_discovery_completed(csip, data, data_len):
-    logging.debug('%s %r', csip_ev_discovery_completed.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -153,7 +153,7 @@ def csip_ev_discovery_completed(csip, data, data_len):
 
 
 def csip_sirk_ev(csip, data, data_len):
-    logging.debug('%s %r', csip_sirk_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s'
     if len(data) < struct.calcsize(fmt):
@@ -171,7 +171,7 @@ def csip_sirk_ev(csip, data, data_len):
 
 
 def csip_lock_ev(csip, data, data_len):
-    logging.debug('%s %r', csip_lock_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<b'
     if len(data) < struct.calcsize(fmt):

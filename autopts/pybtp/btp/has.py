@@ -45,7 +45,7 @@ HAS = {
 
 
 def has_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", has_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -67,7 +67,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def has_set_active_index(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{has_set_active_index.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', index)
@@ -79,7 +79,7 @@ def has_set_active_index(index, bd_addr_type=None, bd_addr=None):
 
 
 def has_set_preset_name(index, name, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{has_set_preset_name.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     size = len(name.encode())
@@ -92,7 +92,7 @@ def has_set_preset_name(index, name, bd_addr_type=None, bd_addr=None):
 
 
 def has_remove_preset(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{has_remove_preset.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', index)
@@ -104,7 +104,7 @@ def has_remove_preset(index, bd_addr_type=None, bd_addr=None):
 
 
 def has_add_preset(index, properties, name, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{has_add_preset.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     size = len(name.encode())
@@ -117,7 +117,7 @@ def has_add_preset(index, properties, name, bd_addr_type=None, bd_addr=None):
 
 
 def has_set_properties(index, properties, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{has_add_preset.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('BB', index, properties)

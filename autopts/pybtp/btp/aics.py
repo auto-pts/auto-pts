@@ -12,7 +12,7 @@ AICS = aics_btp
 
 
 def aics_command_rsp_succ(op=None):
-    logging.debug("%s", aics_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -25,7 +25,7 @@ def aics_command_rsp_succ(op=None):
 
 
 def aics_mute(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_mute.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -36,7 +36,7 @@ def aics_mute(bd_addr_type=None, bd_addr=None):
 
 
 def aics_unmute(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_unmute.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -46,7 +46,7 @@ def aics_unmute(bd_addr_type=None, bd_addr=None):
 
 
 def aics_auto_gain_set(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_auto_gain_set.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -56,7 +56,7 @@ def aics_auto_gain_set(bd_addr_type=None, bd_addr=None):
 
 
 def aics_man_gain_set(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_man_gain_set.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -66,7 +66,7 @@ def aics_man_gain_set(bd_addr_type=None, bd_addr=None):
 
 
 def aics_man_gain_only():
-    logging.debug("%s", aics_man_gain_only.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -75,7 +75,7 @@ def aics_man_gain_only():
 
 
 def aics_auto_gain_only():
-    logging.debug("%s", aics_auto_gain_only.__name__)
+    logging.debug("")
 
     data_ba = bytearray()
     iutctl = get_iut()
@@ -85,7 +85,7 @@ def aics_auto_gain_only():
 
 
 def aics_change_desc(string):
-    logging.debug("%s", aics_change_desc.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     string_len = len(string)
@@ -98,7 +98,7 @@ def aics_change_desc(string):
 
 
 def aics_state_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_state_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -109,7 +109,7 @@ def aics_state_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_status_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_status_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -120,7 +120,7 @@ def aics_status_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_type_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_type_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -131,7 +131,7 @@ def aics_type_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_gain_setting_prop_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_gain_setting_prop_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -151,7 +151,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def aics_set_gain(gain, bd_addr_type=None, bd_addr=None):
-    logging.debug("%s %r", aics_set_gain.__name__, gain)
+    logging.debug("%r", gain)
 
     iutctl = get_iut()
 
@@ -165,7 +165,7 @@ def aics_set_gain(gain, bd_addr_type=None, bd_addr=None):
 
 
 def aics_mute_disable():
-    logging.debug("%s", aics_mute_disable.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -174,7 +174,7 @@ def aics_mute_disable():
 
 
 def aics_description_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_description_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -184,7 +184,7 @@ def aics_description_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_state_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbBbb'
     if len(data) < struct.calcsize(fmt):
@@ -201,7 +201,7 @@ def aics_state_ev(aics, data, data_len):
 
 
 def aics_gain_setting_prop_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_gain_setting_prop_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbBB'
     if len(data) < struct.calcsize(fmt):
@@ -220,7 +220,7 @@ def aics_gain_setting_prop_ev(aics, data, data_len):
 
 
 def aics_input_type_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_input_type_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -237,7 +237,7 @@ def aics_input_type_ev(aics, data, data_len):
 
 
 def aics_status_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_status_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -254,7 +254,7 @@ def aics_status_ev(aics, data, data_len):
 
 
 def aics_description_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_description_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
 
@@ -275,7 +275,7 @@ def aics_description_ev(aics, data, data_len):
 
 
 def aics_procedure_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_procedure_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):

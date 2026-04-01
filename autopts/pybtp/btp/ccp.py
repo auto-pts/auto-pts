@@ -123,7 +123,7 @@ class CallFlags(IntFlag):
 
 
 def ccp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", ccp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -145,7 +145,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def ccp_discover_tbs(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_discover_tbs.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -156,7 +156,7 @@ def ccp_discover_tbs(bd_addr_type=None, bd_addr=None):
 
 
 def ccp_accept_call(index, call_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_accept_call.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<BB', index, call_id)
@@ -168,7 +168,7 @@ def ccp_accept_call(index, call_id, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_terminate_call(index, call_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_terminate_call.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<BB', index, call_id)
@@ -180,7 +180,7 @@ def ccp_terminate_call(index, call_id, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_originate_call(index, uri, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_originate_call.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     uri += '\0'
@@ -194,7 +194,7 @@ def ccp_originate_call(index, uri, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_call_state(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_call_state.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -206,7 +206,7 @@ def ccp_read_call_state(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_bearer_name(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_bearer_name.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -218,7 +218,7 @@ def ccp_read_bearer_name(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_bearer_uci(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_bearer_uci.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -230,7 +230,7 @@ def ccp_read_bearer_uci(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_bearer_tech(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_bearer_tech.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -242,7 +242,7 @@ def ccp_read_bearer_tech(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_uri_list(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_uri_list.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -254,7 +254,7 @@ def ccp_read_uri_list(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_signal_strength(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_signal_strength.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -266,7 +266,7 @@ def ccp_read_signal_strength(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_signal_interval(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_signal_interval.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -278,7 +278,7 @@ def ccp_read_signal_interval(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_current_calls(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_current_calls.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -290,7 +290,7 @@ def ccp_read_current_calls(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_ccid(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_ccid.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -302,7 +302,7 @@ def ccp_read_ccid(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_call_uri(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_call_uri.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -314,7 +314,7 @@ def ccp_read_call_uri(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_status_flags(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_status_flags.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -326,7 +326,7 @@ def ccp_read_status_flags(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_optional_opcodes(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_optional_opcodes.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -338,7 +338,7 @@ def ccp_read_optional_opcodes(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_friendly_name(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_friendly_name.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -350,7 +350,7 @@ def ccp_read_friendly_name(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_read_remote_uri(index, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_read_remote_uri.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<B', index)
@@ -362,7 +362,7 @@ def ccp_read_remote_uri(index, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_set_signal_interval(index, interval, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_set_signal_interval.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<BB', index, interval)
@@ -374,7 +374,7 @@ def ccp_set_signal_interval(index, interval, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_hold_call(index, call_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_hold_call.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<BB', index, call_id)
@@ -386,7 +386,7 @@ def ccp_hold_call(index, call_id, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_retrieve_call(index, call_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_retrieve_call.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('<BB', index, call_id)
@@ -398,7 +398,7 @@ def ccp_retrieve_call(index, call_id, bd_addr_type=None, bd_addr=None):
 
 
 def ccp_join_calls(index, count, call_index: [], bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ccp_join_calls.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack('<B', index))
@@ -438,7 +438,7 @@ def ccp_await_event(ccp, event, timeout):
 
 
 def ccp_await_discovered(timeout=6000):
-    logging.debug(f"{ccp_await_discovered.__name__}")
+    logging.debug("")
 
     stack = get_stack()
     success = ccp_await_event(stack.ccp, defs.BTP_CCP_EV_DISCOVERED, timeout)
@@ -451,7 +451,7 @@ def ccp_await_discovered(timeout=6000):
 
 def ccp_ev_discovered(ccp, data, data_len):
     status, tbs_count, gtbs_found = struct.unpack('<IB?', data)
-    logging.debug(f"{ccp_ev_discovered.__name__} status: %u tbs count: %u gbts: %s" % (status, tbs_count, gtbs_found))
+    logging.debug("status: %u tbs count: %u gbts: %s", status, tbs_count, gtbs_found)
 
     event_dict = {
         'count': 0,
@@ -463,7 +463,7 @@ def ccp_ev_discovered(ccp, data, data_len):
 
 
 def ccp_ev_chrc_handles(ccp, data, data_len):
-    logging.debug('%s %r', ccp_ev_chrc_handles.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<HHHHHHHHHHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -493,7 +493,7 @@ def ccp_ev_chrc_handles(ccp, data, data_len):
 
 
 def ccp_ev_chrc_val(ccp, data, data_len):
-    logging.debug('%s %r', ccp_ev_chrc_val.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbBB'
     if len(data) < struct.calcsize(fmt):
@@ -512,7 +512,7 @@ def ccp_ev_chrc_val(ccp, data, data_len):
 
 
 def ccp_ev_chrc_str(ccp, data, data_len):
-    logging.debug('%s %r', ccp_ev_chrc_str.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbBB'
 
@@ -532,7 +532,7 @@ def ccp_ev_chrc_str(ccp, data, data_len):
 
 
 def ccp_ev_cp(ccp, data, data_len):
-    logging.debug('%s %r', ccp_ev_cp.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
 
@@ -550,7 +550,7 @@ def ccp_ev_cp(ccp, data, data_len):
 
 
 def ccp_ev_current_calls(ccp, data, data_len):
-    logging.debug('%s %r', ccp_ev_current_calls.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
 
@@ -568,7 +568,7 @@ def ccp_ev_current_calls(ccp, data, data_len):
 
 
 def ccp_await_call_state(timeout=1000):
-    logging.debug(f"{ccp_await_call_state.__name__}")
+    logging.debug("")
 
     stack = get_stack()
     success = ccp_await_event(stack.ccp, defs.BTP_CCP_EV_CALL_STATES, timeout)
@@ -617,7 +617,7 @@ def ccp_ev_call_states(ccp, data, data_len):
         states_fmt += " }"
 
     logging.debug(
-        f"{ccp_ev_call_states.__name__} status: {status} index: 0x{index:02x} calls: {call_count} {states_fmt}"
+        f"status: {status} index: 0x{index:02x} calls: {call_count} {states_fmt}"
     )
 
     ccp.event_received(defs.BTP_CCP_EV_CALL_STATES, event_dict)

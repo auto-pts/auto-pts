@@ -39,7 +39,7 @@ MICP = {
 
 
 def micp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", micp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -60,7 +60,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def micp_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{micp_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -71,7 +71,7 @@ def micp_discover(bd_addr_type=None, bd_addr=None):
 
 
 def micp_mute(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{micp_mute.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -82,7 +82,7 @@ def micp_mute(bd_addr_type=None, bd_addr=None):
 
 
 def micp_mute_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{micp_mute_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -93,7 +93,7 @@ def micp_mute_read(bd_addr_type=None, bd_addr=None):
 
 
 def micp_ev_discovery_completed_(micp, data, data_len):
-    logging.debug('%s %r', micp_ev_discovery_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -116,7 +116,7 @@ def micp_ev_discovery_completed_(micp, data, data_len):
 
 
 def micp_mute_state_ev(micp, data, data_len):
-    logging.debug('%s %r', micp_mute_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
