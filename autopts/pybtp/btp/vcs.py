@@ -43,7 +43,7 @@ VCS_EV = {
 
 
 def vcs_command_rsp_succ(op=None):
-    logging.debug("%s", vcs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -56,7 +56,7 @@ def vcs_command_rsp_succ(op=None):
 
 
 def vcs_set_vol(vol):
-    logging.debug("%s %r", vcs_set_vol.__name__, vol)
+    logging.debug("%r", vol)
 
     iutctl = get_iut()
 
@@ -70,7 +70,7 @@ def vcs_set_vol(vol):
 
 
 def vcs_register(step, mute, vol):
-    logging.debug("%s", vcs_register.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     flags = 0
@@ -89,7 +89,7 @@ def vcs_register(step, mute, vol):
 
 
 def vcs_mute():
-    logging.debug("%s", vcs_mute.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -98,7 +98,7 @@ def vcs_mute():
 
 
 def vcs_unmute():
-    logging.debug("%s", vcs_unmute.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -107,7 +107,7 @@ def vcs_unmute():
 
 
 def vcs_vol_down():
-    logging.debug("%s", vcs_vol_down.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -116,7 +116,7 @@ def vcs_vol_down():
 
 
 def vcs_vol_up():
-    logging.debug("%s", vcs_vol_up.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 

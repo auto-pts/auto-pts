@@ -44,7 +44,7 @@ VOCS = {
 
 
 def vocs_command_rsp_succ(op=None):
-    logging.debug("%s", vocs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -66,7 +66,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def vocs_audio_desc(string):
-    logging.debug("%s", vocs_audio_desc.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     string_len = len(string)
@@ -79,7 +79,7 @@ def vocs_audio_desc(string):
 
 
 def vocs_audio_loc(location, bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", vocs_audio_loc.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -91,7 +91,7 @@ def vocs_audio_loc(location, bd_addr_type=None, bd_addr=None):
 
 
 def vocs_offset_state_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vocs_offset_state_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -102,7 +102,7 @@ def vocs_offset_state_get(bd_addr_type=None, bd_addr=None):
 
 
 def vocs_offset_state_set(offset, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vocs_offset_state_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -114,7 +114,7 @@ def vocs_offset_state_set(offset, bd_addr_type=None, bd_addr=None):
 
 
 def vocs_audio_location_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vocs_audio_location_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -125,7 +125,7 @@ def vocs_audio_location_get(bd_addr_type=None, bd_addr=None):
 
 
 def vocs_state_ev(vocs, data, data_len):
-    logging.debug('%s %r', vocs_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbh'
     if len(data) < struct.calcsize(fmt):
@@ -135,14 +135,14 @@ def vocs_state_ev(vocs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VOCS Offset State: addr {addr} addr_type {addr_type},'
-                  f'ATT status {att_status}, offset {offset}')
+    logging.debug("VOCS Offset State: addr %r, addr_type %r, ATT status %r, offset %r",
+                  addr, addr_type, att_status, offset)
 
     vocs.event_received(defs.BTP_VOCS_EV_OFFSET, (addr_type, addr, att_status, offset))
 
 
 def vocs_audio_loc_ev(vocs, data, data_len):
-    logging.debug('%s %r', vocs_audio_loc_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -152,15 +152,15 @@ def vocs_audio_loc_ev(vocs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VOCS Audio Location: addr {addr} addr_type {addr_type},'
-                  f' ATT Status {att_status}, Audio Location {location}')
+    logging.debug("VOCS Audio Location: addr %r, addr_type %r, ATT Status %r, Audio Location %r",
+                  addr, addr_type, att_status, location)
 
     vocs.event_received(defs.BTP_VOCS_EV_AUDIO_LOC, (addr_type, addr, att_status,
                                                  location))
 
 
 def vocs_procedure_ev(vocs, data, data_len):
-    logging.debug('%s %r', vocs_procedure_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -170,8 +170,8 @@ def vocs_procedure_ev(vocs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VOCS Procedure Event: addr {addr} addr_type {addr_type},'
-                  f' ATT status {att_status}, opcode {opcode}')
+    logging.debug("VOCS Procedure Event: addr %r, addr_type %r, ATT status %r, opcode %r",
+                  addr, addr_type, att_status, opcode)
 
     vocs.event_received(defs.BTP_VOCS_EV_PROCEDURE, (addr_type, addr, att_status, opcode))
 

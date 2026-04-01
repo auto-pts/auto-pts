@@ -40,7 +40,7 @@ def announcements(adv_data):
 
 
 def cap_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", cap_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -62,7 +62,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def cap_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{cap_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -73,7 +73,7 @@ def cap_discover(bd_addr_type=None, bd_addr=None):
 
 
 def cap_unicast_audio_start(cig_id, set_type):
-    logging.debug(f"{cap_unicast_audio_start.__name__}")
+    logging.debug("")
 
     data = struct.pack('B', cig_id)
     data += struct.pack('B', set_type)
@@ -85,7 +85,7 @@ def cap_unicast_audio_start(cig_id, set_type):
 
 
 def cap_unicast_audio_update(metadata_tuple):
-    logging.debug(f"{cap_unicast_audio_update.__name__}")
+    logging.debug("")
 
     data = bytearray()
     stream_count = len(metadata_tuple)
@@ -111,7 +111,7 @@ BTP_CAP_UNICAST_AUDIO_STOP_FLAG_RELEASE = 0b00000001
 
 
 def cap_unicast_audio_stop(cig_id, release):
-    logging.debug(f"{cap_unicast_audio_stop.__name__}")
+    logging.debug("")
 
     data = struct.pack('B', cig_id)
 
@@ -128,7 +128,7 @@ def cap_unicast_audio_stop(cig_id, release):
 
 
 def cap_unicast_setup_ase(config, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{cap_unicast_setup_ase.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', config.ase_id)
@@ -164,7 +164,7 @@ def cap_unicast_setup_ase(config, bd_addr_type=None, bd_addr=None):
 
 def cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format,
                                       vid, cid, codec_ltvs, metadata_ltvs):
-    logging.debug(f"{cap_broadcast_source_setup_stream.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -192,7 +192,7 @@ def cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format,
 
 def cap_broadcast_source_setup_subgroup(source_id, subgroup_id, coding_format,
                                         vid, cid, codec_ltvs, metadata_ltvs):
-    logging.debug(f"{cap_broadcast_source_setup_subgroup.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -227,7 +227,7 @@ def cap_broadcast_source_setup(source_id, broadcast_id, sdu_interval, framing, m
                                presentation_delay, encryption, broadcast_code,
                                subgroup_codec_level):
 
-    logging.debug(f"{cap_broadcast_source_setup.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -266,7 +266,7 @@ def cap_broadcast_source_setup(source_id, broadcast_id, sdu_interval, framing, m
 
 
 def cap_broadcast_source_release(source_id):
-    logging.debug(f"{cap_broadcast_source_release.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -278,7 +278,7 @@ def cap_broadcast_source_release(source_id):
 
 
 def cap_broadcast_adv_start(source_id):
-    logging.debug(f"{cap_broadcast_adv_start.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -289,7 +289,7 @@ def cap_broadcast_adv_start(source_id):
 
 
 def cap_broadcast_adv_stop(source_id):
-    logging.debug(f"{cap_broadcast_adv_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -300,7 +300,7 @@ def cap_broadcast_adv_stop(source_id):
 
 
 def cap_broadcast_source_start(source_id):
-    logging.debug(f"{cap_broadcast_source_start.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -311,7 +311,7 @@ def cap_broadcast_source_start(source_id):
 
 
 def cap_broadcast_source_stop(source_id):
-    logging.debug(f"{cap_broadcast_source_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -322,7 +322,7 @@ def cap_broadcast_source_stop(source_id):
 
 
 def cap_broadcast_source_update(source_id, metadata_ltvs):
-    logging.debug(f"{cap_broadcast_source_update.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -339,7 +339,7 @@ def cap_broadcast_source_update(source_id, metadata_ltvs):
 
 
 def cap_ev_discovery_completed_(cap, data, data_len):
-    logging.debug('%s %r', cap_ev_discovery_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sB'
     if len(data) < struct.calcsize(fmt):
@@ -349,14 +349,14 @@ def cap_ev_discovery_completed_(cap, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'CAP Discovery completed: addr {addr} addr_type '
-                  f'{addr_type} status {status}')
+    logging.debug("CAP Discovery completed: addr %r, addr_type %r, status %r",
+                  addr, addr_type, status)
 
     cap.event_received(defs.BTP_CAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
 
 
 def cap_ev_unicast_start_completed_(cap, data, data_len):
-    logging.debug('%s %r', cap_ev_unicast_start_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = 'BB'
     if len(data) < struct.calcsize(fmt):
@@ -364,13 +364,13 @@ def cap_ev_unicast_start_completed_(cap, data, data_len):
 
     cig_id, status = struct.unpack_from(fmt, data)
 
-    logging.debug(f'CAP Unicast Start completed: cig_id {cig_id}, status {status}')
+    logging.debug("CAP Unicast Start completed: cig_id %r, status %r", cig_id, status)
 
     cap.event_received(defs.BTP_CAP_EV_UNICAST_START_COMPLETED, (status,))
 
 
 def cap_ev_unicast_stop_completed_(cap, data, data_len):
-    logging.debug('%s %r', cap_ev_unicast_stop_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = 'BB'
     if len(data) < struct.calcsize(fmt):
@@ -378,7 +378,7 @@ def cap_ev_unicast_stop_completed_(cap, data, data_len):
 
     cig_id, status = struct.unpack_from(fmt, data)
 
-    logging.debug(f'CAP Unicast Stop completed: cig_id {cig_id}, status {status}')
+    logging.debug("CAP Unicast Stop completed: cig_id %r, status %r", cig_id, status)
 
     cap.event_received(defs.BTP_CAP_EV_UNICAST_STOP_COMPLETED, (cig_id, status))
 

@@ -48,7 +48,7 @@ CONTROLLER_INDEX_NONE = CONTROLLER_INDEX_NONE
 
 
 def read_supp_svcs():
-    logging.debug("%s", read_supp_svcs.__name__)
+    logging.debug("")
     iutctl = get_iut()
     stack = get_stack()
 
@@ -59,7 +59,7 @@ def read_supp_svcs():
     btp_hdr_check(tuple_hdr,
                   defs.BTP_SERVICE_ID_CORE,
                   defs.BTP_CORE_CMD_READ_SUPPORTED_SERVICES)
-    logging.debug("%s received %r %r", read_supp_svcs.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
@@ -444,7 +444,7 @@ def core_reg_svc_gap():
 
 
 def core_unreg_svc_gap():
-    logging.debug("%s", core_unreg_svc_gap.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*CORE['gap_unreg'])
@@ -457,7 +457,7 @@ def core_reg_svc_gatt():
 
 
 def core_unreg_svc_gatt():
-    logging.debug("%s", core_unreg_svc_gatt.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['gatt_unreg'])
@@ -468,7 +468,7 @@ def core_reg_svc_l2cap():
 
 
 def core_unreg_svc_l2cap():
-    logging.debug("%s", core_unreg_svc_l2cap.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['l2cap_unreg'])
@@ -479,7 +479,7 @@ def core_reg_svc_mesh():
 
 
 def core_unreg_svc_mesh():
-    logging.debug("%s", core_unreg_svc_mesh.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['mesh_unreg'])
@@ -490,7 +490,7 @@ def core_reg_svc_mmdl():
 
 
 def core_unreg_svc_mmdl():
-    logging.debug("%s", core_unreg_svc_mmdl.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['mmdl_unreg'])
@@ -501,7 +501,7 @@ def core_reg_svc_gatt_cl():
 
 
 def core_unreg_svc_gatt_cl():
-    logging.debug("%s", core_unreg_svc_gatt_cl.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['gatt_cl_unreg'])
@@ -610,7 +610,7 @@ def core_reg_svc_rfcomm():
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ(service_name):
-    logging.debug("%s", core_reg_svc_rsp_succ.__name__)
+    logging.debug("")
     iutctl = get_iut()
 
     expected_frame = ((defs.BTP_SERVICE_ID_CORE,
@@ -638,7 +638,7 @@ def core_reg_svc_rsp_succ(service_name):
 
 
 def core_unreg_svc_rsp_succ():
-    logging.debug("%s", core_unreg_svc_rsp_succ.__name__)
+    logging.debug("")
     iutctl = get_iut()
 
     expected_frame = ((defs.BTP_SERVICE_ID_CORE,
@@ -659,7 +659,7 @@ def core_unreg_svc_rsp_succ():
 
 
 def core_log_message(message):
-    logging.debug("%s", core_log_message.__name__)
+    logging.debug("")
 
     data = bytearray(struct.pack('H', len(message)) + message.encode('utf-8'))
 
@@ -692,7 +692,7 @@ set_get_stack_method(_get_stack)
 
 
 def event_handler(hdr, data):
-    logging.debug("%s %r %r", event_handler.__name__, hdr, data)
+    logging.debug("%r %r", hdr, data)
     from .event_map import (
         AICS_EV,
         ASCS_EV,

@@ -44,7 +44,7 @@ TMAP = {
 
 
 def tmap_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", tmap_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -57,7 +57,7 @@ def tmap_command_rsp_succ(timeout=20.0):
 
 
 def tmap_read_supported_cmds():
-    logging.debug(f"{tmap_read_supported_cmds.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*TMAP['read_supported_cmds'])
@@ -67,7 +67,7 @@ def tmap_read_supported_cmds():
 
 
 def tmap_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{tmap_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -78,7 +78,7 @@ def tmap_discover(bd_addr_type=None, bd_addr=None):
 
 
 def tmap_ev_discovery_completed(tmap, data, data_len):
-    logging.debug('%s %r', tmap_ev_discovery_completed.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBH'
     if len(data) < struct.calcsize(fmt):
@@ -88,9 +88,8 @@ def tmap_ev_discovery_completed(tmap, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'TMAP Discovery completed: addr {addr} addr_type '
-                  f'{addr_type} status {status}'
-                  f'role {role}')
+    logging.debug("TMAP Discovery completed: addr %r, addr_type %r, status %r, role %r",
+                  addr, addr_type, status, role)
 
     tmap.event_received(defs.BTP_TMAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status, role))
 

@@ -95,7 +95,7 @@ def tbs_register_bearer(gtbs, technology, optional_opcodes, provider_name, uci, 
 
 
 def tbs_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", tbs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -116,7 +116,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def tbs_remote_incoming(index, receiver_uri, caller_uri, friendly_name):
-    logging.debug(f"{tbs_remote_incoming.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("b", index))
@@ -136,7 +136,7 @@ def tbs_remote_incoming(index, receiver_uri, caller_uri, friendly_name):
 
 
 def tbs_originate_call(index, uri):
-    logging.debug(f"{tbs_originate_call.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("b", index))
@@ -153,7 +153,7 @@ def tbs_originate_call(index, uri):
 
 
 def tbs_set_bearer_name(index, name):
-    logging.debug(f"{tbs_set_bearer_name.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("B", index))
@@ -170,7 +170,7 @@ def tbs_set_bearer_name(index, name):
 
 
 def tbs_set_bearer_technology(index, technology):
-    logging.debug(f"{tbs_set_bearer_technology.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("Bb", index, technology))
@@ -182,7 +182,7 @@ def tbs_set_bearer_technology(index, technology):
 
 
 def tbs_hold_call(index):
-    logging.debug(f"{tbs_hold_call.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("b", index))
@@ -194,7 +194,7 @@ def tbs_hold_call(index):
 
 
 def tbs_remote_hold_call(index):
-    logging.debug(f"{tbs_remote_hold_call.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("b", index))
@@ -206,7 +206,7 @@ def tbs_remote_hold_call(index):
 
 
 def tbs_set_signal_strength(index, strength):
-    logging.debug(f"{tbs_set_signal_strength.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("Bb", index, strength))
@@ -218,7 +218,7 @@ def tbs_set_signal_strength(index, strength):
 
 
 def tbs_set_uri_scheme_list(index, uri):
-    logging.debug(f"{tbs_set_uri_scheme_list.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("B", index))
@@ -237,7 +237,7 @@ def tbs_set_uri_scheme_list(index, uri):
 
 
 def tbs_set_status_flags(index, flags):
-    logging.debug(f"{tbs_set_status_flags.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("B", index))
@@ -250,7 +250,7 @@ def tbs_set_status_flags(index, flags):
 
 
 def tbs_terminate_call(index):
-    logging.debug(f"{tbs_terminate_call.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("b", index))

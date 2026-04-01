@@ -60,7 +60,7 @@ VCP = {
 
 
 def vcp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", vcp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -81,7 +81,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -92,7 +92,7 @@ def vcp_discover(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_state_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_state_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -103,7 +103,7 @@ def vcp_state_read(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_volume_flags_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_volume_flags_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -114,7 +114,7 @@ def vcp_volume_flags_read(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_volume_down(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_volume_down.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -125,7 +125,7 @@ def vcp_volume_down(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_volume_up(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_volume_up.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -136,7 +136,7 @@ def vcp_volume_up(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_unmute_vol_down(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_unmute_vol_down.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -147,7 +147,7 @@ def vcp_unmute_vol_down(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_unmute_vol_up(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_unmute_vol_up.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -158,7 +158,7 @@ def vcp_unmute_vol_up(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_set_vol(volume, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_set_vol.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -173,7 +173,7 @@ def vcp_set_vol(volume, bd_addr_type=None, bd_addr=None):
 
 
 def vcp_unmute(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_unmute.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -184,7 +184,7 @@ def vcp_unmute(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_mute(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_mute.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -195,7 +195,7 @@ def vcp_mute(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_ev_discovery_completed_(vcp, data, data_len):
-    logging.debug('%s %r', vcp_ev_discovery_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHHHHHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -207,21 +207,13 @@ def vcp_ev_discovery_completed_(vcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VCP Discovery completed: addr {addr}, addr_type {addr_type},'
-                  f' ATT Status {att_status},'
-                  f' Volume Control Point handle {control_handle},'
-                  f' Volume Flags handle {flag_handle},'
-                  f' Volume State handle {state_handle},'
-                  f' VOCS State handle {vocs_state},'
-                  f' VOCS Location handle {vocs_location},'
-                  f' VOCS Control handle {vocs_control},'
-                  f' VOCS Description handle {vocs_desc},'
-                  f' AICS State handle {aics_state},'
-                  f' AICS Gain handle {aics_gain},'
-                  f' AICS Type handle {aics_type},'
-                  f' AICS Status handle {aics_status},'
-                  f' AICS Control Point {aics_control},'
-                  f' AICS Description {aics_desc}')
+    logging.debug(
+        "VCP Discovery completed: addr %r, addr_type %r, ATT Status %r, Volume Control Point handle %r,"
+        "Volume Flags handle %r, Volume State handle %r, VOCS State handle %r, VOCS Location handle %r,"
+        "VOCS Control handle %r, VOCS Description handle %r, AICS State handle %r, AICS Gain handle %r,"
+        "AICS Type handle %r, AICS Status handle %r, AICS Control Point %r, AICS Description %r",
+        addr, addr_type, att_status, control_handle, flag_handle, state_handle, vocs_state, vocs_location,
+        vocs_control, vocs_desc, aics_state, aics_gain, aics_type, aics_status, aics_control, aics_desc)
 
     vcp.event_received(defs.BTP_VCP_EV_DISCOVERED, (addr_type, addr, att_status, control_handle,
                                                 flag_handle, state_handle, vocs_state,
@@ -232,7 +224,7 @@ def vcp_ev_discovery_completed_(vcp, data, data_len):
 
 
 def vcp_state_ev(vcp, data, data_len):
-    logging.debug('%s %r', vcp_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbb'
     if len(data) < struct.calcsize(fmt):
@@ -242,14 +234,14 @@ def vcp_state_ev(vcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VCP State: addr {addr} addr_type {addr_type}, ATT Status {att_status},'
-                  f' volume {volume}, mute {mute}')
+    logging.debug("VCP State: addr %r, addr_type %r, ATT Status %r, volume %r, mute %r",
+                  addr, addr_type, att_status, volume, mute)
 
     vcp.event_received(defs.BTP_VCP_EV_STATE, (addr_type, addr, att_status, volume, mute))
 
 
 def vcp_flags_ev(vcp, data, data_len):
-    logging.debug('%s %r', vcp_flags_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -259,14 +251,14 @@ def vcp_flags_ev(vcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VCP Volume Flags: addr {addr} addr_type {addr_type},'
-                  f'ATT Status {att_status}, flags {flags}')
+    logging.debug("VCP Volume Flags: addr %r, addr_type %r,ATT Status %r, flags %r",
+                  addr, addr_type, att_status, flags)
 
     vcp.event_received(defs.BTP_VCP_EV_FLAGS, (addr_type, addr, att_status, flags))
 
 
 def vcp_procedure_ev(vcp, data, data_len):
-    logging.debug('%s %r', vcp_procedure_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -276,8 +268,8 @@ def vcp_procedure_ev(vcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'VCP Procedure Event: addr {addr} addr_type {addr_type},'
-                  f' ATT status {att_status}, opcode {opcode}')
+    logging.debug("VCP Procedure Event: addr %r, addr_type %r, ATT status %r, opcode %r",
+                  addr, addr_type, att_status, opcode)
 
     vcp.event_received(defs.BTP_VCP_EV_PROCEDURE, (addr_type, addr, att_status, opcode))
 

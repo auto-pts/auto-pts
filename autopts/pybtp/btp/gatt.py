@@ -118,7 +118,7 @@ GATTC = {
 
 def gatt_attr_value_changed_ev_(gatt, data, data_len):
     (handle, value) = gatts_dec_attr_value_changed_ev_data(data)
-    logging.debug("%s %r %r", gatt_attr_value_changed_ev_.__name__,
+    logging.debug("%r %r",
                   handle, value)
 
     gatt.attr_value_set(handle, binascii.hexlify(value[0]))
@@ -127,7 +127,7 @@ def gatt_attr_value_changed_ev_(gatt, data, data_len):
 
 def gatt_notification_ev_(gatt, data, data_len):
     (addr_type, addr, notification_type, handle, value) = gattc_dec_notification_ev_data(data)
-    logging.debug("%s %r %r %r %r %r", gatt_notification_ev_.__name__,
+    logging.debug("%r %r %r %r %r",
                   addr_type, addr, notification_type, handle, value)
 
     gatt.notification_ev_recv(addr_type, addr, notification_type, handle, value)
@@ -140,7 +140,7 @@ GATT_EV = {
 
 
 def gatts_add_svc(svc_type, uuid):
-    logging.debug("%s %r %r", gatts_add_svc.__name__, svc_type, uuid)
+    logging.debug("%r %r", svc_type, uuid)
 
     iutctl = get_iut()
 
@@ -157,7 +157,7 @@ def gatts_add_svc(svc_type, uuid):
 
 
 def gatts_add_inc_svc(hdl):
-    logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
+    logging.debug("%r", hdl)
 
     iutctl = get_iut()
 
@@ -174,7 +174,7 @@ def gatts_add_inc_svc(hdl):
 
 
 def gatts_add_char(hdl, prop, perm, uuid):
-    logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
+    logging.debug("%r %r %r %r", hdl, prop, perm,
                   uuid)
 
     iutctl = get_iut()
@@ -206,7 +206,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
 
 
 def gatts_set_val(hdl, val):
-    logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
+    logging.debug("%r %r ", hdl, val)
 
     iutctl = get_iut()
 
@@ -233,7 +233,7 @@ def gatts_set_val(hdl, val):
 
 
 def gatts_add_desc(hdl, perm, uuid):
-    logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
+    logging.debug("%r %r %r", hdl, perm, uuid)
 
     iutctl = get_iut()
 
@@ -260,7 +260,7 @@ def gatts_add_desc(hdl, perm, uuid):
 
 
 def gatts_change_database(start_hdl, end_hdl, vis):
-    logging.debug("%s %r %r %r", gatts_change_database.__name__, start_hdl, end_hdl, vis)
+    logging.debug("%r %r %r", start_hdl, end_hdl, vis)
 
     iutctl = get_iut()
 
@@ -283,7 +283,7 @@ def gatts_change_database(start_hdl, end_hdl, vis):
 
 
 def gatts_notify_mult(bd_addr_type, bd_addr, cnt, handles):
-    logging.debug("%s %r %r", gatts_notify_mult.__name__, cnt, handles)
+    logging.debug("%r %r", cnt, handles)
 
     iutctl = get_iut()
 
@@ -303,7 +303,7 @@ def gatts_notify_mult(bd_addr_type, bd_addr, cnt, handles):
 
 
 def gatts_start_server():
-    logging.debug("%s", gatts_start_server.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*GATTS['start_server'])
@@ -312,7 +312,7 @@ def gatts_start_server():
 
 
 def gatts_get_handle_from_uuid(uuid):
-    logging.debug("%s %r", gatts_get_handle_from_uuid.__name__, uuid)
+    logging.debug("%r", uuid)
 
     iutctl = get_iut()
     data_ba = bytearray()
@@ -336,7 +336,7 @@ def gatts_get_handle_from_uuid(uuid):
 
 
 def remove_handle_from_db(hdl):
-    logging.debug("%s %r", remove_handle_from_db.__name__, hdl)
+    logging.debug("%r", hdl)
 
     iutctl = get_iut()
 
@@ -353,7 +353,7 @@ def remove_handle_from_db(hdl):
 
 
 def gatts_set_enc_key_size(hdl, enc_key_size):
-    logging.debug("%s %r %r", gatts_set_enc_key_size.__name__,
+    logging.debug("%r %r",
                   hdl, enc_key_size)
 
     iutctl = get_iut()
@@ -408,7 +408,7 @@ def gatts_dec_attr_value_changed_ev_data(frame):
 
 
 def gatts_attr_value_changed_ev():
-    logging.debug("%s", gatts_attr_value_changed_ev.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -418,14 +418,14 @@ def gatts_attr_value_changed_ev():
                   defs.BTP_GATT_EV_ATTR_VALUE_CHANGED)
 
     (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
-    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__,
+    logging.debug("%r %r",
                   handle, data)
 
     return handle, data
 
 
 def dec_gatts_get_attrs_rp(data, data_len):
-    logging.debug("%s %r %r", dec_gatts_get_attrs_rp.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr = '<B'
     hdr_len = struct.calcsize(hdr)
@@ -459,7 +459,7 @@ def dec_gatts_get_attrs_rp(data, data_len):
 
 
 def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
-    logging.debug("%s %r %r %r", gatts_get_attrs.__name__, start_handle,
+    logging.debug("%r %r %r", start_handle,
                   end_handle, type_uuid)
 
     iutctl = get_iut()
@@ -497,7 +497,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
 
 
 def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
-    logging.debug("%s %r", gatts_get_attr_val.__name__, handle)
+    logging.debug("%r", handle)
 
     iutctl = get_iut()
 
@@ -529,7 +529,7 @@ def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
 
 
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
-    logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type,
+    logging.debug("%r %r", bd_addr_type,
                   bd_addr)
     iutctl = get_iut()
 
@@ -547,7 +547,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
 
 
 def gattc_disc_all_prim(bd_addr_type, bd_addr):
-    logging.debug("%s %r %r", gattc_disc_all_prim.__name__, bd_addr_type,
+    logging.debug("%r %r", bd_addr_type,
                   bd_addr)
     iutctl = get_iut()
 
@@ -564,7 +564,7 @@ def gattc_disc_all_prim(bd_addr_type, bd_addr):
 
 
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
-    logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, uuid)
     iutctl = get_iut()
 
@@ -584,7 +584,7 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 
 
 def _gattc_find_included_req(bd_addr_type, bd_addr, start_hdl, end_hdl):
-    logging.debug("%s %r %r %r %r", _gattc_find_included_req.__name__,
+    logging.debug("%r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, end_hdl)
     iutctl = get_iut()
 
@@ -612,14 +612,14 @@ def _gattc_find_included_rsp():
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_find_included_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_FIND_INCLUDED)
 
     incls_list = gatt_dec_disc_rsp(tuple_data[0], "include")
-    logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_list)
+    logging.debug("%r", incls_list)
 
     for incl in incls_list:
         att_handle = f"{incl[0][0]:04X}"
@@ -636,7 +636,7 @@ def _gattc_find_included_rsp():
 
 
 def gattc_find_included(bd_addr_type, bd_addr, start_hdl=None, end_hdl=None):
-    logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
+    logging.debug("%r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, end_hdl)
     gap_wait_for_connection()
 
@@ -663,8 +663,8 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r",
-                  gattc_disc_all_chrc_find_attrs_rsp.__name__, tuple_hdr,
+    logging.debug("received %r %r",
+                  tuple_hdr,
                   tuple_data)
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_ALL_CHRC)
@@ -696,7 +696,7 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
 
 
 def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
-    logging.debug("%s %r %r %r %r %r", gattc_disc_all_chrc.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
     iutctl = get_iut()
 
@@ -742,7 +742,7 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 
 
 def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
-    logging.debug("%s %r %r %r %r %r", gattc_disc_chrc_uuid.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
     iutctl = get_iut()
 
@@ -773,7 +773,7 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
 
 def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
-    logging.debug("%s %r %r %r %r", gattc_disc_all_desc.__name__,
+    logging.debug("%r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
     iutctl = get_iut()
 
@@ -800,7 +800,7 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
 
 def gattc_read_char_val(bd_addr_type, bd_addr, char):
-    logging.debug("%s %r %r %r", gattc_read_char_val.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, char)
 
     char_nb = char[1]
@@ -823,7 +823,7 @@ def gattc_read_char_val(bd_addr_type, bd_addr, char):
 
 
 def gattc_read(bd_addr_type, bd_addr, hdl):
-    logging.debug("%s %r %r %r", gattc_read.__name__, bd_addr_type, bd_addr,
+    logging.debug("%r %r %r", bd_addr_type, bd_addr,
                   hdl)
     iutctl = get_iut()
 
@@ -844,7 +844,7 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
 
 
 def gattc_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
-    logging.debug("%s %r %r %r %r %r", gattc_read_uuid.__name__, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr_type,
                   bd_addr, start_hdl, end_hdl, uuid)
     iutctl = get_iut()
 
@@ -875,7 +875,7 @@ def gattc_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
 
 
 def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
-    logging.debug("%s %r %r %r %r %r", gattc_read_long.__name__, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr_type,
                   bd_addr, hdl, off, modif_off)
     iutctl = get_iut()
 
@@ -919,7 +919,7 @@ def _create_read_multiple_req(bd_addr_type, bd_addr, *hdls):
 
 
 def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
-    logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, hdls)
     iutctl = get_iut()
 
@@ -930,7 +930,7 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
 
 
 def gattc_read_multiple_var(bd_addr_type, bd_addr, *hdls):
-    logging.debug("%s %r %r %r", gattc_read_multiple_var.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, hdls)
     iutctl = get_iut()
 
@@ -941,7 +941,7 @@ def gattc_read_multiple_var(bd_addr_type, bd_addr, *hdls):
 
 
 def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -972,7 +972,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
 
 def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1008,7 +1008,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
 
 def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gattc_write.__name__, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr_type,
                   bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1042,7 +1042,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
 
 def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
-    logging.debug("%s %r %r %r %r %r", gattc_write_long.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, hdl, off, val, length)
     gap_wait_for_connection()
 
@@ -1075,7 +1075,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
 
 def gattc_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gattc_write_reliable.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1107,7 +1107,7 @@ def gattc_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
 
 
 def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
-    logging.debug("%s %r %r, %r, %r", gattc_cfg_notify.__name__, bd_addr_type,
+    logging.debug("%r %r, %r, %r", bd_addr_type,
                   bd_addr, enable, ccc_hdl)
     gap_wait_for_connection()
 
@@ -1128,7 +1128,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     iutctl.btp_socket.send(*GATTC['cfg_notify'], data=data_ba)
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_cfg_notify.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
@@ -1136,7 +1136,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 
 
 def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
-    logging.debug("%s %r %r, %r, %r", gattc_cfg_indicate.__name__,
+    logging.debug("%r %r, %r, %r",
                   bd_addr_type, bd_addr, enable, ccc_hdl)
     gap_wait_for_connection()
 
@@ -1157,7 +1157,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
     iutctl.btp_socket.send(*GATTC['cfg_indicate'], data=data_ba)
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_cfg_indicate.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
@@ -1165,7 +1165,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
 
 
 def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
-    logging.debug("%s %r %r %r", gattc_notification_ev.__name__, bd_addr,
+    logging.debug("%r %r %r", bd_addr,
                   bd_addr_type, ev_type)
     iutctl = get_iut()
 
@@ -1187,7 +1187,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
 
 
 def gatt_command_rsp_succ():
-    logging.debug("%s", gatt_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1376,8 +1376,8 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r",
-                  gattc_disc_prim_uuid_find_attrs_rsp.__name__, tuple_hdr,
+    logging.debug("received %r %r",
+                  tuple_hdr,
                   tuple_data)
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_PRIM_UUID)
@@ -1407,19 +1407,19 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
 
 
 def gattc_disc_all_prim_rsp(store_rsp=False):
-    logging.debug("%s", gattc_disc_all_prim_rsp.__name__)
+    logging.debug("")
     iutctl = get_iut()
     attrs = []
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_disc_all_prim_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_ALL_PRIM)
 
     svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
-    logging.debug("%s %r", gattc_disc_all_prim_rsp.__name__, svcs_list)
+    logging.debug("%r", svcs_list)
 
     for svc in svcs_list:
         (start_hdl, end_hdl, uuid) = svc
@@ -1450,14 +1450,14 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
     svcs = []
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_disc_prim_uuid_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_PRIM_UUID)
 
     svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
-    logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_list)
+    logging.debug("%r", svcs_list)
 
     for svc in svcs_list:
         (start_hdl, end_hdl, uuid) = svc
@@ -1499,14 +1499,14 @@ def gattc_find_included_rsp(store_rsp=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_find_included_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_FIND_INCLUDED)
 
     incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
-    logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
+    logging.debug("%r", incls_tuple)
 
     if store_rsp:
         clear_verify_values()
@@ -1530,14 +1530,14 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
     attrs = []
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_disc_all_chrc_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_ALL_CHRC)
 
     chrcs_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
-    logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_list)
+    logging.debug("%r", chrcs_list)
 
     for chrc in chrcs_list:
         (handle, value_handle, prop, uuid) = chrc
@@ -1564,14 +1564,14 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
     chrcs = []
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_disc_chrc_uuid_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_CHRC_UUID)
 
     chrcs_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
-    logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_list)
+    logging.debug("%r", chrcs_list)
 
     for chrc in chrcs_list:
         (handle, value_handle, prop, uuid) = chrc
@@ -1606,14 +1606,14 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
     descs = []
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_disc_all_desc_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_DISC_ALL_DESC)
 
     descs_list = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
-    logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_list)
+    logging.debug("%r", descs_list)
 
     for desc in descs_list:
         (handle, uuid) = desc
@@ -1644,13 +1644,13 @@ def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
         tuple_hdr, tuple_data = iutctl.btp_socket.read(timeout)
     else:
         tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
+    logging.debug("received %r %r", tuple_hdr,
                   tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
+    logging.debug("%r %r", rsp, value)
 
     if store_rsp or store_val:
         clear_verify_values()
@@ -1668,13 +1668,13 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_read_uuid_rsp.__name__, tuple_hdr,
+    logging.debug("received %r %r", tuple_hdr,
                   tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_UUID)
 
     rsp, char_values = gatt_dec_read_uuid_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_uuid_rsp.__name__, rsp, char_values)
+    logging.debug("%r %r", rsp, char_values)
 
     if store_rsp or store_val:
         clear_verify_values()
@@ -1695,13 +1695,13 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_read_long_rsp.__name__, tuple_hdr,
+    logging.debug("received %r %r", tuple_hdr,
                   tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_LONG)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_long_rsp.__name__, rsp, value)
+    logging.debug("%r %r", rsp, value)
 
     if store_rsp or store_val:
         clear_verify_values()
@@ -1717,14 +1717,14 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_read_multiple_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_READ_MULTIPLE)
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
+    logging.debug("%r %r", rsp, values)
 
     if store_rsp or store_val:
         clear_verify_values()
@@ -1740,14 +1740,14 @@ def gattc_read_multiple_var_rsp(store_val=False, store_rsp=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_read_multiple_var_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_READ_MULTIPLE_VAR)
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_multiple_var_rsp.__name__, rsp, values)
+    logging.debug("%r %r", rsp, values)
 
     if store_rsp or store_val:
         clear_verify_values()
@@ -1766,13 +1766,13 @@ def gattc_write_rsp(store_rsp=False, timeout=None):
         tuple_hdr, tuple_data = iutctl.btp_socket.read(timeout)
     else:
         tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
+    logging.debug("received %r %r", tuple_hdr,
                   tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
-    logging.debug("%s %r", gattc_write_rsp.__name__, rsp)
+    logging.debug("%r", rsp)
 
     if store_rsp:
         clear_verify_values()
@@ -1783,14 +1783,14 @@ def gattc_write_long_rsp(store_rsp=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_write_long_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_WRITE_LONG)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
-    logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
+    logging.debug("%r", rsp)
 
     if store_rsp:
         clear_verify_values()
@@ -1801,14 +1801,14 @@ def gattc_write_reliable_rsp(store_rsp=False):
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_write_reliable_rsp.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.BTP_GATT_CMD_WRITE_RELIABLE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
-    logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
+    logging.debug("%r", rsp)
 
     if store_rsp:
         clear_verify_values()
@@ -1816,7 +1816,7 @@ def gattc_write_reliable_rsp(store_rsp=False):
 
 
 def eatt_conn(bd_addr, bd_addr_type, num=1):
-    logging.debug("%s %r %r", eatt_conn.__name__, bd_addr, bd_addr_type)
+    logging.debug("%r %r", bd_addr, bd_addr_type)
     iutctl = get_iut()
     gap_wait_for_connection()
 

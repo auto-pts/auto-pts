@@ -35,7 +35,7 @@ PACS = {
 
 
 def pacs_update_characteristic(characteristic):
-    logging.debug(f"{pacs_update_characteristic.__name__} {characteristic}")
+    logging.debug("%r", characteristic)
 
     iutctl = get_iut()
 
@@ -69,7 +69,7 @@ def pacs_update_supported_audio_contexts():
 
 
 def pacs_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", pacs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -82,7 +82,7 @@ def pacs_command_rsp_succ(timeout=20.0):
 
 
 def pacs_set_location(direction, location):
-    logging.debug(f"{pacs_set_location.__name__} {direction} {location}")
+    logging.debug("direction %r, location %r", direction, location)
 
     iutctl = get_iut()
 
@@ -94,7 +94,7 @@ def pacs_set_location(direction, location):
 
 
 def pacs_set_available_contexts(sink_contexts, source_contexts):
-    logging.debug(f"{pacs_set_available_contexts.__name__} {sink_contexts} {source_contexts}")
+    logging.debug("sink_contexts %r, source_contexts %r", sink_contexts, source_contexts)
 
     iutctl = get_iut()
 
@@ -106,7 +106,7 @@ def pacs_set_available_contexts(sink_contexts, source_contexts):
 
 
 def pacs_set_supported_contexts(sink_contexts, source_contexts):
-    logging.debug(f"{pacs_set_supported_contexts.__name__} {sink_contexts} {source_contexts}")
+    logging.debug("sink_contexts %r, source_contexts %r", sink_contexts, source_contexts)
 
     iutctl = get_iut()
 
@@ -118,7 +118,7 @@ def pacs_set_supported_contexts(sink_contexts, source_contexts):
 
 
 def pacs_ev_characteristic_subscribed_(pacs, data, data_len):
-    logging.debug('%s %r', pacs_ev_characteristic_subscribed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sB'
     header_size = struct.calcsize(fmt)
@@ -129,7 +129,7 @@ def pacs_ev_characteristic_subscribed_(pacs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'PACS characteristic with handle {handle} subscribed')
+    logging.debug("PACS characteristic with handle %r subscribed", handle)
 
     pacs.event_received(defs.BTP_PACS_EV_CHARACTERISTIC_SUBSCRIBED,
                         (addr_type, addr, handle))

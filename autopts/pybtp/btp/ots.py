@@ -34,7 +34,7 @@ OTS = {
 
 
 def otc_register_object(index, name, flags=0, props=0, alloc_size=0, current_size=0):
-    logging.debug(f"{otc_register_object.__name__}")
+    logging.debug("")
 
     data_ba = bytearray(struct.pack('<BIIIB', flags, props, alloc_size, current_size, len(name)))
     data_ba.extend(name.encode())
@@ -46,7 +46,7 @@ def otc_register_object(index, name, flags=0, props=0, alloc_size=0, current_siz
 
 
 def ots_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", ots_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 

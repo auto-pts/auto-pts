@@ -45,7 +45,7 @@ RFCOMM = {
 
 
 def rfcomm_command_rsp_succ(op=None):
-    logging.debug("%s", rfcomm_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -56,7 +56,7 @@ def rfcomm_command_rsp_succ(op=None):
 
 
 def rfcomm_connect(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=5):
-    logging.debug("%s %r %r %r", rfcomm_connect.__name__, bd_addr, bd_addr_type, channel)
+    logging.debug("%r %r %r", bd_addr, bd_addr_type, channel)
 
     iutctl = get_iut()
     gap_wait_for_connection()
@@ -76,7 +76,7 @@ def rfcomm_connect(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=
 
 
 def rfcomm_disconnect(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=5):
-    logging.debug("%s %r %r %r", rfcomm_disconnect.__name__, bd_addr, bd_addr_type, channel)
+    logging.debug("%r %r %r", bd_addr, bd_addr_type, channel)
 
     iutctl = get_iut()
 
@@ -96,7 +96,7 @@ def rfcomm_disconnect(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, chann
 
 def rfcomm_send_data(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=5, val='00',
                      val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", rfcomm_send_data.__name__, bd_addr, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr, bd_addr_type,
                   channel, val, val_mtp)
 
     iutctl = get_iut()
@@ -123,7 +123,7 @@ def rfcomm_send_data(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channe
 
 
 def rfcomm_listen(channel=5):
-    logging.debug("%s %r", rfcomm_listen.__name__, channel)
+    logging.debug("%r", channel)
 
     iutctl = get_iut()
 
@@ -134,7 +134,7 @@ def rfcomm_listen(channel=5):
 
 def rfcomm_send_rpn(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=5, baud_rate=0,
                     line_settings=0, flow_control=0, xon_char=0, xoff_char=0, param_mask=0):
-    logging.debug("%s %r %r %r %r %r %r %r %r %r", rfcomm_send_rpn.__name__,
+    logging.debug("%r %r %r %r %r %r %r %r %r",
                   bd_addr, bd_addr_type, channel, baud_rate, line_settings,
                   flow_control, xon_char, xoff_char, param_mask)
 
@@ -161,7 +161,7 @@ def rfcomm_send_rpn(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel
 
 
 def rfcomm_get_dlc_info(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=5):
-    logging.debug("%s %r %r %r", rfcomm_get_dlc_info.__name__, bd_addr, bd_addr_type, channel)
+    logging.debug("%r %r %r", bd_addr, bd_addr_type, channel)
 
     iutctl = get_iut()
 
@@ -182,7 +182,7 @@ def rfcomm_get_dlc_info(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, cha
 
 
 def rfcomm_get_dlc_info_rsp():
-    logging.debug("%s", rfcomm_get_dlc_info_rsp.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -200,7 +200,7 @@ def rfcomm_get_dlc_info_rsp():
 
 
 def rfcomm_connected_ev(rfcomm, data, data_len):
-    logging.debug("%s %r %r", rfcomm_connected_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<B6sBH'
     _, bd_addr, channel, mtu = struct.unpack_from(hdr_fmt, data)
@@ -212,7 +212,7 @@ def rfcomm_connected_ev(rfcomm, data, data_len):
 
 
 def rfcomm_disconnected_ev(rfcomm, data, data_len):
-    logging.debug("%s %r %r", rfcomm_disconnected_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<B6sB'
     _, bd_addr, channel = struct.unpack_from(hdr_fmt, data)
@@ -224,7 +224,7 @@ def rfcomm_disconnected_ev(rfcomm, data, data_len):
 
 
 def rfcomm_data_received_ev(rfcomm, data, data_len):
-    logging.debug("%s %r %r", rfcomm_data_received_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<B6sBH'
     hdr_len = struct.calcsize(hdr_fmt)
@@ -239,7 +239,7 @@ def rfcomm_data_received_ev(rfcomm, data, data_len):
 
 
 def rfcomm_data_sent_ev(rfcomm, data, data_len):
-    logging.debug("%s %r %r", rfcomm_data_sent_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<B6sBb'
     _, bd_addr, channel, err = struct.unpack_from(hdr_fmt, data)

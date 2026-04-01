@@ -51,7 +51,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def csip_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", csip_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -64,7 +64,7 @@ def csip_command_rsp_succ(timeout=20.0):
 
 
 def csip_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{csip_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -75,7 +75,7 @@ def csip_discover(bd_addr_type=None, bd_addr=None):
 
 
 def csip_set_coordinator_lock(addr_list=None):
-    logging.debug(f"{csip_set_coordinator_lock.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -97,7 +97,7 @@ def csip_set_coordinator_lock(addr_list=None):
 
 
 def csip_set_coordinator_release(addr_list=None):
-    logging.debug(f"{csip_set_coordinator_release.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -119,7 +119,7 @@ def csip_set_coordinator_release(addr_list=None):
 
 
 def csip_start_ordered_access(flags=0x00):
-    logging.debug(f"{csip_start_ordered_access.__name__}")
+    logging.debug("")
 
     # RFU
     data = struct.pack('B', flags)
@@ -131,7 +131,7 @@ def csip_start_ordered_access(flags=0x00):
 
 
 def csip_ev_discovery_completed(csip, data, data_len):
-    logging.debug('%s %r', csip_ev_discovery_completed.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -141,11 +141,10 @@ def csip_ev_discovery_completed(csip, data, data_len):
         rank_handle = struct.unpack_from(fmt, data)
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'CSIP Discovery Completed: addr {addr},'
-                  f' addr_type {addr_type},'
-                  f' status {status}, Set Sirk Handle {sirk_handle},'
-                  f' Set Size Handle {size_handle}, Set Lock Handle {lock_handle},'
-                  f' Rank Handle {rank_handle}')
+    logging.debug(
+        "CSIP Discovery Completed: addr %r, addr_type %r, status %r, Set Sirk Handle %r,"
+        "Set Size Handle %r, Set Lock Handle %r, Rank Handle %r",
+        addr, addr_type, status, sirk_handle, size_handle, lock_handle, rank_handle)
 
     csip.event_received(defs.BTP_CSIP_EV_DISCOVERED, (addr_type, addr, status,
                                                   sirk_handle, size_handle,
@@ -153,7 +152,7 @@ def csip_ev_discovery_completed(csip, data, data_len):
 
 
 def csip_sirk_ev(csip, data, data_len):
-    logging.debug('%s %r', csip_sirk_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s'
     if len(data) < struct.calcsize(fmt):
@@ -164,14 +163,13 @@ def csip_sirk_ev(csip, data, data_len):
     sirk_bytes = data[7:]
     sirk_hex = le_bytes_to_hex_str(sirk_bytes)
 
-    logging.debug(f'CSIP Sirk event: addr {addr}, addr_type {addr_type},'
-                  f' sirk {sirk_hex}')
+    logging.debug("CSIP Sirk event: addr %r, addr_type %r, sirk %r", addr, addr_type, sirk_hex)
 
     csip.event_received(defs.BTP_CSIP_EV_SIRK, (addr_type, addr, sirk_hex))
 
 
 def csip_lock_ev(csip, data, data_len):
-    logging.debug('%s %r', csip_lock_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<b'
     if len(data) < struct.calcsize(fmt):
@@ -179,7 +177,7 @@ def csip_lock_ev(csip, data, data_len):
 
     lock_val = struct.unpack_from(fmt, data)
 
-    logging.debug(f'CSIP Set Lock status {lock_val}')
+    logging.debug("CSIP Set Lock status %r", lock_val)
 
     csip.event_received(defs.BTP_CSIP_EV_LOCK, lock_val)
 

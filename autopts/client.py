@@ -81,6 +81,13 @@ AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
 
 def logger_log(self, *args, **kwargs):
     with log_lock:
+        # Add one frame so logs show the real caller (not logger_log).
+        # Adjust stacklevel (kwarg or 7th arg) without duplicating it.
+        if len(args) > 6:
+            args = list(args)
+            args[6] += 1
+        else:
+            kwargs['stacklevel'] = kwargs.get('stacklevel', 1) + 1
         self.original_log(*args, **kwargs)
 
 

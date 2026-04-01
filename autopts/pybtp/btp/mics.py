@@ -42,7 +42,7 @@ MICS = {
 
 
 def mics_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", mics_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -63,7 +63,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def mics_mute_disable():
-    logging.debug(f"{mics_mute_disable.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -73,7 +73,7 @@ def mics_mute_disable():
 
 
 def mics_mute_read():
-    logging.debug(f"{mics_mute_read.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -83,7 +83,7 @@ def mics_mute_read():
 
 
 def mics_mute():
-    logging.debug(f"{mics_mute.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -93,7 +93,7 @@ def mics_mute():
 
 
 def mics_unmute():
-    logging.debug(f"{mics_unmute.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -103,7 +103,7 @@ def mics_unmute():
 
 
 def mics_mute_state_ev(mics, data, data_len):
-    logging.debug('%s %r', mics_mute_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<b'
     if len(data) < struct.calcsize(fmt):
@@ -111,7 +111,7 @@ def mics_mute_state_ev(mics, data, data_len):
 
     mute = struct.unpack_from(fmt, data)
 
-    logging.debug(f'MICS Mute state: {mute[0]}')
+    logging.debug("MICS Mute state: %r", mute[0])
 
     mics.event_received(defs.BTP_MICS_EV_MUTE_STATE, mute)
 

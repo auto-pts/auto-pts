@@ -12,7 +12,7 @@ AICS = aics_btp
 
 
 def aics_command_rsp_succ(op=None):
-    logging.debug("%s", aics_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -25,7 +25,7 @@ def aics_command_rsp_succ(op=None):
 
 
 def aics_mute(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_mute.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -36,7 +36,7 @@ def aics_mute(bd_addr_type=None, bd_addr=None):
 
 
 def aics_unmute(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_unmute.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -46,7 +46,7 @@ def aics_unmute(bd_addr_type=None, bd_addr=None):
 
 
 def aics_auto_gain_set(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_auto_gain_set.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -56,7 +56,7 @@ def aics_auto_gain_set(bd_addr_type=None, bd_addr=None):
 
 
 def aics_man_gain_set(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_man_gain_set.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -66,7 +66,7 @@ def aics_man_gain_set(bd_addr_type=None, bd_addr=None):
 
 
 def aics_man_gain_only():
-    logging.debug("%s", aics_man_gain_only.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -75,7 +75,7 @@ def aics_man_gain_only():
 
 
 def aics_auto_gain_only():
-    logging.debug("%s", aics_auto_gain_only.__name__)
+    logging.debug("")
 
     data_ba = bytearray()
     iutctl = get_iut()
@@ -85,7 +85,7 @@ def aics_auto_gain_only():
 
 
 def aics_change_desc(string):
-    logging.debug("%s", aics_change_desc.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     string_len = len(string)
@@ -98,7 +98,7 @@ def aics_change_desc(string):
 
 
 def aics_state_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_state_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -109,7 +109,7 @@ def aics_state_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_status_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_status_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -120,7 +120,7 @@ def aics_status_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_type_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_type_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -131,7 +131,7 @@ def aics_type_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_gain_setting_prop_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_gain_setting_prop_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -151,7 +151,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def aics_set_gain(gain, bd_addr_type=None, bd_addr=None):
-    logging.debug("%s %r", aics_set_gain.__name__, gain)
+    logging.debug("%r", gain)
 
     iutctl = get_iut()
 
@@ -165,7 +165,7 @@ def aics_set_gain(gain, bd_addr_type=None, bd_addr=None):
 
 
 def aics_mute_disable():
-    logging.debug("%s", aics_mute_disable.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -174,7 +174,7 @@ def aics_mute_disable():
 
 
 def aics_description_get(bd_addr_type=None, bd_addr=None):
-    logging.debug("%s", aics_description_get.__name__)
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -184,7 +184,7 @@ def aics_description_get(bd_addr_type=None, bd_addr=None):
 
 
 def aics_state_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbBbb'
     if len(data) < struct.calcsize(fmt):
@@ -194,14 +194,14 @@ def aics_state_ev(aics, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'Audio Input Control State: addr {addr} addr_type '
-                  f'{addr_type}, att_status {att_status}, gain {gain}, mute {mute}, mode {mode}')
+    logging.debug("Audio Input Control State: addr %r, addr_type %r, att_status %r, gain %r, mute %r, mode %r",
+                  addr, addr_type, att_status, gain, mute, mode)
 
     aics.event_received(defs.BTP_AICS_EV_STATE, (addr_type, addr, att_status, gain, mute, mode))
 
 
 def aics_gain_setting_prop_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_gain_setting_prop_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbBB'
     if len(data) < struct.calcsize(fmt):
@@ -211,16 +211,15 @@ def aics_gain_setting_prop_ev(aics, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'AICS Gain Setting Properties: addr {addr} addr_type '
-                  f'{addr_type}, units {units}, minimum {minimum}, maximum {maximum},'
-                  f' att_status {att_status}')
+    logging.debug("AICS Gain Setting Properties: addr %r, addr_type %r, units %r, minimum %r, maximum %r, att_status %r",
+                  addr, addr_type, units, minimum, maximum, att_status)
 
     aics.event_received(defs.BTP_AICS_EV_GAIN_SETTING_PROP, (addr_type, addr, units,
                                                          minimum, maximum, att_status))
 
 
 def aics_input_type_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_input_type_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -230,14 +229,14 @@ def aics_input_type_ev(aics, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'AICS Input type ev: addr {addr} addr_type '
-                  f'{addr_type}, input type {input_type}, att_status {att_status}')
+    logging.debug("AICS Input type ev: addr %r, addr_type %r, input type %r, att_status %r",
+                  addr, addr_type, input_type, att_status)
 
     aics.event_received(defs.BTP_AICS_EV_INPUT_TYPE, (addr_type, addr, input_type, att_status))
 
 
 def aics_status_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_status_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -247,14 +246,14 @@ def aics_status_ev(aics, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'AICS Status ev: addr {addr} addr_type '
-                  f'{addr_type}, status {status}, att_status {att_status}')
+    logging.debug("AICS Status ev: addr %r, addr_type %r, status %r, att_status %r",
+                  addr, addr_type, status, att_status)
 
     aics.event_received(defs.BTP_AICS_EV_STATUS, (addr_type, addr, status, att_status))
 
 
 def aics_description_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_description_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
 
@@ -268,14 +267,14 @@ def aics_description_ev(aics, data, data_len):
     description = struct.unpack_from(f'<{len(data) - fmt_size - 1}s', data, offset=fmt_size)
     description = binascii.hexlify(description[0]).decode('utf-8')
 
-    logging.debug(f'AICS Description ev: addr {addr} addr_type '
-                  f'{addr_type}, att_status {att_status}, description {description}')
+    logging.debug("AICS Description ev: addr %r, addr_type %r, att_status %r, description %r",
+                  addr, addr_type, att_status, description)
 
     aics.event_received(defs.BTP_AICS_EV_DESCRIPTION, (addr_type, addr, att_status, description))
 
 
 def aics_procedure_ev(aics, data, data_len):
-    logging.debug('%s %r', aics_procedure_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -285,8 +284,8 @@ def aics_procedure_ev(aics, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'AICS Procedure ev: addr {addr} addr_type '
-                  f'{addr_type}, att status {att_status}, opcode {opcode}')
+    logging.debug("AICS Procedure ev: addr %r, addr_type %r, att status %r, opcode %r",
+                  addr, addr_type, att_status, opcode)
 
     aics.event_received(defs.BTP_AICS_EV_PROCEDURE, (addr_type, addr, att_status, opcode))
 

@@ -53,7 +53,7 @@ L2CAP = {
 
 
 def l2cap_command_rsp_succ(op=None):
-    logging.debug("%s", l2cap_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -64,7 +64,7 @@ def l2cap_command_rsp_succ(op=None):
 
 
 def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
-    logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr, bd_addr_type,
                   psm)
     iutctl = get_iut()
     gap_wait_for_connection()
@@ -100,7 +100,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
 
 
 def l2cap_conn_v2_rsp():
-    logging.debug("%s", l2cap_conn_v2_rsp.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -115,7 +115,7 @@ def l2cap_conn_v2_rsp():
 
 def l2cap_conn_v2(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0, mode=0,
                   options=0):
-    logging.debug("%s %r %r %r %r %r", l2cap_conn_v2.__name__, bd_addr, bd_addr_type, psm, mode,
+    logging.debug("%r %r %r %r %r", bd_addr, bd_addr_type, psm, mode,
                   options)
 
     iutctl = get_iut()
@@ -167,7 +167,7 @@ l2cap_result_str = {0: "Success",
 
 
 def l2cap_conn_rsp():
-    logging.debug("%s", l2cap_conn_rsp.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -181,7 +181,7 @@ def l2cap_conn_rsp():
 
 
 def l2cap_disconn(chan_id):
-    logging.debug("%s %r", l2cap_disconn.__name__, chan_id)
+    logging.debug("%r", chan_id)
 
     iutctl = get_iut()
 
@@ -193,7 +193,7 @@ def l2cap_disconn(chan_id):
 
 
 def l2cap_send_data(chan_id, val, val_mtp=None):
-    logging.debug("%s %r %r %r", l2cap_send_data.__name__, chan_id, val,
+    logging.debug("%r %r %r", chan_id, val,
                   val_mtp)
 
     iutctl = get_iut()
@@ -215,7 +215,7 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
 
 
 def l2cap_listen(psm, transport, mtu=0, response=L2CAPConnectionResponse.success):
-    logging.debug("%s %r %r %r %r", l2cap_le_listen.__name__, psm, transport, mtu, response)
+    logging.debug("%r %r %r %r", psm, transport, mtu, response)
 
     iutctl = get_iut()
 
@@ -234,7 +234,7 @@ def l2cap_listen(psm, transport, mtu=0, response=L2CAPConnectionResponse.success
 
 def l2cap_listen_v2(psm, transport, mtu=0, response=L2CAPConnectionResponse.success, mode=0,
                     options=0):
-    logging.debug("%s %r %r %r %r %r %r", l2cap_listen_v2.__name__, psm, transport, mtu, response,
+    logging.debug("%r %r %r %r %r %r", psm, transport, mtu, response,
                   mode, options)
 
     iutctl = get_iut()
@@ -255,7 +255,7 @@ def l2cap_listen_v2(psm, transport, mtu=0, response=L2CAPConnectionResponse.succ
 
 
 def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
-    logging.debug("%s %r", l2cap_disconn_eatt_chans.__name__, channel_count)
+    logging.debug("%r", channel_count)
 
     iutctl = get_iut()
 
@@ -289,7 +289,7 @@ def l2cap_br_listen_v2(psm, mtu=0, response=0, mode=0, options=0):
 
 
 def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
-    logging.debug("%s %r %r %r %r", l2cap_reconfigure.__name__,
+    logging.debug("%r %r %r %r",
                   bd_addr, bd_addr_type, mtu, channels)
 
     iutctl = get_iut()
@@ -311,7 +311,7 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
 
 
 def l2cap_credits(chan_id):
-    logging.debug("%s %r", l2cap_credits.__name__, chan_id)
+    logging.debug("%r", chan_id)
 
     iutctl = get_iut()
 
@@ -323,7 +323,7 @@ def l2cap_credits(chan_id):
 
 
 def l2cap_echo_req(bd_addr, bd_addr_type, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r", l2cap_echo_req.__name__, bd_addr, bd_addr_type, val, val_mtp)
+    logging.debug("%r %r %r %r", bd_addr, bd_addr_type, val, val_mtp)
 
     iutctl = get_iut()
 
@@ -349,7 +349,7 @@ def l2cap_echo_req(bd_addr, bd_addr_type, val, val_mtp=None):
 
 
 def l2cap_cls_send(bd_addr, bd_addr_type, psm, val, val_mtp=None, options=0):
-    logging.debug("%s %r %r %r %r %r %r", l2cap_cls_send.__name__, bd_addr, bd_addr_type, psm, val,
+    logging.debug("%r %r %r %r %r %r", bd_addr, bd_addr_type, psm, val,
                   val_mtp, options)
 
     iutctl = get_iut()
@@ -381,7 +381,7 @@ def l2cap_cls_send(bd_addr, bd_addr_type, psm, val, val_mtp=None, options=0):
 
 
 def l2cap_connected_ev(l2cap, data, data_len):
-    logging.debug("%s %r %r", l2cap_connected_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<BHHHHHB6s'
     chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps, \
@@ -396,7 +396,7 @@ def l2cap_connected_ev(l2cap, data, data_len):
 
 
 def l2cap_disconnected_ev(l2cap, data, data_len):
-    logging.debug("%s %r %r", l2cap_disconnected_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<HBHB6s'
     res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
@@ -408,7 +408,7 @@ def l2cap_disconnected_ev(l2cap, data, data_len):
 
 
 def l2cap_data_rcv_ev(l2cap, data, data_len):
-    logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<BH'
     hdr_len = struct.calcsize(hdr_fmt)
@@ -421,7 +421,7 @@ def l2cap_data_rcv_ev(l2cap, data, data_len):
 
 
 def l2cap_reconfigured_ev(l2cap, data, data_len):
-    logging.debug("%s %r %r", l2cap_reconfigured_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<BHHHH'
     chan_id, peer_mtu, peer_mps, our_mtu, our_mps = \

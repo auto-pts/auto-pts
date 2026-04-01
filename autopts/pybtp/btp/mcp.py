@@ -102,7 +102,7 @@ MCP = {
 
 
 def mcp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", mcp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -123,7 +123,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -134,7 +134,7 @@ def mcp_discover(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_track_duration_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_track_duration_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -145,7 +145,7 @@ def mcp_track_duration_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_track_position_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_track_position_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -156,7 +156,7 @@ def mcp_track_position_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_track_position_set(position, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_track_position_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -168,7 +168,7 @@ def mcp_track_position_set(position, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playback_speed_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playback_speed_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -179,7 +179,7 @@ def mcp_playback_speed_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playback_speed_set(speed, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playback_speed_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -192,7 +192,7 @@ def mcp_playback_speed_set(speed, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_seeking_speed_get(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_seeking_speed_get.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -203,7 +203,7 @@ def mcp_seeking_speed_get(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_icon_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_icon_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -214,7 +214,7 @@ def mcp_icon_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_next_track_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_next_track_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -225,7 +225,7 @@ def mcp_next_track_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_next_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_next_track_obj_id_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     obj_id_bytes = obj_id.to_bytes(6, 'little')
@@ -238,7 +238,7 @@ def mcp_next_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_parent_group_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_parent_group_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -249,7 +249,7 @@ def mcp_parent_group_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_group_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_group_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -260,7 +260,7 @@ def mcp_current_group_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_group_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_group_obj_id_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     obj_id_bytes = obj_id.to_bytes(6, 'little')
@@ -273,7 +273,7 @@ def mcp_current_group_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playing_order_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playing_order_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -284,7 +284,7 @@ def mcp_playing_order_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playing_order_set(order, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playing_order_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack("b", order))
@@ -296,7 +296,7 @@ def mcp_playing_order_set(order, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_playing_orders_supported_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_playing_orders_supported_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -307,7 +307,7 @@ def mcp_playing_orders_supported_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_media_state_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_media_state_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -318,7 +318,7 @@ def mcp_media_state_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_content_control_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_content_control_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -329,7 +329,7 @@ def mcp_content_control_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_segments_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_segments_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -340,7 +340,7 @@ def mcp_segments_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_track_obj_id_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_track_obj_id_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -351,7 +351,7 @@ def mcp_current_track_obj_id_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_current_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_current_track_obj_id_set.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     obj_id_bytes = obj_id.to_bytes(6, 'little')
@@ -364,7 +364,7 @@ def mcp_current_track_obj_id_set(obj_id, bd_addr_type=None, bd_addr=None):
 
 
 def mcp_opcodes_supported_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_opcodes_supported_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -375,7 +375,7 @@ def mcp_opcodes_supported_read(bd_addr_type=None, bd_addr=None):
 
 
 def mcp_control_point_cmd(opcode, use_param, param, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_control_point_cmd.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack("b", opcode))
@@ -389,7 +389,7 @@ def mcp_control_point_cmd(opcode, use_param, param, bd_addr_type=None, bd_addr=N
 
 
 def mcp_search_control_point_cmd(search_type, param, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{mcp_search_control_point_cmd.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data.extend(struct.pack("b", search_type))
@@ -406,7 +406,7 @@ def mcp_search_control_point_cmd(search_type, param, bd_addr_type=None, bd_addr=
 
 
 def mcp_ev_discovery_completed(mcp, data, data_len):
-    logging.debug('%s %r', mcp_ev_discovery_completed.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -422,23 +422,19 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Discovery: MCS and OTS service characteristic handles:'
-                  f'addr {addr} addr_type {addr_type},'
-                  f'Status {status}, Player Name {player_name}, Icon Obj ID {icon_obj_id},'
-                  f'Icon Url {icon_url}, Track Changed {track_changed}, Track Title {track_title},'
-                  f'Track Duration {track_duration}, Track Position {track_position},'
-                  f'Playback Speed {playback_speed}, Seeking Speed {seeking_speed},'
-                  f'Segments Obj ID {segments_obj_id}, Current Track Obj ID {current_track_obj_id},'
-                  f'Next Track Obj ID {next_track_obj_id}, Current Group Obj ID {current_group_obj_id}, '
-                  f'Parent Group Obj ID {parent_group_obj_id}, Playing Order {playing_order}, '
-                  f'Playing Orders Supported {playing_orders_supported}, Media State {media_state}, '
-                  f'Control Point {cp}, Opcodes Supported {opcodes_supported}, Search Control Point {scp},'
-                  f'Search Results Obj ID {search_results_obj_id}, Content Control ID {content_control_id},'
-                  f'OTS Feature {feature}, Object Name {obj_name}, Object Type {obj_type},'
-                  f'Object Size {obj_size}, Object Properties {obj_prop}, Object Created {obj_created},'
-                  f'Object Modified {obj_modified}, Object ID {obj_id},'
-                  f'Object Action Control Point {oacp},'
-                  f'Object List Control Point {olcp}')
+    logging.debug(
+        "MCP Discovery: MCS and OTS service characteristic handles:addr %r, addr_type %r, Status %r, Player Name %r,"
+        "Icon Obj ID %r, Icon Url %r, Track Changed %r, Track Title %r,Track Duration %r, Track Position %r,"
+        "Playback Speed %r, Seeking Speed %r, Segments Obj ID %r, Current Track Obj ID %r, Next Track Obj ID %r,"
+        "Current Group Obj ID %r, Parent Group Obj ID %r, Playing Order %r, Playing Orders Supported %r, Media State %r,"
+        "Control Point %r, Opcodes Supported %r, Search Control Point %r, Search Results Obj ID %r, Content Control ID %r,"
+        "OTS Feature %r, Object Name %r, Object Type %r,Object Size %r, Object Properties %r, Object Created %r,"
+        "Object Modified %r, Object ID %r, Object Action Control Point %r, Object List Control Point %r",
+        addr, addr_type, status, player_name, icon_obj_id, icon_url, track_changed, track_title, track_duration,
+        track_position, playback_speed, seeking_speed, segments_obj_id, current_track_obj_id, next_track_obj_id,
+        current_group_obj_id, parent_group_obj_id, playing_order, playing_orders_supported, media_state, cp,
+        opcodes_supported, scp, search_results_obj_id, content_control_id, feature, obj_name, obj_type, obj_size,
+        obj_prop, obj_created, obj_modified, obj_id, oacp, olcp)
 
     mcp.event_received(defs.BTP_MCP_EV_DISCOVERED, (addr_type, addr, status, player_name,
                                                 icon_obj_id, icon_url, track_changed,
@@ -454,7 +450,7 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
 
 
 def mcp_track_duration_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_track_duration_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -464,15 +460,15 @@ def mcp_track_duration_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Track Duration ev: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, track duration {duration}')
+    logging.debug("MCP Track Duration ev: addr %r, addr_type %r, Status %r, track duration %r",
+                  addr, addr_type, status, duration)
 
     mcp.event_received(defs.BTP_MCP_EV_TRACK_DURATION, (addr_type, addr, status,
                                                     duration))
 
 
 def mcp_track_position_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_track_position_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -482,15 +478,15 @@ def mcp_track_position_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Track Position ev: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, track position {position}')
+    logging.debug("MCP Track Position ev: addr %r, addr_type %r, Status %r, track position %r",
+                  addr, addr_type, status, position)
 
     mcp.event_received(defs.BTP_MCP_EV_TRACK_POSITION, (addr_type, addr, status,
                                                     position))
 
 
 def mcp_playback_speed_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_playback_speed_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -500,15 +496,15 @@ def mcp_playback_speed_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Playback speed: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, playback speed {speed}')
+    logging.debug("MCP Playback speed: addr %r, addr_type %r, Status %r, playback speed %r",
+                  addr, addr_type, status, speed)
 
     mcp.event_received(defs.BTP_MCP_EV_PLAYBACK_SPEED, (addr_type, addr, status,
                                                     speed))
 
 
 def mcp_seeking_speed_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_seeking_speed_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -518,15 +514,15 @@ def mcp_seeking_speed_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Seeking speed: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, seeking speed {speed}')
+    logging.debug("MCP Seeking speed: addr %r, addr_type %r, Status %r, seeking speed %r",
+                  addr, addr_type, status, speed)
 
     mcp.event_received(defs.BTP_MCP_EV_SEEKING_SPEED, (addr_type, addr, status,
                                                    speed))
 
 
 def mcp_icon_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_icon_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -537,15 +533,15 @@ def mcp_icon_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    logging.debug(f'MCP Icon Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Icon Object ID {obj_id}')
+    logging.debug("MCP Icon Object ID: addr %r, addr_type %r, Status %r, Icon Object ID %r",
+                  addr, addr_type, status, obj_id)
 
     mcp.event_received(defs.BTP_MCP_EV_ICON_OBJ_ID, (addr_type, addr, status,
                                                  obj_id))
 
 
 def mcp_next_track_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_next_track_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -556,15 +552,15 @@ def mcp_next_track_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    logging.debug(f'MCP Next Track Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Next Track object ID {obj_id}')
+    logging.debug("MCP Next Track Object ID: addr %r, addr_type %r, Status %r, Next Track object ID %r",
+                  addr, addr_type, status, obj_id)
 
     mcp.event_received(defs.BTP_MCP_EV_NEXT_TRACK_OBJ_ID, (addr_type, addr, status,
                                                        obj_id))
 
 
 def mcp_parent_group_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_parent_group_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -575,15 +571,15 @@ def mcp_parent_group_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    logging.debug(f'MCP Parent Group Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Parent Group Object ID {obj_id}')
+    logging.debug("MCP Parent Group Object ID: addr %r, addr_type %r, Status %r, Parent Group Object ID %r",
+                  addr, addr_type, status, obj_id)
 
     mcp.event_received(defs.BTP_MCP_EV_PARENT_GROUP_OBJ_ID, (addr_type, addr, status,
                                                          obj_id))
 
 
 def mcp_current_group_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_current_group_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -594,15 +590,15 @@ def mcp_current_group_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    logging.debug(f'MCP Current Group Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Current Group Object ID {obj_id}')
+    logging.debug("MCP Current Group Object ID: addr %r, addr_type %r, Status %r, Current Group Object ID %r",
+                  addr, addr_type, status, obj_id)
 
     mcp.event_received(defs.BTP_MCP_EV_CURRENT_GROUP_OBJ_ID, (addr_type, addr, status,
                                                           obj_id))
 
 
 def mcp_playing_order_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_playing_order_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -612,15 +608,15 @@ def mcp_playing_order_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Playing Order: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, playing order {order}')
+    logging.debug("MCP Playing Order: addr %r, addr_type %r, Status %r, playing order %r",
+                  addr, addr_type, status, order)
 
     mcp.event_received(defs.BTP_MCP_EV_PLAYING_ORDER, (addr_type, addr, status,
                                                    order))
 
 
 def mcp_playing_orders_supported_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_playing_orders_supported_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbB'
     if len(data) < struct.calcsize(fmt):
@@ -630,15 +626,15 @@ def mcp_playing_orders_supported_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Playing orders supported: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, playing orders supported {orders}')
+    logging.debug("MCP Playing orders supported: addr %r, addr_type %r, Status %r, playing orders supported %r",
+                  addr, addr_type, status, orders)
 
     mcp.event_received(defs.BTP_MCP_EV_PLAYING_ORDERS_SUPPORTED, (addr_type, addr,
                                                               status, orders))
 
 
 def mcp_media_state_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_media_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -648,15 +644,15 @@ def mcp_media_state_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Media State: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, media state {state}')
+    logging.debug("MCP Media State: addr %r, addr_type %r, Status %r, media state %r",
+                  addr, addr_type, status, state)
 
     mcp.event_received(defs.BTP_MCP_EV_MEDIA_STATE, (addr_type, addr, status,
                                                  state))
 
 
 def mcp_opcodes_supported_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_opcodes_supported_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbI'
     if len(data) < struct.calcsize(fmt):
@@ -666,15 +662,15 @@ def mcp_opcodes_supported_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Opcodes Supported: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, opcodes {opcodes}')
+    logging.debug("MCP Opcodes Supported: addr %r, addr_type %r, Status %r, opcodes %r",
+                  addr, addr_type, status, opcodes)
 
     mcp.event_received(defs.BTP_MCP_EV_OPCODES_SUPPORTED, (addr_type, addr,
                                                        status, opcodes))
 
 
 def mcp_content_control_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_content_control_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -684,15 +680,15 @@ def mcp_content_control_id_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Content Control ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, content control ID {ccid}')
+    logging.debug("MCP Content Control ID: addr %r, addr_type %r, Status %r, content control ID %r",
+                  addr, addr_type, status, ccid)
 
     mcp.event_received(defs.BTP_MCP_EV_CONTENT_CONTROL_ID, (addr_type, addr, status,
                                                         ccid))
 
 
 def mcp_segments_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_segments_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -703,15 +699,15 @@ def mcp_segments_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    logging.debug(f'MCP Track Segments Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Track Segments Object ID {obj_id}')
+    logging.debug("MCP Track Segments Object ID: addr %r, addr_type %r, Status %r, Track Segments Object ID %r",
+                  addr, addr_type, status, obj_id)
 
     mcp.event_received(defs.BTP_MCP_EV_SEGMENTS_OBJ_ID, (addr_type, addr, status,
                                                      obj_id))
 
 
 def mcp_current_track_obj_id_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_current_track_obj_id_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sb'
     if len(data) < struct.calcsize(fmt):
@@ -722,15 +718,15 @@ def mcp_current_track_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    logging.debug(f'MCP Current Track Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Current Track Object ID {obj_id}')
+    logging.debug("MCP Current Track Object ID: addr %r, addr_type %r, Status %r, Current Track Object ID %r",
+                  addr, addr_type, status, obj_id)
 
     mcp.event_received(defs.BTP_MCP_EV_CURRENT_TRACK_OBJ_ID, (addr_type, addr, status,
                                                           obj_id))
 
 
 def mcp_control_point_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_control_point_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbbI'
     if len(data) < struct.calcsize(fmt):
@@ -741,15 +737,15 @@ def mcp_control_point_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Media Control Point: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Opcode {opcode}, Param {param}')
+    logging.debug("MCP Media Control Point: addr %r, addr_type %r, Status %r, Opcode %r, Param %r",
+                  addr, addr_type, status, opcode, param)
 
     mcp.event_received(defs.BTP_MCP_EV_COMMAND, (addr_type, addr, status, opcode,
                                              use_param, param))
 
 
 def mcp_search_control_point_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_search_control_point_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbb'
 
@@ -763,16 +759,15 @@ def mcp_search_control_point_ev(mcp, data, data_len):
     param = struct.unpack_from(f'<{len(data) - fmt_size - 1}s',
                                data, offset=fmt_size)[0].decode('utf-8')
 
-    logging.debug(f'MCP Search Control Point: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, param_len {param_len},'
-                  f'search type {search}, param {param}')
+    logging.debug("MCP Search Control Point: addr %r, addr_type %r, Status %r, param_len %r, search type %r, param %r",
+                  addr, addr_type, status, param_len, search, param)
 
     mcp.event_received(defs.BTP_MCP_EV_SEARCH, (addr_type, addr, status, param_len,
                                             search, param))
 
 
 def mcp_cmd_ntf_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_cmd_ntf_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbb'
     if len(data) < struct.calcsize(fmt):
@@ -783,16 +778,16 @@ def mcp_cmd_ntf_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Media Control Point Notification: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Requested Opcode {requested_opcode},'
-                  f' Result Code {result_code}')
+    logging.debug(
+        "MCP Media Control Point Notification: addr %r, addr_type %r, Status %r, Requested Opcode %r, Result Code %r",
+        addr, addr_type, status, requested_opcode, result_code)
 
     mcp.event_received(defs.BTP_MCP_EV_CMD_NTF, (addr_type, addr, status,
                                              requested_opcode, result_code))
 
 
 def mcp_search_ntf_ev(mcp, data, data_len):
-    logging.debug('%s %r', mcp_search_ntf_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -802,8 +797,8 @@ def mcp_search_ntf_ev(mcp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MCP Search Control Point Notification: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Result Code {result_code}')
+    logging.debug("MCP Search Control Point Notification: addr %r, addr_type %r, Status %r, Result Code %r",
+                  addr, addr_type, status, result_code)
 
     mcp.event_received(defs.BTP_MCP_EV_SEARCH_NTF, (addr_type, addr, status,
                                                 result_code))

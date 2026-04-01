@@ -351,7 +351,7 @@ MMDL = {
 
 
 def mmdl_gen_onoff_get():
-    logging.debug("%s", mmdl_gen_onoff_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -366,7 +366,7 @@ def mmdl_gen_onoff_get():
 
 
 def mmdl_gen_onoff_set(onoff, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_gen_onoff_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BB", ack, onoff))
@@ -391,7 +391,7 @@ def mmdl_gen_onoff_set(onoff, tt=None, delay=None, ack=True):
 
 
 def mmdl_gen_lvl_get():
-    logging.debug("%s", mmdl_gen_lvl_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_lvl_get'])
@@ -405,7 +405,7 @@ def mmdl_gen_lvl_get():
 
 
 def mmdl_gen_lvl_set(lvl, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_gen_lvl_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<Bh", ack, lvl))
@@ -429,7 +429,7 @@ def mmdl_gen_lvl_set(lvl, tt=None, delay=None, ack=True):
 
 
 def mmdl_gen_lvl_delta_set(delta, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_gen_lvl_delta_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<Bi", ack, delta))
@@ -454,7 +454,7 @@ def mmdl_gen_lvl_delta_set(delta, tt=None, delay=None, ack=True):
 
 
 def mmdl_gen_lvl_move_set(move, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_gen_lvl_move_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<Bh", ack, move))
@@ -479,7 +479,7 @@ def mmdl_gen_lvl_move_set(move, tt=None, delay=None, ack=True):
 
 
 def mmdl_gen_dtt_get():
-    logging.debug("%s", mmdl_gen_dtt_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_dtt_get'])
@@ -492,7 +492,7 @@ def mmdl_gen_dtt_get():
 
 
 def mmdl_gen_dtt_set(tt, ack=True):
-    logging.debug("%s", mmdl_gen_dtt_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BB", ack, tt))
@@ -509,7 +509,7 @@ def mmdl_gen_dtt_set(tt, ack=True):
 
 
 def mmdl_gen_ponoff_get():
-    logging.debug("%s", mmdl_gen_ponoff_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_ponoff_get'])
@@ -523,7 +523,7 @@ def mmdl_gen_ponoff_get():
 
 
 def mmdl_gen_ponoff_set(on_power_up, ack=True):
-    logging.debug("%s", mmdl_gen_ponoff_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BB", ack, on_power_up))
@@ -541,7 +541,7 @@ def mmdl_gen_ponoff_set(on_power_up, ack=True):
 
 
 def mmdl_gen_plvl_get():
-    logging.debug("%s", mmdl_gen_plvl_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_plvl_get'])
@@ -555,7 +555,7 @@ def mmdl_gen_plvl_get():
 
 
 def mmdl_gen_plvl_set(power_lvl, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_gen_plvl_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, power_lvl))
@@ -580,7 +580,7 @@ def mmdl_gen_plvl_set(power_lvl, tt=None, delay=None, ack=True):
 
 
 def mmdl_gen_plvl_last_get():
-    logging.debug("%s", mmdl_gen_plvl_last_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_plvl_last_get'])
@@ -594,7 +594,7 @@ def mmdl_gen_plvl_last_get():
 
 
 def mmdl_gen_plvl_dflt_get():
-    logging.debug("%s", mmdl_gen_plvl_dflt_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_plvl_dflt_get'])
@@ -608,7 +608,7 @@ def mmdl_gen_plvl_dflt_get():
 
 
 def mmdl_gen_plvl_dflt_set(dflt, ack=True):
-    logging.debug("%s", mmdl_gen_plvl_dflt_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, dflt))
@@ -626,7 +626,7 @@ def mmdl_gen_plvl_dflt_set(dflt, ack=True):
 
 
 def mmdl_gen_plvl_range_get():
-    logging.debug("%s", mmdl_gen_plvl_range_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_plvl_range_get'])
@@ -641,7 +641,7 @@ def mmdl_gen_plvl_range_get():
 
 
 def mmdl_gen_plvl_range_set(range_min, range_max, ack=True):
-    logging.debug("%s", mmdl_gen_plvl_range_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHH", ack, range_min, range_max))
@@ -661,7 +661,7 @@ def mmdl_gen_plvl_range_set(range_min, range_max, ack=True):
 
 
 def mmdl_gen_battery_get():
-    logging.debug("%s", mmdl_gen_battery_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_battery_get'])
@@ -679,7 +679,7 @@ def mmdl_gen_battery_get():
 
 
 def mmdl_gen_loc_global_get():
-    logging.debug("%s", mmdl_gen_loc_global_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_loc_global_get'])
@@ -692,7 +692,7 @@ def mmdl_gen_loc_global_get():
 
 
 def mmdl_gen_loc_local_get():
-    logging.debug("%s", mmdl_gen_loc_local_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['gen_loc_local_get'])
@@ -707,7 +707,7 @@ def mmdl_gen_loc_local_get():
 
 
 def mmdl_gen_loc_global_set(lat, lon, alt, ack=True):
-    logging.debug("%s", mmdl_gen_loc_global_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BIIH", ack, lat, lon, alt))
@@ -725,7 +725,7 @@ def mmdl_gen_loc_global_set(lat, lon, alt, ack=True):
 
 
 def mmdl_gen_loc_local_set(north, east, alt, floor, location_uncert, ack=True):
-    logging.debug("%s", mmdl_gen_loc_local_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHHBH", ack, north,
@@ -746,7 +746,7 @@ def mmdl_gen_loc_local_set(north, east, alt, floor, location_uncert, ack=True):
 
 
 def mmdl_gen_props_get(kind, prop_id=0):
-    logging.debug("%s", mmdl_gen_props_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", kind, prop_id))
@@ -760,7 +760,7 @@ def mmdl_gen_props_get(kind, prop_id=0):
 
 
 def mmdl_gen_prop_get(kind, prop_id):
-    logging.debug("%s", mmdl_gen_prop_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", kind, prop_id))
@@ -777,7 +777,7 @@ def mmdl_gen_prop_get(kind, prop_id):
 
 
 def mmdl_gen_prop_set(kind, prop_id, access, value, ack=True):
-    logging.debug("%s", mmdl_gen_prop_set.__name__)
+    logging.debug("")
 
     payload = binascii.unhexlify(value)
     payload_len = len(payload)
@@ -802,7 +802,7 @@ def mmdl_gen_prop_set(kind, prop_id, access, value, ack=True):
 
 
 def mmdl_sensor_desc_get(sensor_id=None):
-    logging.debug("%s", mmdl_sensor_desc_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     if sensor_id:
@@ -821,7 +821,7 @@ def mmdl_sensor_desc_get(sensor_id=None):
 
 
 def mmdl_sensor_get(sensor_id):
-    logging.debug("%s", mmdl_sensor_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     if sensor_id:
@@ -862,7 +862,7 @@ def mmdl_sensor_get(sensor_id):
 
 
 def mmdl_sensor_cadence_get(sensor_id):
-    logging.debug("%s", mmdl_sensor_cadence_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<H", sensor_id))
@@ -879,7 +879,7 @@ def mmdl_sensor_cadence_get(sensor_id):
 
 
 def mmdl_sensor_cadence_set(sensor_id, payload, ack=True):
-    logging.debug("%s", mmdl_sensor_cadence_set.__name__)
+    logging.debug("")
 
     payload = binascii.unhexlify(payload)
     payload_len = len(payload)
@@ -898,7 +898,7 @@ def mmdl_sensor_cadence_set(sensor_id, payload, ack=True):
 
 
 def mmdl_sensor_settings_get(sensor_id):
-    logging.debug("%s", mmdl_sensor_settings_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<H", sensor_id))
@@ -914,7 +914,7 @@ def mmdl_sensor_settings_get(sensor_id):
 
 
 def mmdl_sensor_setting_get(sensor_id, setting_id):
-    logging.debug("%s", mmdl_sensor_setting_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<HH", sensor_id, setting_id))
@@ -923,7 +923,7 @@ def mmdl_sensor_setting_get(sensor_id, setting_id):
 
 
 def mmdl_sensor_setting_set(sensor_id, setting_id, setting_raw, ack=True):
-    logging.debug("%s", mmdl_sensor_setting_set.__name__)
+    logging.debug("")
 
     payload = binascii.unhexlify(setting_raw)
     payload_len = len(payload)
@@ -937,7 +937,7 @@ def mmdl_sensor_setting_set(sensor_id, setting_id, setting_raw, ack=True):
 
 
 def mmdl_sensor_column_get(sensor_id, raw_value):
-    logging.debug("%s", mmdl_sensor_column_get.__name__)
+    logging.debug("")
 
     payload = binascii.unhexlify(raw_value)
     payload_len = len(payload)
@@ -959,7 +959,7 @@ def mmdl_sensor_column_get(sensor_id, raw_value):
 
 
 def mmdl_sensor_series_get(sensor_id, raw_values):
-    logging.debug("%s", mmdl_sensor_series_get.__name__)
+    logging.debug("")
 
     payload = binascii.unhexlify(raw_values)
     payload_len = len(payload)
@@ -980,7 +980,7 @@ def mmdl_sensor_series_get(sensor_id, raw_values):
 
 
 def mmdl_time_get():
-    logging.debug("%s", mmdl_time_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['time_get'])
@@ -1002,7 +1002,7 @@ def mmdl_time_get():
 
 
 def mmdl_time_set(tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset):
-    logging.debug("%s", mmdl_time_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1029,7 +1029,7 @@ def mmdl_time_set(tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset):
 
 
 def mmdl_time_role_get():
-    logging.debug("%s", mmdl_time_role_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['time_role_get'])
@@ -1042,7 +1042,7 @@ def mmdl_time_role_get():
 
 
 def mmdl_time_role_set(role):
-    logging.debug("%s", mmdl_time_role_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<B", role))
@@ -1057,7 +1057,7 @@ def mmdl_time_role_set(role):
 
 
 def mmdl_time_zone_get():
-    logging.debug("%s", mmdl_time_zone_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['time_zone_get'])
@@ -1072,7 +1072,7 @@ def mmdl_time_zone_get():
 
 
 def mmdl_time_zone_set(new_offset, timestamp):
-    logging.debug("%s", mmdl_time_zone_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<hQ", new_offset, timestamp))
@@ -1088,7 +1088,7 @@ def mmdl_time_zone_set(new_offset, timestamp):
 
 
 def mmdl_time_tai_utc_delta_get():
-    logging.debug("%s", mmdl_time_tai_utc_delta_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['time_tai_utc_delta_get'])
@@ -1103,7 +1103,7 @@ def mmdl_time_tai_utc_delta_get():
 
 
 def mmdl_time_tai_utc_delta_set(delta_new, timestamp):
-    logging.debug("%s", mmdl_time_tai_utc_delta_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<hQ", delta_new, timestamp))
@@ -1120,7 +1120,7 @@ def mmdl_time_tai_utc_delta_set(delta_new, timestamp):
 
 
 def mmdl_light_lightness_get():
-    logging.debug("%s", mmdl_light_lightness_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_lightness_get'])
@@ -1133,7 +1133,7 @@ def mmdl_light_lightness_get():
 
 
 def mmdl_light_lightness_set(lightness, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_light_lightness_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, lightness))
@@ -1159,7 +1159,7 @@ def mmdl_light_lightness_set(lightness, tt=None, delay=None, ack=True):
 
 
 def mmdl_light_lightness_linear_get():
-    logging.debug("%s", mmdl_light_lightness_linear_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
@@ -1175,7 +1175,7 @@ def mmdl_light_lightness_linear_get():
 
 
 def mmdl_light_lightness_linear_set(lightness_linear, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_light_lightness_linear_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, lightness_linear))
@@ -1202,7 +1202,7 @@ def mmdl_light_lightness_linear_set(lightness_linear, tt=None, delay=None, ack=T
 
 
 def mmdl_light_lightness_last_get():
-    logging.debug("%s", mmdl_light_lightness_last_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_lightness_last_get'])
@@ -1217,7 +1217,7 @@ def mmdl_light_lightness_last_get():
 
 
 def mmdl_light_lightness_default_get():
-    logging.debug("%s", mmdl_light_lightness_default_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
@@ -1233,7 +1233,7 @@ def mmdl_light_lightness_default_get():
 
 
 def mmdl_light_lightness_default_set(dflt, ack=True):
-    logging.debug("%s", mmdl_light_lightness_default_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, dflt))
@@ -1252,7 +1252,7 @@ def mmdl_light_lightness_default_set(dflt, ack=True):
 
 
 def mmdl_light_lightness_range_get():
-    logging.debug("%s", mmdl_light_lightness_range_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
@@ -1267,7 +1267,7 @@ def mmdl_light_lightness_range_get():
 
 
 def mmdl_light_lightness_range_set(min_val, max_val, ack=True):
-    logging.debug("%s", mmdl_light_lightness_range_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHH", ack, min_val, max_val))
@@ -1285,7 +1285,7 @@ def mmdl_light_lightness_range_set(min_val, max_val, ack=True):
 
 
 def mmdl_light_lc_mode_get():
-    logging.debug("%s", mmdl_light_lc_mode_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_lc_mode_get'])
@@ -1298,7 +1298,7 @@ def mmdl_light_lc_mode_get():
 
 
 def mmdl_light_lc_mode_set(mode, ack=True):
-    logging.debug("%s", mmdl_light_lc_mode_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BB", ack, mode))
@@ -1315,7 +1315,7 @@ def mmdl_light_lc_mode_set(mode, ack=True):
 
 
 def mmdl_light_lc_occupancy_mode_get():
-    logging.debug("%s", mmdl_light_lc_occupancy_mode_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
@@ -1329,7 +1329,7 @@ def mmdl_light_lc_occupancy_mode_get():
 
 
 def mmdl_light_lc_occupancy_mode_set(occupancy_mode, ack=True):
-    logging.debug("%s", mmdl_light_lc_occupancy_mode_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BB", ack, occupancy_mode))
@@ -1346,7 +1346,7 @@ def mmdl_light_lc_occupancy_mode_set(occupancy_mode, ack=True):
 
 
 def mmdl_light_lc_light_onoff_mode_get():
-    logging.debug("%s", mmdl_light_lc_light_onoff_mode_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
@@ -1360,7 +1360,7 @@ def mmdl_light_lc_light_onoff_mode_get():
 
 
 def mmdl_light_lc_light_onoff_mode_set(light_onoff_mode, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_light_lc_light_onoff_mode_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BB", ack, light_onoff_mode))
@@ -1387,7 +1387,7 @@ def mmdl_light_lc_light_onoff_mode_set(light_onoff_mode, tt=None, delay=None, ac
 
 
 def mmdl_light_lc_property_get(prop_id):
-    logging.debug("%s", mmdl_light_lc_property_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<H", prop_id))
@@ -1404,7 +1404,7 @@ def mmdl_light_lc_property_get(prop_id):
 
 
 def mmdl_light_lc_property_set(prop_id, prop_val, ack=True):
-    logging.debug("%s", mmdl_light_lc_property_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHH", ack, prop_id, prop_val))
@@ -1422,7 +1422,7 @@ def mmdl_light_lc_property_set(prop_id, prop_val, ack=True):
 
 
 def mmdl_sensor_data_set(sensor_id, raw_values):
-    logging.debug("%s", mmdl_sensor_data_set.__name__)
+    logging.debug("")
 
     payload_len = len(raw_values)
 
@@ -1434,7 +1434,7 @@ def mmdl_sensor_data_set(sensor_id, raw_values):
 
 
 def mmdl_light_ctl_states_get():
-    logging.debug("%s", mmdl_light_ctl_states_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_ctl_states_get'])
@@ -1449,7 +1449,7 @@ def mmdl_light_ctl_states_get():
 
 
 def mmdl_light_ctl_states_set(ctl_lightness, ctl_temperature, ctl_delta_uv, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_light_ctl_states_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHh", ack, ctl_lightness,
@@ -1480,7 +1480,7 @@ def mmdl_light_ctl_states_set(ctl_lightness, ctl_temperature, ctl_delta_uv, tt=N
 
 
 def mmdl_light_ctl_temperature_get():
-    logging.debug("%s", mmdl_light_ctl_temperature_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
@@ -1496,7 +1496,7 @@ def mmdl_light_ctl_temperature_get():
 
 
 def mmdl_light_ctl_temperature_set(ctl_temperature, ctl_delta_uv, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_light_ctl_temperature_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHh", ack, ctl_temperature, ctl_delta_uv))
@@ -1526,7 +1526,7 @@ def mmdl_light_ctl_temperature_set(ctl_temperature, ctl_delta_uv, tt=None, delay
 
 
 def mmdl_light_ctl_default_get():
-    logging.debug("%s", mmdl_light_ctl_default_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1540,7 +1540,7 @@ def mmdl_light_ctl_default_get():
 
 
 def mmdl_light_ctl_default_set(ctl_lightness, ctl_temperature, ctl_delta_uv, ack=True):
-    logging.debug("%s", mmdl_light_ctl_default_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHh", ack, ctl_lightness,
@@ -1559,7 +1559,7 @@ def mmdl_light_ctl_default_set(ctl_lightness, ctl_temperature, ctl_delta_uv, ack
 
 
 def mmdl_light_ctl_temp_range_get():
-    logging.debug("%s", mmdl_light_ctl_temp_range_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_ctl_temp_range_get'])
@@ -1572,7 +1572,7 @@ def mmdl_light_ctl_temp_range_get():
 
 
 def mmdl_light_ctl_temp_range_set(range_min, range_max, ack=True):
-    logging.debug("%s", mmdl_light_ctl_temp_range_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHH", ack, range_min, range_max))
@@ -1589,7 +1589,7 @@ def mmdl_light_ctl_temp_range_set(range_min, range_max, ack=True):
 
 
 def mmdl_scene_get():
-    logging.debug("%s", mmdl_scene_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scene_get'])
@@ -1603,7 +1603,7 @@ def mmdl_scene_get():
 
 
 def mmdl_scene_register_get():
-    logging.debug("%s", mmdl_scene_register_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scene_register_get'])
@@ -1616,7 +1616,7 @@ def mmdl_scene_register_get():
 
 
 def mmdl_scene_store_procedure(scene_num, ack=True):
-    logging.debug("%s", mmdl_scene_store_procedure.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, scene_num))
@@ -1633,7 +1633,7 @@ def mmdl_scene_store_procedure(scene_num, ack=True):
 
 
 def mmdl_scene_recall(scene_num, tt=None, delay=None, ack=True):
-    logging.debug("%s", mmdl_scene_recall.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, scene_num))
@@ -1659,7 +1659,7 @@ def mmdl_scene_recall(scene_num, tt=None, delay=None, ack=True):
 
 
 def mmdl_light_xyl_get():
-    logging.debug("%s", mmdl_light_xyl_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_get'])
@@ -1672,7 +1672,7 @@ def mmdl_light_xyl_get():
 
 
 def mmdl_light_xyl_set(lightness, x_value, y_value, tt, delay, ack=True):
-    logging.debug("%s", mmdl_light_xyl_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHH", ack, lightness, x_value, y_value))
@@ -1693,7 +1693,7 @@ def mmdl_light_xyl_set(lightness, x_value, y_value, tt, delay, ack=True):
 
 
 def mmdl_light_xyl_target_get():
-    logging.debug("%s", mmdl_light_xyl_target_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_target_get'])
@@ -1706,7 +1706,7 @@ def mmdl_light_xyl_target_get():
 
 
 def mmdl_light_xyl_default_get():
-    logging.debug("%s", mmdl_light_xyl_default_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_default_get'])
@@ -1719,7 +1719,7 @@ def mmdl_light_xyl_default_get():
 
 
 def mmdl_light_xyl_default_set(lightness, x_value, y_value, ack=True):
-    logging.debug("%s", mmdl_light_xyl_default_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHH", ack, lightness, x_value, y_value))
@@ -1735,7 +1735,7 @@ def mmdl_light_xyl_default_set(lightness, x_value, y_value, ack=True):
 
 
 def mmdl_light_xyl_range_get():
-    logging.debug("%s", mmdl_light_xyl_range_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_range_get'])
@@ -1748,7 +1748,7 @@ def mmdl_light_xyl_range_get():
 
 
 def mmdl_light_xyl_range_set(lmin_x, min_y, max_x, max_y, ack=True):
-    logging.debug("%s", mmdl_light_xyl_range_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHHH", ack, lmin_x, min_y, max_x, max_y))
@@ -1764,7 +1764,7 @@ def mmdl_light_xyl_range_set(lmin_x, min_y, max_x, max_y, ack=True):
 
 
 def mmdl_light_hsl_get():
-    logging.debug("%s", mmdl_light_hsl_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_get'])
@@ -1777,7 +1777,7 @@ def mmdl_light_hsl_get():
 
 
 def mmdl_light_hsl_set(lightness, hue, saturation, tt, delay, ack=True):
-    logging.debug("%s", mmdl_light_hsl_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHH", ack, lightness, hue, saturation))
@@ -1798,7 +1798,7 @@ def mmdl_light_hsl_set(lightness, hue, saturation, tt, delay, ack=True):
 
 
 def mmdl_light_hsl_target_get():
-    logging.debug("%s", mmdl_light_hsl_target_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_target_get'])
@@ -1811,7 +1811,7 @@ def mmdl_light_hsl_target_get():
 
 
 def mmdl_light_hsl_default_get():
-    logging.debug("%s", mmdl_light_hsl_default_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_default_get'])
@@ -1824,7 +1824,7 @@ def mmdl_light_hsl_default_get():
 
 
 def mmdl_light_hsl_default_set(lightness, hue, saturation, ack=True):
-    logging.debug("%s", mmdl_light_hsl_default_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHH", ack, lightness, hue, saturation))
@@ -1840,7 +1840,7 @@ def mmdl_light_hsl_default_set(lightness, hue, saturation, ack=True):
 
 
 def mmdl_light_hsl_range_get():
-    logging.debug("%s", mmdl_light_hsl_range_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_range_get'])
@@ -1853,7 +1853,7 @@ def mmdl_light_hsl_range_get():
 
 
 def mmdl_light_hsl_range_set(hue_min, saturation_min, hue_max, saturation_max, ack=True):
-    logging.debug("%s", mmdl_light_hsl_range_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BHHHH", ack, hue_min, saturation_min, hue_max, saturation_max))
@@ -1869,7 +1869,7 @@ def mmdl_light_hsl_range_set(hue_min, saturation_min, hue_max, saturation_max, a
 
 
 def mmdl_light_hsl_hue_get():
-    logging.debug("%s", mmdl_light_hsl_hue_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_hue_get'])
@@ -1882,7 +1882,7 @@ def mmdl_light_hsl_hue_get():
 
 
 def mmdl_light_hsl_hue_set(hue, tt, delay, ack=True):
-    logging.debug("%s", mmdl_light_hsl_hue_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, hue))
@@ -1905,7 +1905,7 @@ def mmdl_light_hsl_hue_set(hue, tt, delay, ack=True):
 
 
 def mmdl_light_hsl_saturation_get():
-    logging.debug("%s", mmdl_light_hsl_saturation_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_saturation_get'])
@@ -1918,7 +1918,7 @@ def mmdl_light_hsl_saturation_get():
 
 
 def mmdl_light_hsl_saturation_set(hue, tt, delay, ack=True):
-    logging.debug("%s", mmdl_light_hsl_saturation_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<BH", ack, hue))
@@ -1941,7 +1941,7 @@ def mmdl_light_hsl_saturation_set(hue, tt, delay, ack=True):
 
 
 def mmdl_scheduler_get():
-    logging.debug("%s", mmdl_scheduler_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scheduler_get'])
@@ -1954,7 +1954,7 @@ def mmdl_scheduler_get():
 
 
 def mmdl_scheduler_action_get(index):
-    logging.debug("%s", mmdl_scheduler_action_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(struct.pack("<B", index))
@@ -1972,7 +1972,7 @@ def mmdl_scheduler_action_get(index):
 
 def mmdl_scheduler_action_set(index, year, month, day, hour, minute, second, day_of_week, action, transition_time,
                               scene_num, ack=True):
-    logging.debug("%s", mmdl_scheduler_action_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray(
@@ -1991,7 +1991,7 @@ def mmdl_scheduler_action_set(index, year, month, day, hour, minute, second, day
 
 
 def mmdl_dfu_info_get(limit):
-    logging.debug("%s", mmdl_dfu_info_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     stack = get_stack()
@@ -2002,7 +2002,7 @@ def mmdl_dfu_info_get(limit):
 
 
 def mmdl_blob_info_get(addrs):
-    logging.debug("%s", mmdl_blob_info_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2014,7 +2014,7 @@ def mmdl_blob_info_get(addrs):
 
 
 def mmdl_dfu_update_firmware_check(index, slot_idx, slot_size, fwid, metadata):
-    logging.debug("%s", mmdl_dfu_update_firmware_check.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2038,7 +2038,7 @@ def mmdl_dfu_update_firmware_check(index, slot_idx, slot_size, fwid, metadata):
 
 
 def mmdl_dfu_update_firmware_get():
-    logging.debug("%s", mmdl_dfu_update_firmware_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2049,7 +2049,7 @@ def mmdl_dfu_update_firmware_get():
 
 
 def mmdl_dfu_update_firmware_cancel():
-    logging.debug("%s", mmdl_dfu_update_firmware_cancel.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2057,7 +2057,7 @@ def mmdl_dfu_update_firmware_cancel():
 
 
 def mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk_size, fwid, metadata):
-    logging.debug("%s", mmdl_dfu_update_firmware_start.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2077,7 +2077,7 @@ def mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk
 
 
 def mmdl_blob_srv_recv(id_mmdl, timeout, ttl):
-    logging.debug("%s", mmdl_blob_srv_recv.__name__)
+    logging.debug("")
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<QHB", id_mmdl, timeout, ttl))
@@ -2086,7 +2086,7 @@ def mmdl_blob_srv_recv(id_mmdl, timeout, ttl):
 
 
 def mmdl_blob_transfer_start(id_mmdl, block_size, chunk_size, timeout, ttl, size):
-    logging.debug("%s", mmdl_blob_transfer_start.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2096,7 +2096,7 @@ def mmdl_blob_transfer_start(id_mmdl, block_size, chunk_size, timeout, ttl, size
 
 
 def mmdl_blob_transfer_cancel():
-    logging.debug("%s", mmdl_blob_transfer_cancel.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2104,7 +2104,7 @@ def mmdl_blob_transfer_cancel():
 
 
 def mmdl_blob_transfer_get():
-    logging.debug("%s", mmdl_blob_transfer_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2112,7 +2112,7 @@ def mmdl_blob_transfer_get():
 
 
 def mmdl_blob_srv_cancel():
-    logging.debug("%s", mmdl_blob_srv_cancel.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2120,7 +2120,7 @@ def mmdl_blob_srv_cancel():
 
 
 def mmdl_dfu_update_firmware_apply():
-    logging.debug("%s", mmdl_dfu_update_firmware_apply.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -2128,7 +2128,7 @@ def mmdl_dfu_update_firmware_apply():
 
 
 def mmdl_dfu_srv_apply():
-    logging.debug("%s", mmdl_dfu_srv_apply.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 

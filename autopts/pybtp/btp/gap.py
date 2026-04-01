@@ -174,7 +174,7 @@ GAP = {
 
 
 def gap_new_settings_ev_(gap, data, data_len):
-    logging.debug("%s %r", gap_new_settings_ev_.__name__, data)
+    logging.debug("%r", data)
 
     data_fmt = '<I'
 
@@ -184,7 +184,7 @@ def gap_new_settings_ev_(gap, data, data_len):
 
 
 def gap_device_found_ev_(gap, data, data_len):
-    logging.debug("%s %r", gap_device_found_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBBH'
     if len(data) < struct.calcsize(fmt):
@@ -206,7 +206,7 @@ def gap_device_found_ev_(gap, data, data_len):
 
 
 def gap_connected_ev_(gap, data, data_len):
-    logging.debug("%s %r", gap_connected_ev_.__name__, data)
+    logging.debug("%r", data)
 
     hdr_fmt = '<B6sHHH'
 
@@ -219,7 +219,7 @@ def gap_connected_ev_(gap, data, data_len):
 
 
 def gap_disconnected_ev_(gap, data, data_len):
-    logging.debug("%s %r", gap_disconnected_ev_.__name__, data)
+    logging.debug("%r", data)
 
     hdr_fmt = '<B6s'
     addr_type, addr = struct.unpack_from(hdr_fmt, data)
@@ -229,7 +229,7 @@ def gap_disconnected_ev_(gap, data, data_len):
 
 
 def gap_passkey_disp_ev_(gap, data, data_len):
-    logging.debug("%s %r", gap_passkey_disp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sI'
 
@@ -246,7 +246,7 @@ def gap_passkey_disp_ev_(gap, data, data_len):
 
 
 def gap_identity_resolved_ev_(gap, data, data_len):
-    logging.debug("%s", gap_identity_resolved_ev_.__name__)
+    logging.debug("")
 
     logging.debug("received %r", data)
 
@@ -270,7 +270,7 @@ def gap_identity_resolved_ev_(gap, data, data_len):
 
 
 def gap_conn_param_update_ev_(gap, data, data_len):
-    logging.debug("%s", gap_conn_param_update_ev_.__name__)
+    logging.debug("")
 
     logging.debug("received %r", data)
 
@@ -291,7 +291,7 @@ def gap_conn_param_update_ev_(gap, data, data_len):
 
 
 def gap_sec_level_changed_ev_(gap, data, data_len):
-    logging.debug("%s", gap_sec_level_changed_ev_.__name__)
+    logging.debug("")
 
     logging.debug("received %r", data)
 
@@ -308,7 +308,7 @@ def gap_sec_level_changed_ev_(gap, data, data_len):
 
 
 def gap_pairing_consent_ev_(gap, data, data_len):
-    logging.debug("%s", gap_pairing_consent_ev_.__name__)
+    logging.debug("")
 
     logging.debug("received %r", data)
 
@@ -324,7 +324,7 @@ def gap_pairing_consent_ev_(gap, data, data_len):
 
 def gap_pairing_failed_ev_(gap, data, data_len):
     stack = get_stack()
-    logging.debug("%s", gap_pairing_failed_ev_.__name__)
+    logging.debug("")
 
     logging.debug("received %r", data)
 
@@ -341,7 +341,7 @@ def gap_pairing_failed_ev_(gap, data, data_len):
 
 
 def gap_bond_lost_ev_(gap, data, data_len):
-    logging.debug("%s", gap_bond_lost_ev_.__name__)
+    logging.debug("")
 
     logging.debug("received %r", data)
 
@@ -357,33 +357,33 @@ def gap_bond_lost_ev_(gap, data, data_len):
 
 
 def gap_padv_sync_established_ev_(gap, data, data_len):
-    logging.debug("%s", gap_padv_sync_established_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
 
     stack.gap.periodic_sync_established_rxed = True
 
 
 def gap_padv_sync_lost_ev_(gap, data, data_len):
-    logging.debug("%s", gap_padv_sync_lost_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
 
     stack.gap.periodic_sync_lost_rxed = True
 
 
 def gap_padv_report_ev_(gap, data, data_len):
-    logging.debug("%s", gap_padv_report_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
     stack.gap.periodic_report_rxed = True
 
 
 def gap_padv_transfer_received_ev_(gap, data, data_len):
-    logging.debug("%s", gap_padv_transfer_received_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
     stack.gap.periodic_transfer_received = True
 
 
 def gap_big_sync_established_ev_(gap, data, data_len):
-    logging.debug("%s", gap_big_sync_established_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
 
     fmt = '<B6sIBBIBHH'
@@ -397,7 +397,7 @@ def gap_big_sync_established_ev_(gap, data, data_len):
 
 
 def gap_big_sync_lost_ev_(gap, data, data_len):
-    logging.debug("%s", gap_big_sync_lost_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
 
     stack.gap.big_sync_established = False
@@ -407,7 +407,7 @@ def gap_big_sync_lost_ev_(gap, data, data_len):
 
 
 def gap_bis_data_path_setup_ev_(gap, data, data_len):
-    logging.debug("%s", gap_bis_data_path_setup_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
 
     fmt = '<B6sB'
@@ -417,7 +417,7 @@ def gap_bis_data_path_setup_ev_(gap, data, data_len):
 
 
 def gap_bis_stream_received_ev_(gap, data, data_len):
-    logging.debug("%s", gap_bis_stream_received_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
 
     fmt = '<B6sBBIHB'
@@ -439,7 +439,7 @@ def gap_bis_stream_received_ev_(gap, data, data_len):
 
 
 def gap_passkey_confirm_req_ev_(gap, data, data_len):
-    logging.debug("%s", gap_passkey_confirm_req_ev_.__name__)
+    logging.debug("")
     iutctl = get_iut()
 
     fmt = '<B6sI'
@@ -457,7 +457,7 @@ def gap_passkey_confirm_req_ev_(gap, data, data_len):
 
 
 def gap_passkey_entry_req_ev_(gap, data, data_len):
-    logging.debug("%s", gap_passkey_entry_req_ev_.__name__)
+    logging.debug("")
     iutctl = get_iut()
 
     fmt = '<B6s'
@@ -471,7 +471,7 @@ def gap_passkey_entry_req_ev_(gap, data, data_len):
 
 def gap_encryption_change_ev_(gap, data, data_len):
     stack = get_stack()
-    logging.debug("%s", gap_encryption_change_ev_.__name__)
+    logging.debug("")
 
     logging.debug("enc change received %r", data)
 
@@ -488,7 +488,7 @@ def gap_encryption_change_ev_(gap, data, data_len):
 
 
 def gap_peer_car_status_ev_(gap, data, data_len):
-    logging.debug("%s", gap_peer_car_status_ev_.__name__)
+    logging.debug("")
     stack = get_stack()
     fmt = '<B6sB'
     _addr_t, _addr, _car = struct.unpack_from(fmt, data)
@@ -502,7 +502,7 @@ def gap_peer_car_status_ev_(gap, data, data_len):
 
 def gap_subrate_change_ev_(gap, data, data_len):
     stack = get_stack()
-    logging.debug("%s", gap_subrate_change_ev_.__name__)
+    logging.debug("")
 
     logging.debug("Subrate change received %r", data)
 
@@ -524,7 +524,7 @@ def gap_subrate_change_ev_(gap, data, data_len):
 
 
 def gap_padv_biginfo_ev_(gap, data, data_len):
-    logging.debug("%s %r", gap_padv_biginfo_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sHBBBHBBBHIHBBB'
     if len(data) < struct.calcsize(fmt):
@@ -573,7 +573,7 @@ GAP_EV = {
 
 
 def __gap_current_settings_update(settings):
-    logging.debug("%s %r", __gap_current_settings_update.__name__, settings)
+    logging.debug("%r", settings)
     if isinstance(settings, tuple):
         fmt = '<I'
         if len(settings[0]) != struct.calcsize(fmt):
@@ -627,7 +627,7 @@ def gap_wait_for_sec_lvl_change(level, timeout=30):
 
 
 def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
-    logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
+    logging.debug("%r %r", ad, sd)
 
     if ad is None:
         ad = {}
@@ -690,7 +690,7 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
 
 
 def gap_adv_off():
-    logging.debug("%s", gap_adv_off.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -707,7 +707,7 @@ def gap_adv_off():
 
 
 def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
-    logging.debug("%s %r %r %r %r", gap_direct_adv_on.__name__, addr,
+    logging.debug("%r %r %r %r", addr,
                   addr_type, high_duty, peer_rpa)
 
     stack = get_stack()
@@ -739,7 +739,7 @@ def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
 
 
 def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_identity_address):
-    logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
+    logging.debug("%r %r", bd_addr, bd_addr_type)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -763,7 +763,7 @@ def set_filter_accept_list(address_list=None):
         address_list -- address type and address as tuples:
             address_list = [(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')]
     """
-    logging.debug("%s %s", set_filter_accept_list.__name__, address_list)
+    logging.debug("%s", address_list)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -792,7 +792,7 @@ def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
     Arguments:
     description -- description provided in PTS MMI.
     """
-    logging.debug("%s %s", gap_conn.__name__, description)
+    logging.debug("%s", description)
     iutctl = get_iut()
 
     bd_addr = re.search("[a-fA-F0-9]{12}", description).group(0)
@@ -811,7 +811,7 @@ def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
 
 
 def gap_disconn(bd_addr=None, bd_addr_type=None):
-    logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
+    logging.debug("%r %r", bd_addr, bd_addr_type)
     iutctl = get_iut()
 
     stack = get_stack()
@@ -826,7 +826,7 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
 
 
 def verify_not_connected(description):
-    logging.debug("%s", verify_not_connected.__name__)
+    logging.debug("")
     stack = get_stack()
 
     gap_wait_for_connection(5)
@@ -837,7 +837,7 @@ def verify_not_connected(description):
 
 
 def gap_set_io_cap(io_cap):
-    logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
+    logging.debug("%r", io_cap)
     iutctl = get_iut()
     stack = get_stack()
     stack.gap.io_cap = io_cap
@@ -848,7 +848,7 @@ def gap_set_io_cap(io_cap):
 
 
 def gap_pair(bd_addr=None, bd_addr_type=None):
-    logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
+    logging.debug("%r %r", bd_addr, bd_addr_type)
     iutctl = get_iut()
 
     gap_wait_for_connection()
@@ -867,7 +867,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
 
 def gap_pair_v2(bd_addr=None, bd_addr_type=None, mode=defs.BTP_GAP_CMD_PAIR_V2_MODE_ANY,
                 level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_ANY, flags=defs.BTP_GAP_CMD_PAIR_V2_FLAG_NONE):
-    logging.debug("%s %r %r %r %r %r", gap_pair_v2.__name__, bd_addr, bd_addr_type, mode, level,
+    logging.debug("%r %r %r %r %r", bd_addr, bd_addr_type, mode, level,
                   flags)
     iutctl = get_iut()
 
@@ -889,7 +889,7 @@ def gap_pair_v2(bd_addr=None, bd_addr_type=None, mode=defs.BTP_GAP_CMD_PAIR_V2_M
 
 
 def gap_unpair(bd_addr=None, bd_addr_type=None):
-    logging.debug("%s %r %r", gap_unpair.__name__, bd_addr, bd_addr_type)
+    logging.debug("%r %r", bd_addr, bd_addr_type)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -905,7 +905,7 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
 
 
 def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
-    logging.debug("%s %r %r", gap_passkey_entry_rsp.__name__, bd_addr,
+    logging.debug("%r %r", bd_addr,
                   bd_addr_type)
     iutctl = get_iut()
 
@@ -927,7 +927,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
 
 
 def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
-    logging.debug("%s %r %r", gap_passkey_confirm_rsp.__name__, bd_addr,
+    logging.debug("%r %r", bd_addr,
                   bd_addr_type)
     iutctl = get_iut()
 
@@ -950,7 +950,7 @@ def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
 
 
 def gap_reset():
-    logging.debug("%s", gap_reset.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*GAP['reset'])
@@ -959,7 +959,7 @@ def gap_reset():
 
 
 def gap_set_conn():
-    logging.debug("%s", gap_set_conn.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -976,7 +976,7 @@ def gap_set_conn():
 
 
 def gap_set_nonconn():
-    logging.debug("%s", gap_set_nonconn.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -993,7 +993,7 @@ def gap_set_nonconn():
 
 
 def gap_set_nondiscov():
-    logging.debug("%s", gap_set_nondiscov.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1010,7 +1010,7 @@ def gap_set_nondiscov():
 
 
 def gap_set_gendiscov():
-    logging.debug("%s", gap_set_gendiscov.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1021,7 +1021,7 @@ def gap_set_gendiscov():
 
 
 def gap_set_limdiscov():
-    logging.debug("%s", gap_set_limdiscov.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1032,7 +1032,7 @@ def gap_set_limdiscov():
 
 
 def gap_set_powered_on():
-    logging.debug("%s", gap_set_powered_on.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1043,7 +1043,7 @@ def gap_set_powered_on():
 
 
 def gap_set_powered_off():
-    logging.debug("%s", gap_set_powered_off.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1054,7 +1054,7 @@ def gap_set_powered_off():
 
 
 def gap_set_bondable_on():
-    logging.debug("%s", gap_set_bondable_on.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1071,7 +1071,7 @@ def gap_set_bondable_on():
 
 
 def gap_set_bondable_off():
-    logging.debug("%s", gap_set_bondable_off.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1097,7 +1097,7 @@ def gap_start_discov(transport='le', discov_type='active', mode='general'):
     mode: <general, limited, observe>
 
     """
-    logging.debug("%s", gap_start_discov.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1125,7 +1125,7 @@ def gap_start_discov(transport='le', discov_type='active', mode='general'):
 
 
 def gap_stop_discov():
-    logging.debug("%s", gap_stop_discov.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1138,7 +1138,7 @@ def gap_stop_discov():
 
 
 def gap_read_ctrl_info():
-    logging.debug("%s", gap_read_ctrl_info.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1173,7 +1173,7 @@ def gap_read_ctrl_info():
 
 
 def gap_command_rsp_succ(op=None):
-    logging.debug("%s", gap_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1187,7 +1187,7 @@ def gap_command_rsp_succ(op=None):
 
 def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
                           conn_itvl_max, conn_latency, supervision_timeout):
-    logging.debug("%s %r %r 0x%04x 0x%04x 0x%04x 0x%04x", gap_conn_param_update.__name__,
+    logging.debug("%r %r 0x%04x 0x%04x 0x%04x 0x%04x",
                   bd_addr, bd_addr_type, conn_itvl_min, conn_itvl_max, conn_latency, supervision_timeout)
     iutctl = get_iut()
 
@@ -1216,7 +1216,7 @@ def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
 
 
 def gap_oob_legacy_set_data(oob_data):
-    logging.debug("%s %r", gap_oob_legacy_set_data.__name__, oob_data)
+    logging.debug("%r", oob_data)
     iutctl = get_iut()
 
     data_ba = hex_str_to_le_bytes(oob_data)
@@ -1228,13 +1228,13 @@ def gap_oob_legacy_set_data(oob_data):
 
 
 def gap_oob_sc_get_local_data():
-    logging.debug("%s", gap_oob_sc_get_local_data.__name__)
+    logging.debug("")
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['oob_sc_get_local_data'], data=bytearray())
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gap_oob_sc_get_local_data.__name__,
+    logging.debug("received %r %r",
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
@@ -1249,7 +1249,7 @@ def gap_oob_sc_get_local_data():
 
 
 def gap_oob_sc_set_remote_data(r, c):
-    logging.debug("%s %r %r", gap_oob_sc_set_remote_data.__name__, r, c)
+    logging.debug("%r %r", r, c)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -1266,7 +1266,7 @@ def gap_oob_sc_set_remote_data(r, c):
 
 
 def gap_set_mitm_on():
-    logging.debug("%s", gap_set_mitm_on.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1276,7 +1276,7 @@ def gap_set_mitm_on():
 
 
 def gap_set_mitm_off():
-    logging.debug("%s", gap_set_mitm_off.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1286,7 +1286,7 @@ def gap_set_mitm_off():
 
 
 def gap_set_privacy_on():
-    logging.debug("%s", gap_set_privacy_on.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1303,7 +1303,7 @@ def gap_set_privacy_on():
 
 
 def gap_set_privacy_off():
-    logging.debug("%s", gap_set_privacy_off.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1320,7 +1320,7 @@ def gap_set_privacy_off():
 
 
 def gap_set_sc_only_on():
-    logging.debug("%s", gap_set_sc_only_on.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1337,7 +1337,7 @@ def gap_set_sc_only_on():
 
 
 def gap_set_sc_only_off():
-    logging.debug("%s", gap_set_sc_only_off.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1354,7 +1354,7 @@ def gap_set_sc_only_off():
 
 
 def gap_set_min_enc_key_size(enc_key_size):
-    logging.debug("%s %r", gap_set_min_enc_key_size.__name__,
+    logging.debug("%r",
                   enc_key_size)
 
     iutctl = get_iut()
@@ -1368,7 +1368,7 @@ def gap_set_min_enc_key_size(enc_key_size):
 
 
 def gap_set_sc_on():
-    logging.debug("%s", gap_set_sc_on.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1385,7 +1385,7 @@ def gap_set_sc_on():
 
 
 def gap_set_sc_off():
-    logging.debug("%s", gap_set_sc_off.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1402,7 +1402,7 @@ def gap_set_sc_off():
 
 
 def gap_set_extended_advertising_on():
-    logging.debug("%s", gap_set_extended_advertising_on.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1419,7 +1419,7 @@ def gap_set_extended_advertising_on():
 
 
 def gap_set_extended_advertising_off():
-    logging.debug("%s", gap_set_sc_off.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1453,7 +1453,7 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, u
     addr = pts_addr_get(addr)
     addr_type = pts_addr_type_get(addr_type)
 
-    logging.debug("%s %r %r %r %r", check_discov_results.__name__, addr_type,
+    logging.debug("%r %r %r %r", addr_type,
                   addr, discovered, eir)
 
     found = False
@@ -1602,7 +1602,7 @@ def create_ead_adv(payload):
 
 
 def gap_padv_configure(include_tx_power, intvl_min, intvl_max):
-    logging.debug("%s", gap_padv_configure.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data_ba = bytearray(struct.pack("<BHH", include_tx_power,
@@ -1615,7 +1615,7 @@ def gap_padv_configure(include_tx_power, intvl_min, intvl_max):
 
 
 def gap_padv_start(flags=0):
-    logging.debug("%s", gap_padv_start.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     data_ba = bytearray(struct.pack('<B', flags))
@@ -1627,7 +1627,7 @@ def gap_padv_start(flags=0):
 
 
 def gap_padv_set_data(data):
-    logging.debug("%s", gap_padv_set_data.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1643,7 +1643,7 @@ def gap_padv_set_data(data):
 
 def gap_padv_create_sync(adv_sid, skip, sync_to, flags,
                          addr_type=None, addr=None):
-    logging.debug("%s", gap_padv_create_sync.__name__)
+    logging.debug("")
 
     if not addr_type or not addr:
         addr_type = pts_addr_type_get(None)
@@ -1661,7 +1661,7 @@ def gap_padv_create_sync(adv_sid, skip, sync_to, flags,
 
 
 def gap_padv_sync_transfer_set_info(svc_data, addr_type=None, addr=None):
-    logging.debug("%s", gap_padv_sync_transfer_set_info.__name__)
+    logging.debug("")
 
     if not addr_type or not addr:
         addr_type = pts_addr_type_get(None)
@@ -1678,7 +1678,7 @@ def gap_padv_sync_transfer_set_info(svc_data, addr_type=None, addr=None):
 
 
 def gap_padv_sync_transfer_start(svc_data, addr_type=None, addr=None):
-    logging.debug("%s", gap_padv_sync_transfer_start.__name__)
+    logging.debug("")
 
     if not addr_type or not addr:
         addr_type = pts_addr_type_get(None)
@@ -1695,7 +1695,7 @@ def gap_padv_sync_transfer_start(svc_data, addr_type=None, addr=None):
 
 
 def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=None):
-    logging.debug("%s", gap_padv_sync_transfer_recv.__name__)
+    logging.debug("")
 
     if not addr_type or not addr:
         addr_type = pts_addr_type_get(None)
@@ -1712,7 +1712,7 @@ def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=
 
 def gap_subrate_request(bd_addr, bd_addr_type, subrate_min, subrate_max,
                         conn_latency, cont_num, supervision_timeout):
-    logging.debug("%s", gap_subrate_request.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1742,7 +1742,7 @@ def gap_subrate_request(bd_addr, bd_addr_type, subrate_min, subrate_max,
 
 def gap_big_create_sync(adv_sid, num_bis, bis_bitfield, sync_timeout, broadcast_code=None, mse=0x00,
                         addr_type=None, addr=None):
-    logging.debug("%s", gap_big_create_sync.__name__)
+    logging.debug("")
 
     addr_type = pts_addr_type_get(addr_type)
     addr = addr_str_to_le_bytes(pts_addr_get(addr))
@@ -1774,7 +1774,7 @@ def gap_create_big(bis_id, num_bis, interval, latency, broadcast_code=None,
                    packing=defs.BTP_GAP_CMD_CREATE_BIG_PACKING_SEQUENTIAL,
                    framing=defs.BTP_GAP_CMD_CREATE_BIG_FRAMING_UNFRAMED,
                    rtn=2, phy=defs.BTP_GAP_CMD_CREATE_BIG_PHY_2M):
-    logging.debug("%s", gap_create_big.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1799,7 +1799,7 @@ def gap_create_big(bis_id, num_bis, interval, latency, broadcast_code=None,
 
 
 def gap_bis_broadcast(bis_id, val, val_mtp=None):
-    logging.debug("%s", gap_bis_broadcast.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1819,7 +1819,7 @@ def gap_bis_broadcast(bis_id, val, val_mtp=None):
 
 
 def gap_set_broadcast_code(broadcast_code):
-    logging.debug("%s %r", gap_set_broadcast_code.__name__, broadcast_code)
+    logging.debug("%r", broadcast_code)
     stack = get_stack()
     stack.gap.big_broadcast_code = broadcast_code
 

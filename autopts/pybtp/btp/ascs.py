@@ -50,7 +50,7 @@ ASCS = {
 
 
 def ascs_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", ascs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -73,7 +73,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 def ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs,
                       bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_config_codec.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -94,7 +94,7 @@ def ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs,
 
 
 def ascs_add_ase_to_cis(ase_id, cis_id, cig_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_add_ase_to_cis.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -111,7 +111,7 @@ def ascs_config_qos(ase_id, cig_id, cis_id, sdu_interval, framing, max_sdu,
                     retransmission_number, max_transport_latency,
                     presentation_delay, bd_addr_type=None, bd_addr=None):
 
-    logging.debug(f"{ascs_config_qos.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -131,7 +131,7 @@ def ascs_config_qos(ase_id, cig_id, cis_id, sdu_interval, framing, max_sdu,
 
 
 def ascs_enable(ase_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_enable.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -141,7 +141,7 @@ def ascs_enable(ase_id, bd_addr_type=None, bd_addr=None):
 
 
 def ascs_receiver_start_ready(ase_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_receiver_start_ready.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -151,7 +151,7 @@ def ascs_receiver_start_ready(ase_id, bd_addr_type=None, bd_addr=None):
 
 
 def ascs_receiver_stop_ready(ase_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_receiver_stop_ready.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -161,7 +161,7 @@ def ascs_receiver_stop_ready(ase_id, bd_addr_type=None, bd_addr=None):
 
 
 def ascs_disable(ase_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_disable.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -171,7 +171,7 @@ def ascs_disable(ase_id, bd_addr_type=None, bd_addr=None):
 
 
 def ascs_release(ase_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_release.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -181,7 +181,7 @@ def ascs_release(ase_id, bd_addr_type=None, bd_addr=None):
 
 
 def ascs_update_metadata(ase_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{ascs_update_metadata.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -193,7 +193,7 @@ def ascs_update_metadata(ase_id, bd_addr_type=None, bd_addr=None):
 def ascs_preconfig_qos(cig_id, cis_id, sdu_interval, framing, max_sdu,
                        retransmission_number, max_transport_latency,
                        presentation_delay):
-    logging.debug(f"{ascs_config_qos.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data += struct.pack('B', cig_id)
@@ -212,7 +212,7 @@ def ascs_preconfig_qos(cig_id, cis_id, sdu_interval, framing, max_sdu,
 
 
 def ascs_ev_operation_completed_(ascs, data, data_len):
-    logging.debug('%s %r', ascs_ev_operation_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBBBB'
     header_size = struct.calcsize(fmt)
@@ -224,16 +224,15 @@ def ascs_ev_operation_completed_(ascs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'ASE operation completed event: addr {addr} addr_type '
-                  f'{addr_type} ase_id {ase_id} opcode {opcode} '
-                  f'status {status} flags {flags}')
+    logging.debug("ASE operation completed event: addr %r, addr_type %r, ase_id %r, opcode %r, status %r, flags %r",
+                  addr, addr_type, ase_id, opcode, status, flags)
 
     ascs.event_received(defs.BTP_ASCS_EV_OPERATION_COMPLETED,
                         (addr_type, addr, ase_id, opcode, status, flags))
 
 
 def ascs_ev_characteristic_subscribed_(ascs, data, data_len):
-    logging.debug('%s %r', ascs_ev_characteristic_subscribed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sB'
     header_size = struct.calcsize(fmt)
@@ -244,14 +243,14 @@ def ascs_ev_characteristic_subscribed_(ascs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'ASCS characteristic with handle {handle} subscribed')
+    logging.debug("ASCS characteristic with handle %r subscribed", handle)
 
     ascs.event_received(defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED,
                         (addr_type, addr, handle))
 
 
 def ascs_ev_ase_state_changed_(ascs, data, data_len):
-    logging.debug('%s %r', ascs_ev_ase_state_changed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBB'
     header_size = struct.calcsize(fmt)
@@ -262,14 +261,14 @@ def ascs_ev_ase_state_changed_(ascs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'ASE state: ase_id {ase_id}, state {state}')
+    logging.debug("ASE state: ase_id %r, state %r", ase_id, state)
 
     ascs.event_received(defs.BTP_ASCS_EV_ASE_STATE_CHANGED,
                         (addr_type, addr, ase_id, state))
 
 
 def ascs_ev_cis_connected_(ascs, data, data_len):
-    logging.debug("%s %r", ascs_ev_cis_connected_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = "<B6sBB"
     header_size = struct.calcsize(fmt)
@@ -280,13 +279,13 @@ def ascs_ev_cis_connected_(ascs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f"CIS connected: ase_id {ase_id}, cis_id {cis_id}")
+    logging.debug("CIS connected: ase_id %r, cis_id %r", ase_id, cis_id)
 
     ascs.event_received(defs.BTP_ASCS_EV_CIS_CONNECTED, (addr_type, addr, ase_id, cis_id))
 
 
 def ascs_ev_cis_disconnected_(ascs, data, data_len):
-    logging.debug("%s %r", ascs_ev_cis_disconnected_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = "<B6sBBB"
     header_size = struct.calcsize(fmt)
@@ -297,7 +296,7 @@ def ascs_ev_cis_disconnected_(ascs, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f"CIS disconnected: ase_id {ase_id}, cis_id {cis_id}, reason {reason}")
+    logging.debug("CIS disconnected: ase_id %r, cis_id %r, reason %r", ase_id, cis_id, reason)
 
     ascs.event_received(
         defs.BTP_ASCS_EV_CIS_DISCONNECTED, (addr_type, addr, ase_id, cis_id, reason)

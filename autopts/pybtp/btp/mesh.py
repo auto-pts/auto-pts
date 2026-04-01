@@ -29,7 +29,7 @@ MESH = mesh_btp
 
 
 def mesh_config_prov():
-    logging.debug("%s", mesh_config_prov.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -63,7 +63,7 @@ def mesh_config_prov():
 
 
 def mesh_prov_node():
-    logging.debug("%s", mesh_prov_node.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -84,7 +84,7 @@ def mesh_prov_node():
 
 
 def mesh_provision_adv(uuid, addr, attention_duration):
-    logging.debug("%s %r %r %r", mesh_provision_adv.__name__, uuid, addr, attention_duration)
+    logging.debug("%r %r %r", uuid, addr, attention_duration)
 
     iutctl = get_iut()
     stack = get_stack()
@@ -99,7 +99,7 @@ def mesh_provision_adv(uuid, addr, attention_duration):
 
 
 def mesh_init(comp=0):
-    logging.debug("%s %r", mesh_init.__name__, comp)
+    logging.debug("%r", comp)
 
     iutctl = get_iut()
 
@@ -109,7 +109,7 @@ def mesh_init(comp=0):
 
 
 def mesh_start():
-    logging.debug("%s", mesh_start.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -123,7 +123,7 @@ def mesh_start():
 
 
 def mesh_reset():
-    logging.debug("%s", mesh_reset.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -138,7 +138,7 @@ def mesh_reset():
 
 
 def mesh_input_number(number):
-    logging.debug("%s %r", mesh_input_number.__name__, number)
+    logging.debug("%r", number)
 
     iutctl = get_iut()
 
@@ -151,7 +151,7 @@ def mesh_input_number(number):
 
 
 def mesh_input_string(string):
-    logging.debug("%s %s", mesh_input_string.__name__, string)
+    logging.debug("%s", string)
 
     iutctl = get_iut()
 
@@ -164,7 +164,7 @@ def mesh_input_string(string):
 
 
 def mesh_iv_update_test_mode(enable):
-    logging.debug("%s", mesh_iv_update_test_mode.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -180,7 +180,7 @@ def mesh_iv_update_test_mode(enable):
 
 
 def mesh_iv_update_toggle():
-    logging.debug("%s", mesh_iv_update_toggle.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -192,7 +192,7 @@ def mesh_iv_update_toggle():
 
 
 def mesh_net_send(ttl, src, dst, payload):
-    logging.debug("%s %r %r %r %r", mesh_net_send.__name__, ttl, src, dst,
+    logging.debug("%r %r %r %r", ttl, src, dst,
                   payload)
 
     if ttl is None:
@@ -220,7 +220,7 @@ def mesh_net_send(ttl, src, dst, payload):
 
 
 def mesh_va_add(label):
-    logging.debug("%s %r", mesh_va_add.__name__, label)
+    logging.debug("%r", label)
 
     label = binascii.unhexlify(label)
 
@@ -238,7 +238,7 @@ def mesh_va_add(label):
 
 
 def mesh_va_del(label):
-    logging.debug("%s %r", mesh_va_del.__name__, label)
+    logging.debug("%r", label)
 
     label = binascii.unhexlify(label)
 
@@ -253,7 +253,7 @@ def mesh_va_del(label):
 
 
 def mesh_health_generate_faults():
-    logging.debug("%s", mesh_health_generate_faults.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
@@ -273,14 +273,14 @@ def mesh_health_generate_faults():
 
 
 def mesh_health_clear_faults():
-    logging.debug("%s", mesh_health_clear_faults.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
 
 
 def mesh_lpn(enable):
-    logging.debug("%s %r", mesh_lpn.__name__, enable)
+    logging.debug("%r", enable)
 
     if enable:
         enable = 0x01
@@ -294,14 +294,14 @@ def mesh_lpn(enable):
 
 
 def mesh_lpn_poll():
-    logging.debug("%s", mesh_lpn_poll.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
 
 
 def mesh_model_send(src, dst, payload, ttl=0xff):
-    logging.debug("%s %r %r %r %r", mesh_model_send.__name__, src, dst, payload, ttl)
+    logging.debug("%r %r %r %r", src, dst, payload, ttl)
 
     if isinstance(src, str):
         src = int(src, 16)
@@ -326,7 +326,7 @@ def mesh_model_send(src, dst, payload, ttl=0xff):
 
 
 def mesh_lpn_subscribe(address):
-    logging.debug("%s %r", mesh_lpn_subscribe.__name__, address)
+    logging.debug("%r", address)
 
     if isinstance(address, str):
         address = int(address, 16)
@@ -338,7 +338,7 @@ def mesh_lpn_subscribe(address):
 
 
 def mesh_lpn_unsubscribe(address):
-    logging.debug("%s %r", mesh_lpn_unsubscribe.__name__, address)
+    logging.debug("%r", address)
 
     if isinstance(address, str):
         address = int(address, 16)
@@ -350,21 +350,21 @@ def mesh_lpn_unsubscribe(address):
 
 
 def mesh_rpl_clear():
-    logging.debug("%s", mesh_rpl_clear.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['rpl_clear'])
 
 
 def mesh_proxy_identity():
-    logging.debug("%s", mesh_proxy_identity.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['proxy_identity'])
 
 
 def mesh_proxy_private_identity(enabled):
-    logging.debug("%s %s", mesh_proxy_private_identity.__name__, "Enabled" if enabled else "Disable")
+    logging.debug("%s", "Enabled" if enabled else "Disable")
 
     enable = bytearray(struct.pack("<B", 0x01 if enabled else 0x00))
 
@@ -373,7 +373,7 @@ def mesh_proxy_private_identity(enabled):
 
 
 def mesh_sar_transmitter_get(dst):
-    logging.debug("%s 0x%02x", mesh_sar_transmitter_get.__name__, dst)
+    logging.debug("0x%02x", dst)
 
     data = bytearray(struct.pack("<H", dst))
 
@@ -388,7 +388,7 @@ def mesh_sar_transmitter_set(dst, seg_int_step,
                              unicast_retrans_int_inc,
                              multicast_retrans_count,
                              multicast_retrans_int):
-    logging.debug("%s 0x%02x %r %r %r %r %r %r %r", mesh_sar_transmitter_set.__name__,
+    logging.debug("0x%02x %r %r %r %r %r %r %r",
                   dst,
                   seg_int_step,
                   unicast_retrans_count,
@@ -411,7 +411,7 @@ def mesh_sar_transmitter_set(dst, seg_int_step,
 
 
 def mesh_sar_receiver_get(dst):
-    logging.debug("%s 0x%02x", mesh_sar_receiver_get.__name__, dst)
+    logging.debug("0x%02x", dst)
 
     data = bytearray(struct.pack("<H", dst))
 
@@ -424,7 +424,7 @@ def mesh_sar_receiver_set(dst, seg_thresh,
                           ack_retrans_count,
                           discard_timeout,
                           rx_seg_int_step):
-    logging.debug("%s 0x%02x %r %r %r %r %r", mesh_sar_receiver_set.__name__,
+    logging.debug("0x%02x %r %r %r %r %r",
                   dst,
                   seg_thresh,
                   ack_delay_inc,
@@ -443,7 +443,7 @@ def mesh_sar_receiver_set(dst, seg_thresh,
 
 
 def mesh_large_comp_data_get(net_idx, addr, page, offset):
-    logging.debug("%s %r %r %r %r", mesh_large_comp_data_get.__name__,
+    logging.debug("%r %r %r %r",
                   net_idx, addr, page, offset)
 
     data = bytearray(struct.pack("<HHBH", net_idx, addr, page, offset))
@@ -458,7 +458,7 @@ def mesh_large_comp_data_get(net_idx, addr, page, offset):
 
 
 def mesh_models_metadata_get(net_idx, addr, page, offset):
-    logging.debug("%s %r %r %r %r", mesh_models_metadata_get.__name__,
+    logging.debug("%r %r %r %r",
                   net_idx, addr, page, offset)
 
     data = bytearray(struct.pack("<HHBH", net_idx, addr, page, offset))
@@ -473,7 +473,7 @@ def mesh_models_metadata_get(net_idx, addr, page, offset):
 
 
 def mesh_opcodes_aggregator_init(net_idx, app_idx, dst, elem_addr):
-    logging.debug("%s %r %r %r %r", mesh_opcodes_aggregator_init.__name__,
+    logging.debug("%r %r %r %r",
                   net_idx, app_idx, dst, elem_addr)
 
     data = bytearray(struct.pack("<HHHH", net_idx, app_idx, dst, elem_addr))
@@ -483,14 +483,14 @@ def mesh_opcodes_aggregator_init(net_idx, app_idx, dst, elem_addr):
 
 
 def mesh_opcodes_aggregator_send():
-    logging.debug("%s", mesh_opcodes_aggregator_send.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['opcodes_aggregator_send'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
-    logging.debug("%s %r", mesh_out_number_action_ev.__name__, data)
+    logging.debug("%r", data)
 
     action, number = struct.unpack_from('<HI', data)
 
@@ -499,7 +499,7 @@ def mesh_out_number_action_ev(mesh, data, data_len):
 
 
 def mesh_out_string_action_ev(mesh, data, data_len):
-    logging.debug("%s %r", mesh_out_string_action_ev.__name__, data)
+    logging.debug("%r", data)
 
     hdr_fmt = '<B'
     hdr_len = struct.calcsize(hdr_fmt)
@@ -511,13 +511,13 @@ def mesh_out_string_action_ev(mesh, data, data_len):
 
 
 def mesh_in_action_ev(mesh, data, data_len):
-    logging.debug("%s %r", mesh_in_action_ev.__name__, data)
+    logging.debug("%r", data)
 
     action, size = struct.unpack('<HB', data)
 
 
 def mesh_provisioned_ev(mesh, data, data_len):
-    logging.debug("%s %r", mesh_provisioned_ev.__name__, data)
+    logging.debug("%r", data)
     stack = get_stack()
 
     mesh.is_provisioned.data = True
@@ -527,7 +527,7 @@ def mesh_provisioned_ev(mesh, data, data_len):
 
 
 def mesh_prov_link_open_ev(mesh, data, data_len):
-    logging.debug("%s %r", mesh_prov_link_open_ev.__name__, data)
+    logging.debug("%r", data)
 
     (bearer,) = struct.unpack('<B', data)
 
@@ -535,7 +535,7 @@ def mesh_prov_link_open_ev(mesh, data, data_len):
 
 
 def mesh_prov_link_closed_ev(mesh, data, data_len):
-    logging.debug("%s %r", mesh_prov_link_closed_ev.__name__, data)
+    logging.debug("%r", data)
     stack = get_stack()
 
     (bearer,) = struct.unpack('<B', data)
@@ -569,7 +569,7 @@ def mesh_net_rcv_ev(mesh, data, data_len):
     if not stack.mesh.net_recv_ev_store.data:
         return
 
-    logging.debug("%s %r %r", mesh_net_rcv_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<BBHHB'
     hdr_len = struct.calcsize(hdr_fmt)
@@ -584,7 +584,7 @@ def mesh_net_rcv_ev(mesh, data, data_len):
 def mesh_invalid_bearer_ev(mesh, data, data_len):
     stack = get_stack()
 
-    logging.debug("%s %r %r", mesh_invalid_bearer_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     hdr_fmt = '<B'
     (opcode,) = struct.unpack_from(hdr_fmt, data, 0)
@@ -593,7 +593,7 @@ def mesh_invalid_bearer_ev(mesh, data, data_len):
 
 
 def mesh_incomp_timer_exp_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_incomp_timer_exp_ev.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -601,7 +601,7 @@ def mesh_incomp_timer_exp_ev(mesh, data, data_len):
 
 
 def mesh_frnd_established_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_frnd_established_ev.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -614,7 +614,7 @@ def mesh_frnd_established_ev(mesh, data, data_len):
 
 
 def mesh_frnd_terminated_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_frnd_terminated_ev.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -626,7 +626,7 @@ def mesh_frnd_terminated_ev(mesh, data, data_len):
 
 
 def mesh_lpn_established_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_lpn_established_ev.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -639,7 +639,7 @@ def mesh_lpn_established_ev(mesh, data, data_len):
 
 
 def mesh_lpn_terminated_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_lpn_terminated_ev.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -651,7 +651,7 @@ def mesh_lpn_terminated_ev(mesh, data, data_len):
 
 
 def mesh_cfg_beacon_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_beacon_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -665,7 +665,7 @@ def mesh_cfg_beacon_get(net_idx, addr):
 
 
 def mesh_cfg_beacon_set(net_idx, addr, val):
-    logging.debug("%s", mesh_cfg_beacon_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -679,7 +679,7 @@ def mesh_cfg_beacon_set(net_idx, addr, val):
 
 
 def mesh_composition_data_get(net_idx, addr, page):
-    logging.debug("%s", mesh_composition_data_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -699,7 +699,7 @@ def mesh_composition_data_get(net_idx, addr, page):
 
 
 def mesh_cfg_krp_get(net_idx, addr, net_key_idx):
-    logging.debug("%s", mesh_cfg_krp_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -714,7 +714,7 @@ def mesh_cfg_krp_get(net_idx, addr, net_key_idx):
 
 
 def mesh_cfg_krp_set(net_idx, addr, net_key_idx, phase):
-    logging.debug("%s", mesh_cfg_krp_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -729,7 +729,7 @@ def mesh_cfg_krp_set(net_idx, addr, net_key_idx, phase):
 
 
 def mesh_cfg_default_ttl_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_default_ttl_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -742,7 +742,7 @@ def mesh_cfg_default_ttl_get(net_idx, addr):
 
 
 def mesh_cfg_default_ttl_set(net_idx, addr, val):
-    logging.debug("%s", mesh_cfg_default_ttl_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -756,7 +756,7 @@ def mesh_cfg_default_ttl_set(net_idx, addr, val):
 
 
 def mesh_cfg_gatt_proxy_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_gatt_proxy_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -770,7 +770,7 @@ def mesh_cfg_gatt_proxy_get(net_idx, addr):
 
 
 def mesh_cfg_gatt_proxy_set(net_idx, addr, val):
-    logging.debug("%s", mesh_cfg_gatt_proxy_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -784,7 +784,7 @@ def mesh_cfg_gatt_proxy_set(net_idx, addr, val):
 
 
 def mesh_cfg_friend_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_friend_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -798,7 +798,7 @@ def mesh_cfg_friend_get(net_idx, addr):
 
 
 def mesh_cfg_friend_set(net_idx, addr, val):
-    logging.debug("%s", mesh_cfg_friend_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -812,7 +812,7 @@ def mesh_cfg_friend_set(net_idx, addr, val):
 
 
 def mesh_cfg_relay_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_relay_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -826,7 +826,7 @@ def mesh_cfg_relay_get(net_idx, addr):
 
 
 def mesh_cfg_relay_set(net_idx, addr, new_relay, new_transmit):
-    logging.debug("%s", mesh_cfg_relay_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -840,7 +840,7 @@ def mesh_cfg_relay_set(net_idx, addr, new_relay, new_transmit):
 
 
 def mesh_cfg_model_publication_get(net_idx, addr, el_address, model_id):
-    logging.debug("%s", mesh_cfg_model_publication_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -855,7 +855,7 @@ def mesh_cfg_model_publication_get(net_idx, addr, el_address, model_id):
 
 def mesh_cfg_model_publication_set(net_idx, addr, el_address, model_id, pub_addr, appkey_index,
                                       cred_flag, ttl, period, transmit):
-    logging.debug("%s", mesh_cfg_model_publication_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -871,7 +871,7 @@ def mesh_cfg_model_publication_set(net_idx, addr, el_address, model_id, pub_addr
 
 def mesh_cfg_model_pub_va_set(net_idx, addr, el_address, model_id, uuid, appkey_index,
                                  cred_flag, ttl, period, transmit):
-    logging.debug("%s", mesh_cfg_model_pub_va_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -888,7 +888,7 @@ def mesh_cfg_model_pub_va_set(net_idx, addr, el_address, model_id, uuid, appkey_
 
 
 def mesh_cfg_model_sub_add(net_idx, addr, el_address, sub_address, model_id):
-    logging.debug("%s", mesh_cfg_model_sub_add.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -902,7 +902,7 @@ def mesh_cfg_model_sub_add(net_idx, addr, el_address, sub_address, model_id):
 
 
 def mesh_cfg_model_sub_del(net_idx, addr, el_address, sub_address, model_id):
-    logging.debug("%s", mesh_cfg_model_sub_del.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -916,7 +916,7 @@ def mesh_cfg_model_sub_del(net_idx, addr, el_address, sub_address, model_id):
 
 
 def mesh_cfg_model_sub_ovw(net_idx, addr, el_address, sub_address, model_id):
-    logging.debug("%s", mesh_cfg_model_sub_ovw.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -930,7 +930,7 @@ def mesh_cfg_model_sub_ovw(net_idx, addr, el_address, sub_address, model_id):
 
 
 def mesh_cfg_model_sub_del_all(net_idx, addr, el_address, model_id):
-    logging.debug("%s", mesh_cfg_model_sub_del_all.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -944,7 +944,7 @@ def mesh_cfg_model_sub_del_all(net_idx, addr, el_address, model_id):
 
 
 def mesh_cfg_model_sub_get(net_idx, addr, el_address, model_id):
-    logging.debug("%s", mesh_cfg_model_sub_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -958,7 +958,7 @@ def mesh_cfg_model_sub_get(net_idx, addr, el_address, model_id):
 
 
 def mesh_cfg_model_sub_vnd_get(net_idx, addr, el_address, model_id, cid):
-    logging.debug("%s", mesh_cfg_model_sub_vnd_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -972,7 +972,7 @@ def mesh_cfg_model_sub_vnd_get(net_idx, addr, el_address, model_id, cid):
 
 
 def mesh_cfg_model_sub_va_add(net_idx, addr, el_address, model_id, uuid):
-    logging.debug("%s", mesh_cfg_model_sub_va_add.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -988,7 +988,7 @@ def mesh_cfg_model_sub_va_add(net_idx, addr, el_address, model_id, uuid):
 
 
 def mesh_cfg_model_sub_va_del(net_idx, addr, el_address, model_id, uuid):
-    logging.debug("%s", mesh_cfg_model_sub_va_del.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1004,7 +1004,7 @@ def mesh_cfg_model_sub_va_del(net_idx, addr, el_address, model_id, uuid):
 
 
 def mesh_cfg_model_sub_va_ovw(net_idx, addr, el_address, model_id, uuid):
-    logging.debug("%s", mesh_cfg_model_sub_va_ovw.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1020,7 +1020,7 @@ def mesh_cfg_model_sub_va_ovw(net_idx, addr, el_address, model_id, uuid):
 
 
 def mesh_cfg_netkey_add(net_idx, addr, net_key, net_key_idx):
-    logging.debug("%s", mesh_cfg_netkey_add.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1036,7 +1036,7 @@ def mesh_cfg_netkey_add(net_idx, addr, net_key, net_key_idx):
 
 
 def mesh_cfg_netkey_get(net_idx, addr, net_key_idx):
-    logging.debug("%s", mesh_cfg_netkey_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1050,7 +1050,7 @@ def mesh_cfg_netkey_get(net_idx, addr, net_key_idx):
 
 
 def mesh_cfg_netkey_update(net_idx, addr, net_key, net_key_idx):
-    logging.debug("%s", mesh_cfg_netkey_update.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1066,7 +1066,7 @@ def mesh_cfg_netkey_update(net_idx, addr, net_key, net_key_idx):
 
 
 def mesh_cfg_netkey_del(net_idx, addr, net_key_idx):
-    logging.debug("%s", mesh_cfg_netkey_del.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1080,7 +1080,7 @@ def mesh_cfg_netkey_del(net_idx, addr, net_key_idx):
 
 
 def mesh_cfg_appkey_add(net_idx, addr, net_key_idx, app_key, app_key_idx):
-    logging.debug("%s", mesh_cfg_appkey_add.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1096,7 +1096,7 @@ def mesh_cfg_appkey_add(net_idx, addr, net_key_idx, app_key, app_key_idx):
 
 
 def mesh_cfg_appkey_update(net_idx, addr, net_key_idx, app_key, app_key_idx):
-    logging.debug("%s", mesh_cfg_appkey_update.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1112,7 +1112,7 @@ def mesh_cfg_appkey_update(net_idx, addr, net_key_idx, app_key, app_key_idx):
 
 
 def mesh_cfg_appkey_del(net_idx, addr, net_key_idx, app_key_idx):
-    logging.debug("%s", mesh_cfg_appkey_del.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1126,7 +1126,7 @@ def mesh_cfg_appkey_del(net_idx, addr, net_key_idx, app_key_idx):
 
 
 def mesh_cfg_appkey_get(net_idx, addr, net_key_idx):
-    logging.debug("%s", mesh_cfg_appkey_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1140,7 +1140,7 @@ def mesh_cfg_appkey_get(net_idx, addr, net_key_idx):
 
 
 def mesh_cfg_model_app_bind(net_idx, addr, el_address, app_key_idx, model_id):
-    logging.debug("%s", mesh_cfg_model_app_bind.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1154,7 +1154,7 @@ def mesh_cfg_model_app_bind(net_idx, addr, el_address, app_key_idx, model_id):
 
 
 def mesh_config_model_app_bind_vnd(net_idx, addr, el_address, app_key_idx, model_id, cid):
-    logging.debug("%s", mesh_config_model_app_bind_vnd.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1168,7 +1168,7 @@ def mesh_config_model_app_bind_vnd(net_idx, addr, el_address, app_key_idx, model
 
 
 def mesh_cfg_model_app_unbind(net_idx, addr, el_address, app_key_idx, model_id):
-    logging.debug("%s", mesh_cfg_model_app_unbind.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1182,7 +1182,7 @@ def mesh_cfg_model_app_unbind(net_idx, addr, el_address, app_key_idx, model_id):
 
 
 def mesh_cfg_model_app_get(net_idx, addr, el_address, model_id):
-    logging.debug("%s", mesh_cfg_model_app_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1196,7 +1196,7 @@ def mesh_cfg_model_app_get(net_idx, addr, el_address, model_id):
 
 
 def mesh_cfg_model_app_vnd_get(net_idx, addr, el_address, model_id, cid):
-    logging.debug("%s", mesh_cfg_model_app_vnd_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1210,7 +1210,7 @@ def mesh_cfg_model_app_vnd_get(net_idx, addr, el_address, model_id, cid):
 
 
 def mesh_cfg_heartbeat_pub_set(net_idx, addr, net_key_idx, destination, count_log, period_log, ttl, features):
-    logging.debug("%s", mesh_cfg_heartbeat_pub_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1225,7 +1225,7 @@ def mesh_cfg_heartbeat_pub_set(net_idx, addr, net_key_idx, destination, count_lo
 
 
 def mesh_cfg_heartbeat_pub_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_heartbeat_pub_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1239,7 +1239,7 @@ def mesh_cfg_heartbeat_pub_get(net_idx, addr):
 
 
 def mesh_cfg_heartbeat_sub_set(net_idx, addr, source, destination, period_log):
-    logging.debug("%s", mesh_cfg_heartbeat_sub_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1253,7 +1253,7 @@ def mesh_cfg_heartbeat_sub_set(net_idx, addr, source, destination, period_log):
 
 
 def mesh_cfg_heartbeat_sub_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_heartbeat_sub_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1267,7 +1267,7 @@ def mesh_cfg_heartbeat_sub_get(net_idx, addr):
 
 
 def mesh_cfg_net_transmit_get(net_idx, addr):
-    logging.debug("%s", mesh_cfg_net_transmit_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1281,7 +1281,7 @@ def mesh_cfg_net_transmit_get(net_idx, addr):
 
 
 def mesh_cfg_net_transmit_set(net_idx, addr, transmit):
-    logging.debug("%s", mesh_cfg_net_transmit_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1295,7 +1295,7 @@ def mesh_cfg_net_transmit_set(net_idx, addr, transmit):
 
 
 def mesh_cfg_node_idt_set(net_idx, addr, net_key_idx, identity):
-    logging.debug("%s", mesh_cfg_node_idt_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1311,7 +1311,7 @@ def mesh_cfg_node_idt_set(net_idx, addr, net_key_idx, identity):
 
 
 def mesh_cfg_node_idt_get(net_idx, addr, net_key_idx):
-    logging.debug("%s", mesh_cfg_node_idt_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1326,7 +1326,7 @@ def mesh_cfg_node_idt_get(net_idx, addr, net_key_idx):
 
 
 def mesh_cfg_node_reset(net_idx, addr):
-    logging.debug("%s", mesh_cfg_node_reset.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1340,7 +1340,7 @@ def mesh_cfg_node_reset(net_idx, addr):
 
 
 def mesh_cfg_lpn_polltimeout_get(net_idx, addr, unicast_addr):
-    logging.debug("%s", mesh_cfg_lpn_polltimeout_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1355,7 +1355,7 @@ def mesh_cfg_lpn_polltimeout_get(net_idx, addr, unicast_addr):
 
 
 def mesh_health_fault_get(addr, app_idx, cid):
-    logging.debug("%s", mesh_health_fault_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1366,7 +1366,7 @@ def mesh_health_fault_get(addr, app_idx, cid):
 
 
 def mesh_health_fault_clear(addr, app_idx, cid, ack):
-    logging.debug("%s", mesh_health_fault_clear.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1381,7 +1381,7 @@ def mesh_health_fault_clear(addr, app_idx, cid, ack):
 
 
 def mesh_health_fault_test(addr, app_idx, cid, test_id, ack):
-    logging.debug("%s", mesh_health_fault_test.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1396,7 +1396,7 @@ def mesh_health_fault_test(addr, app_idx, cid, test_id, ack):
 
 
 def mesh_health_period_get(addr, app_idx):
-    logging.debug("%s", mesh_health_period_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1407,7 +1407,7 @@ def mesh_health_period_get(addr, app_idx):
 
 
 def mesh_health_period_set(addr, app_idx, divisor, ack):
-    logging.debug("%s", mesh_health_period_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1422,7 +1422,7 @@ def mesh_health_period_set(addr, app_idx, divisor, ack):
 
 
 def mesh_health_attention_get(addr, app_idx):
-    logging.debug("%s", mesh_health_attention_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1433,7 +1433,7 @@ def mesh_health_attention_get(addr, app_idx):
 
 
 def mesh_health_attention_set(addr, app_idx, attention, ack):
-    logging.debug("%s", mesh_health_attention_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1448,7 +1448,7 @@ def mesh_health_attention_set(addr, app_idx, attention, ack):
 
 
 def mesh_proxy_connect(net_idx=None):
-    logging.debug("%s", mesh_proxy_connect.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1463,7 +1463,7 @@ def mesh_proxy_connect(net_idx=None):
 
 
 def mesh_comp_change_prepare():
-    logging.debug("%s", mesh_comp_change_prepare.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1474,7 +1474,7 @@ def mesh_comp_change_prepare():
 
 
 def mesh_priv_beacon_get(dst):
-    logging.debug("%s", mesh_priv_beacon_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1485,7 +1485,7 @@ def mesh_priv_beacon_get(dst):
 
 
 def mesh_priv_beacon_set(dst, enabled, rand_interval):
-    logging.debug("%s", mesh_priv_beacon_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1496,7 +1496,7 @@ def mesh_priv_beacon_set(dst, enabled, rand_interval):
 
 
 def mesh_priv_gatt_proxy_get(dst):
-    logging.debug("%s", mesh_priv_gatt_proxy_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1507,7 +1507,7 @@ def mesh_priv_gatt_proxy_get(dst):
 
 
 def mesh_priv_gatt_proxy_set(dst, state):
-    logging.debug("%s", mesh_priv_gatt_proxy_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1518,7 +1518,7 @@ def mesh_priv_gatt_proxy_set(dst, state):
 
 
 def mesh_priv_node_id_get(dst, key_net_idx):
-    logging.debug("%s", mesh_priv_node_id_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1529,7 +1529,7 @@ def mesh_priv_node_id_get(dst, key_net_idx):
 
 
 def mesh_priv_node_id_set(dst, net_idx, state):
-    logging.debug("%s", mesh_priv_node_id_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1540,7 +1540,7 @@ def mesh_priv_node_id_set(dst, net_idx, state):
 
 
 def mesh_rpr_scan_start(dst, timeout, uuid):
-    logging.debug("%s", mesh_rpr_scan_start.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1550,7 +1550,7 @@ def mesh_rpr_scan_start(dst, timeout, uuid):
 
 
 def mesh_rpr_ext_scan_start(dst, timeout, uuid, ad_count, ad_types):
-    logging.debug("%s", mesh_rpr_ext_scan_start.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1562,7 +1562,7 @@ def mesh_rpr_ext_scan_start(dst, timeout, uuid, ad_count, ad_types):
 
 
 def mesh_rpr_scan_caps_get(dst):
-    logging.debug("%s", mesh_rpr_scan_caps_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1572,7 +1572,7 @@ def mesh_rpr_scan_caps_get(dst):
 
 
 def mesh_rpr_scan_get(dst):
-    logging.debug("%s", mesh_rpr_scan_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1582,7 +1582,7 @@ def mesh_rpr_scan_get(dst):
 
 
 def mesh_rpr_scan_stop(dst):
-    logging.debug("%s", mesh_rpr_scan_stop.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1592,7 +1592,7 @@ def mesh_rpr_scan_stop(dst):
 
 
 def mesh_rpr_link_get(dst):
-    logging.debug("%s", mesh_rpr_link_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1602,7 +1602,7 @@ def mesh_rpr_link_get(dst):
 
 
 def mesh_rpr_link_close(dst):
-    logging.debug("%s", mesh_rpr_link_close.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1612,7 +1612,7 @@ def mesh_rpr_link_close(dst):
 
 
 def mesh_rpr_prov_remote(dst, uuid, net_idx, addr):
-    logging.debug("%s", mesh_rpr_prov_remote.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1622,7 +1622,7 @@ def mesh_rpr_prov_remote(dst, uuid, net_idx, addr):
 
 
 def mesh_rpr_reprov_remote(dst, addr, comp_change):
-    logging.debug("%s", mesh_rpr_reprov_remote.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1632,7 +1632,7 @@ def mesh_rpr_reprov_remote(dst, addr, comp_change):
 
 
 def mesh_subnet_bridge_get(dst):
-    logging.debug("%s", mesh_subnet_bridge_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1643,7 +1643,7 @@ def mesh_subnet_bridge_get(dst):
 
 
 def mesh_subnet_bridge_set(dst, val):
-    logging.debug("%s", mesh_subnet_bridge_set.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1654,7 +1654,7 @@ def mesh_subnet_bridge_set(dst, val):
 
 
 def mesh_bridging_table_add(dst, direction, net_idx1, net_idx2, addr1, addr2):
-    logging.debug("%s", mesh_bridging_table_add.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1665,7 +1665,7 @@ def mesh_bridging_table_add(dst, direction, net_idx1, net_idx2, addr1, addr2):
 
 
 def mesh_bridging_table_remove(dst, net_idx1, net_idx2, addr1, addr2):
-    logging.debug("%s", mesh_bridging_table_remove.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1676,7 +1676,7 @@ def mesh_bridging_table_remove(dst, net_idx1, net_idx2, addr1, addr2):
 
 
 def mesh_bridged_subnets_get(dst, filter_mesh, net_idx, start_idx):
-    logging.debug("%s", mesh_bridged_subnets_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1687,7 +1687,7 @@ def mesh_bridged_subnets_get(dst, filter_mesh, net_idx, start_idx):
 
 
 def mesh_bridging_table_get(dst, net_idx1, net_idx2, start_idx):
-    logging.debug("%s", mesh_bridging_table_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1698,7 +1698,7 @@ def mesh_bridging_table_get(dst, net_idx1, net_idx2, start_idx):
 
 
 def mesh_bridge_capability_get(dst):
-    logging.debug("%s", mesh_bridge_capability_get.__name__)
+    logging.debug("")
 
     stack = get_stack()
     iutctl = get_iut()
@@ -1709,7 +1709,7 @@ def mesh_bridge_capability_get(dst):
 
 
 def mesh_od_priv_proxy_get(dst):
-    logging.debug("%s", mesh_od_priv_proxy_get.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1719,7 +1719,7 @@ def mesh_od_priv_proxy_get(dst):
 
 
 def mesh_od_priv_proxy_set(dst, val):
-    logging.debug("%s", mesh_od_priv_proxy_set.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1729,7 +1729,7 @@ def mesh_od_priv_proxy_set(dst, val):
 
 
 def mesh_srpl_clear(dst, range_start, range_len, acked):
-    logging.debug("%s", mesh_srpl_clear.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -1739,7 +1739,7 @@ def mesh_srpl_clear(dst, range_start, range_len, acked):
 
 
 def mesh_proxy_solicit(net_idx=None):
-    logging.debug("%s", mesh_proxy_solicit.__name__)
+    logging.debug("")
 
     stack = get_stack()
 
@@ -1754,7 +1754,7 @@ def mesh_proxy_solicit(net_idx=None):
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_lpn_polled_ev.__name__)
+    logging.debug("")
 
     hdr_fmt = '<HHB'
 
@@ -1762,7 +1762,7 @@ def mesh_lpn_polled_ev(mesh, data, data_len):
 
 
 def mesh_prov_node_added_ev(mesh, data, data_len):
-    logging.debug("%s", mesh_prov_node_added_ev.__name__)
+    logging.debug("")
 
     stack = get_stack()
     hdr_fmt = '<HH16sB'
@@ -1774,7 +1774,7 @@ def mesh_prov_node_added_ev(mesh, data, data_len):
 
 
 def mesh_model_recv_ev(mesh, data, data_len):
-    logging.debug("%s %r %r", mesh_model_recv_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     stack = get_stack()
 
@@ -1796,7 +1796,7 @@ def mesh_model_recv_ev(mesh, data, data_len):
 
 
 def mesh_blob_lost_target_ev(mesh, data, data_len):
-    logging.debug("%s %r %r", mesh_blob_lost_target_ev.__name__, data, data_len)
+    logging.debug("%r %r", data, data_len)
 
     stack = get_stack()
 

@@ -36,7 +36,7 @@ GATTC = gatt_cl
 
 
 def gatt_cl_mtu_exchanged_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_mtu_exchanged_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sB'
 
@@ -172,14 +172,13 @@ att_rsp_str = {0: "",
 
 
 def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_disc_all_prim_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBB'
 
     addr_type, addr, status, svc_cnt = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r svc_cnt=%r",
-                  gatt_cl_disc_all_prim_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r svc_cnt=%r",
                   addr_type, addr, status, svc_cnt)
 
     svcs_data = data[struct.calcsize(fmt) - 1:]
@@ -193,7 +192,7 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
 
     svcs = gatt_cl_dec_disc_rsp(svcs_data, 'service')
 
-    logging.debug("%s %r", gatt_cl_disc_all_prim_rsp_ev_.__name__, svcs)
+    logging.debug("%r", svcs)
 
     for svc in svcs:
         start_handle = f"{svc[0]:04X}"
@@ -206,14 +205,13 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_disc_prim_uuid_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBB'
 
     addr_type, addr, status, svc_cnt = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r svc_cnt=%r",
-                  gatt_cl_disc_prim_uuid_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r svc_cnt=%r",
                   addr_type, addr, status, svc_cnt)
 
     # svcs_data contains service count and services - adjust data offset
@@ -229,7 +227,7 @@ def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
 
     svcs = gatt_cl_dec_disc_rsp(svcs_data, 'service')
 
-    logging.debug("%s %r", gatt_cl_disc_prim_uuid_rsp_ev_.__name__, svcs)
+    logging.debug("%r", svcs)
 
     for svc in svcs:
         start_handle = f"{svc[0]:04X}"
@@ -244,14 +242,13 @@ def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_find_incld_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBB'
 
     addr_type, addr, status, svc_cnt = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r svc_cnt=%r",
-                  gatt_cl_find_incld_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r svc_cnt=%r",
                   addr_type, addr, status, svc_cnt)
 
     svcs_data = data[struct.calcsize(fmt) - 1:]
@@ -264,7 +261,7 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
         return
     incl_tuples = gatt_cl_dec_disc_rsp(svcs_data, 'include')
 
-    logging.debug("%s %r", gatt_cl_find_incld_rsp_ev_.__name__, incl_tuples)
+    logging.debug("%r", incl_tuples)
 
     for incl in incl_tuples:
         att_handle = f"{incl[0][0]:04X}"
@@ -279,15 +276,14 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_disc_all_chrc_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_disc_all_chrc_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
     attrs = []
 
     fmt = '<B6sBB'
 
     addr_type, addr, status, char_cnt = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r char_cnt=%r",
-                  gatt_cl_disc_all_chrc_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r char_cnt=%r",
                   addr_type, addr, status, char_cnt)
 
     svcs_data = data[struct.calcsize(fmt) - 1:]
@@ -301,7 +297,7 @@ def gatt_cl_disc_all_chrc_rsp_ev_(gatt_cl, data, data_len):
 
     chrcs = gatt_cl_dec_disc_rsp(svcs_data, 'characteristic')
 
-    logging.debug("%s %r", gatt_cl_disc_all_chrc_rsp_ev_.__name__, chrcs)
+    logging.debug("%r", chrcs)
 
     for chrc in chrcs:
         (handle, value_handle, prop, uuid) = chrc
@@ -317,15 +313,14 @@ def gatt_cl_disc_all_chrc_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_disc_chrc_uuid_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_disc_chrc_uuid_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
     attrs = []
 
     fmt = '<B6sBB'
 
     addr_type, addr, status, char_cnt = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r char_cnt=%r",
-                  gatt_cl_disc_chrc_uuid_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r char_cnt=%r",
                   addr_type, addr, status, char_cnt)
 
     svcs_data = data[struct.calcsize(fmt) - 1:]
@@ -339,7 +334,7 @@ def gatt_cl_disc_chrc_uuid_rsp_ev_(gatt_cl, data, data_len):
 
     chrcs = gatt_cl_dec_disc_rsp(svcs_data, 'characteristic')
 
-    logging.debug("%s %r", gatt_cl_disc_chrc_uuid_rsp_ev_.__name__, chrcs)
+    logging.debug("%r", chrcs)
 
     for chrc in chrcs:
         (handle, value_handle, prop, uuid) = chrc
@@ -355,14 +350,13 @@ def gatt_cl_disc_chrc_uuid_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_disc_all_desc_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_disc_all_desc_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBB'
 
     addr_type, addr, status, char_cnt = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r char_cnt=%r",
-                  gatt_cl_disc_all_desc_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r char_cnt=%r",
                   addr_type, addr, status, char_cnt)
 
     svcs_data = data[struct.calcsize(fmt) - 1:]
@@ -376,7 +370,7 @@ def gatt_cl_disc_all_desc_rsp_ev_(gatt_cl, data, data_len):
 
     descs = gatt_cl_dec_disc_rsp(svcs_data, 'descriptor')
 
-    logging.debug("%s %r", gatt_cl_disc_all_desc_rsp_ev_.__name__, descs)
+    logging.debug("%r", descs)
 
     gatt_cl.dscs = []
     gatt_cl.dscs_cnt = char_cnt
@@ -388,14 +382,13 @@ def gatt_cl_disc_all_desc_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_read_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_read_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBH'
 
     addr_type, addr, status, data_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
-                  gatt_cl_read_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r data_len=%r",
                   addr_type, addr, status, data_length)
 
     clear_verify_values()
@@ -408,7 +401,7 @@ def gatt_cl_read_rsp_ev_(gatt_cl, data, data_len):
 
     (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
-    logging.debug("%s %r %r", gatt_cl_read_rsp_ev_.__name__, status, value)
+    logging.debug("%r %r", status, value)
 
     add_to_verify_values(att_rsp_str[status])
 
@@ -418,15 +411,14 @@ def gatt_cl_read_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_read_uuid_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBHB'
 
     addr_type, addr, status, data_length, value_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r,"
+    logging.debug("received addr_type=%r addr=%r status=%r data_len=%r,"
                   "value_len=%r",
-                  gatt_cl_read_uuid_rsp_ev_.__name__,
                   addr_type, addr, status, data_length, value_length)
 
     if status != 0:
@@ -445,8 +437,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
         clear_verify_values()
         for _x in range(chrc_count):
             handle, value = struct.unpack_from(data_fmt, tuple_data, offset)
-            logging.debug("%s %r %r",
-                          gatt_cl_read_uuid_rsp_ev_.__name__,
+            logging.debug("%r %r",
                           handle, value)
             offset += tuple_len
             attrs_to_save.append((handle, binascii.hexlify(value).upper()))
@@ -461,8 +452,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
                 # verify_values doesn't match read_uuid_rp, let's clear it
                 clear_verify_values()
         handle, value = struct.unpack_from(data_fmt, tuple_data)
-        logging.debug("%s %r %r",
-                      gatt_cl_read_uuid_rsp_ev_.__name__,
+        logging.debug("%r %r",
                       handle, value)
         add_to_verify_values((handle, binascii.hexlify(value).upper()))
 
@@ -470,21 +460,20 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_read_long_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_read_long_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBH'
 
     addr_type, addr, status, data_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
-                  gatt_cl_read_long_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r data_len=%r",
                   addr_type, addr, status, data_length)
 
     rp_data = data[struct.calcsize(fmt):]
 
     (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
-    logging.debug("%s %r %r", gatt_cl_read_long_rsp_ev_.__name__, status, value)
+    logging.debug("%r %r", status, value)
 
     clear_verify_values()
 
@@ -496,14 +485,13 @@ def gatt_cl_read_long_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_read_mult_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBH'
 
     addr_type, addr, status, data_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
-                  gatt_cl_read_mult_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r data_len=%r",
                   addr_type, addr, status, data_length)
 
     if status != 0:
@@ -518,7 +506,7 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
 
     (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
-    logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
+    logging.debug("%r %r", status, value)
 
     if (len(get_verify_values()) > 0 and not
         (isinstance(get_verify_values()[0][0], str) and
@@ -532,14 +520,13 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_read_mult_var_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBH'
 
     addr_type, addr, status, data_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
-                  gatt_cl_read_mult_var_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r data_len=%r",
                   addr_type, addr, status, data_length)
 
     rp_data = data[struct.calcsize(fmt):]
@@ -552,7 +539,7 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
 
     (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
-    logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
+    logging.debug("%r %r", status, value)
 
     if (len(get_verify_values()) > 0 and not
     (isinstance(get_verify_values()[0][0], str) and
@@ -566,28 +553,26 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
 
 
 def gatt_cl_write_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_write_rsp_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sB'
 
     addr_type, addr, status = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r status=%r",
-                  gatt_cl_write_rsp_ev_.__name__,
+    logging.debug("received addr_type=%r addr=%r status=%r",
                   addr_type, addr, status)
     gatt_cl.write_status = status
 
 
 def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_notification_rxed_ev_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBHH'
 
     addr_type, addr, value_type, handle, data_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("%s received addr_type=%r addr=%r"
+    logging.debug("received addr_type=%r addr=%r"
                   "value_type=%r handle=%r data_length=%r",
-                  gatt_cl_notification_rxed_ev_.__name__,
                   addr_type, addr, value_type, handle, data_length)
 
     if data_length == 0:
@@ -623,7 +608,7 @@ GATTC_EV = {
 
 
 def gatt_cl_command_rsp_succ():
-    logging.debug("%s", gatt_cl_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -634,7 +619,7 @@ def gatt_cl_command_rsp_succ():
 
 
 def gatt_cl_exchange_mtu(bd_addr_type, bd_addr):
-    logging.debug("%s %r %r", gatt_cl_exchange_mtu.__name__, bd_addr_type,
+    logging.debug("%r %r", bd_addr_type,
                   bd_addr)
     iutctl = get_iut()
 
@@ -652,7 +637,7 @@ def gatt_cl_exchange_mtu(bd_addr_type, bd_addr):
 
 
 def gatt_cl_disc_all_prim(bd_addr_type, bd_addr):
-    logging.debug("%s %r %r", gatt_cl_disc_all_prim.__name__, bd_addr_type,
+    logging.debug("%r %r", bd_addr_type,
                   bd_addr)
     stack = get_stack()
     stack.gatt_cl.prim_svcs_cnt = None
@@ -675,7 +660,7 @@ def gatt_cl_disc_all_prim(bd_addr_type, bd_addr):
 
 
 def gatt_cl_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
-    logging.debug("%s %r %r %r", gatt_cl_disc_prim_uuid.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, uuid)
     stack = get_stack()
     stack.gatt_cl.prim_svcs_cnt = None
@@ -701,7 +686,7 @@ def gatt_cl_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 
 
 def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
-    logging.debug("%s %r %r %r %r", gatt_cl_find_included.__name__,
+    logging.debug("%r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, end_hdl)
     stack = get_stack()
     stack.gatt_cl.incl_svcs_cnt = None
@@ -734,7 +719,7 @@ def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
 
 
 def gatt_cl_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_disc_all_chrc.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
     stack = get_stack()
     stack.gatt_cl.chrcs_cnt = None
@@ -786,7 +771,7 @@ def gatt_cl_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 
 
 def gatt_cl_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_disc_chrc_uuid.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
     iutctl = get_iut()
     stack = get_stack()
@@ -822,7 +807,7 @@ def gatt_cl_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
 
 def gatt_cl_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
-    logging.debug("%s %r %r %r %r", gatt_cl_disc_all_desc.__name__,
+    logging.debug("%r %r %r %r",
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
     stack = get_stack()
     stack.gatt_cl.dscs_cnt = None
@@ -855,7 +840,7 @@ def gatt_cl_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
 
 def gatt_cl_read(bd_addr_type, bd_addr, hdl):
-    logging.debug("%s %r %r %r", gatt_cl_read.__name__, bd_addr_type, bd_addr,
+    logging.debug("%r %r %r", bd_addr_type, bd_addr,
                   hdl)
     iutctl = get_iut()
 
@@ -881,7 +866,7 @@ def gatt_cl_read(bd_addr_type, bd_addr, hdl):
 
 
 def gatt_cl_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_read_uuid.__name__, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr_type,
                   bd_addr, start_hdl, end_hdl, uuid)
     iutctl = get_iut()
 
@@ -917,7 +902,7 @@ def gatt_cl_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
 
 
 def gatt_cl_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_read_long.__name__, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr_type,
                   bd_addr, hdl, off, modif_off)
     iutctl = get_iut()
 
@@ -950,7 +935,7 @@ def gatt_cl_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
 
 
 def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
-    logging.debug("%s %r %r %r", gatt_cl_read_multiple.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, hdls)
     iutctl = get_iut()
 
@@ -978,7 +963,7 @@ def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
 
 
 def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
-    logging.debug("%s %r %r %r", gatt_cl_read_multiple_var.__name__, bd_addr_type,
+    logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, hdls)
     iutctl = get_iut()
 
@@ -1006,7 +991,7 @@ def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
 
 
 def gatt_cl_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_write_without_rsp.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1037,7 +1022,7 @@ def gatt_cl_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
 
 def gatt_cl_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_signed_write.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1076,7 +1061,7 @@ def gatt_cl_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
 
 def gatt_cl_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_write.__name__, bd_addr_type,
+    logging.debug("%r %r %r %r %r", bd_addr_type,
                   bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1110,7 +1095,7 @@ def gatt_cl_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
 
 def gatt_cl_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_write_long.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, hdl, off, val, length)
     gap_wait_for_connection()
 
@@ -1148,7 +1133,7 @@ def gatt_cl_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
 
 def gatt_cl_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_write_reliable.__name__,
+    logging.debug("%r %r %r %r %r",
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     iutctl = get_iut()
 
@@ -1185,7 +1170,7 @@ def gatt_cl_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
 
 
 def gatt_cl_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
-    logging.debug("%s %r %r, %r, %r", gatt_cl_cfg_notify.__name__, bd_addr_type,
+    logging.debug("%r %r, %r, %r", bd_addr_type,
                   bd_addr, enable, ccc_hdl)
     gap_wait_for_connection()
 
@@ -1209,7 +1194,7 @@ def gatt_cl_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 
 
 def gatt_cl_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
-    logging.debug("%s %r %r, %r, %r", gatt_cl_cfg_indicate.__name__,
+    logging.debug("%r %r, %r, %r",
                   bd_addr_type, bd_addr, enable, ccc_hdl)
     gap_wait_for_connection()
 

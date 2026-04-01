@@ -88,7 +88,7 @@ BAP = {
 
 
 def bap_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", bap_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -110,7 +110,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def bap_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -121,7 +121,7 @@ def bap_discover(bd_addr_type=None, bd_addr=None):
 
 
 def bap_send(ase_id, data_ba, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_send.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
@@ -142,7 +142,7 @@ def bap_broadcast_source_setup(
         codec_ltvs, sdu_interval, framing, max_sdu, retransmission_number,
         max_transport_latency, presentation_delay):
 
-    logging.debug(f"{bap_broadcast_source_setup.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -181,7 +181,7 @@ def bap_broadcast_source_setup_v2(
         codec_ltvs, sdu_interval, framing, max_sdu, retransmission_number,
         max_transport_latency, presentation_delay):
 
-    logging.debug(f"{bap_broadcast_source_setup_v2.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -217,7 +217,7 @@ def bap_broadcast_source_setup_v2(
 
 
 def bap_broadcast_source_release(broadcast_id):
-    logging.debug(f"{bap_broadcast_source_release.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -229,7 +229,7 @@ def bap_broadcast_source_release(broadcast_id):
 
 
 def bap_broadcast_adv_start(broadcast_id):
-    logging.debug(f"{bap_broadcast_adv_start.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -240,7 +240,7 @@ def bap_broadcast_adv_start(broadcast_id):
 
 
 def bap_broadcast_adv_stop(broadcast_id):
-    logging.debug(f"{bap_broadcast_adv_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -251,7 +251,7 @@ def bap_broadcast_adv_stop(broadcast_id):
 
 
 def bap_broadcast_source_start(broadcast_id):
-    logging.debug(f"{bap_broadcast_source_start.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -262,7 +262,7 @@ def bap_broadcast_source_start(broadcast_id):
 
 
 def bap_broadcast_source_stop(broadcast_id):
-    logging.debug(f"{bap_broadcast_source_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -274,7 +274,7 @@ def bap_broadcast_source_stop(broadcast_id):
 
 def bap_broadcast_sink_setup():
 
-    logging.debug(f"{bap_broadcast_sink_setup.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['broadcast_sink_setup'])
@@ -283,7 +283,7 @@ def bap_broadcast_sink_setup():
 
 
 def bap_broadcast_sink_release():
-    logging.debug(f"{bap_broadcast_sink_release.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['broadcast_sink_release'])
@@ -292,7 +292,7 @@ def bap_broadcast_sink_release():
 
 
 def bap_broadcast_scan_start():
-    logging.debug(f"{bap_broadcast_scan_start.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['broadcast_scan_start'])
@@ -301,7 +301,7 @@ def bap_broadcast_scan_start():
 
 
 def bap_broadcast_scan_stop():
-    logging.debug(f"{bap_broadcast_scan_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['broadcast_scan_stop'])
@@ -311,7 +311,7 @@ def bap_broadcast_scan_stop():
 
 def bap_broadcast_sink_sync(broadcast_id, advertiser_sid, skip, sync_timeout,
                             past_available, src_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_broadcast_sink_sync.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -329,7 +329,7 @@ def bap_broadcast_sink_sync(broadcast_id, advertiser_sid, skip, sync_timeout,
 
 
 def bap_broadcast_sink_stop(broadcast_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_broadcast_sink_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -343,7 +343,7 @@ def bap_broadcast_sink_stop(broadcast_id, bd_addr_type=None, bd_addr=None):
 
 def bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync,
                                 bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_broadcast_sink_bis_sync.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -359,7 +359,7 @@ def bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync,
 def bap_scan_delegator_add_src(broadcaster_addr_type, broadcaster_addr,
                                advertiser_sid, broadcast_id, pa_sync_state,
                                big_encryption, num_subgroups, subgroups):
-    logging.debug(f"{bap_scan_delegator_add_src.__name__}")
+    logging.debug("")
 
     if not BASSPASyncState.NOT_SYNCED <= pa_sync_state <= BASSPASyncState.NO_PAST:
         raise BTPError(f'Invalid pa_sync_state {pa_sync_state}')
@@ -388,7 +388,7 @@ def bap_scan_delegator_add_src(broadcaster_addr_type, broadcaster_addr,
 
 
 def bap_discover_scan_delegator(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_discover_scan_delegator.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -400,7 +400,7 @@ def bap_discover_scan_delegator(bd_addr_type=None, bd_addr=None):
 
 
 def bap_broadcast_assistant_scan_start(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_broadcast_assistant_scan_start.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -412,7 +412,7 @@ def bap_broadcast_assistant_scan_start(bd_addr_type=None, bd_addr=None):
 
 
 def bap_broadcast_assistant_scan_stop(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_broadcast_assistant_scan_stop.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -427,7 +427,7 @@ def bap_add_broadcast_src(advertiser_sid, broadcast_id, pa_sync,
                           pa_interval, num_subgroups, subgroups,
                           broadcaster_addr_type, broadcaster_addr,
                           bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_add_broadcast_src.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -446,7 +446,7 @@ def bap_add_broadcast_src(advertiser_sid, broadcast_id, pa_sync,
 
 
 def bap_remove_broadcast_src(src_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_remove_broadcast_src.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -461,7 +461,7 @@ def bap_remove_broadcast_src(src_id, bd_addr_type=None, bd_addr=None):
 def bap_modify_broadcast_src(src_id, pa_sync, pa_interval,
                              num_subgroups, subgroups,
                              bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_modify_broadcast_src.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -479,7 +479,7 @@ def bap_modify_broadcast_src(src_id, pa_sync, pa_interval,
 
 def bap_set_broadcast_code(src_id, broadcast_code,
                            bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_set_broadcast_code.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -500,7 +500,7 @@ def bap_set_broadcast_code(src_id, broadcast_code,
 
 
 def bap_send_past(src_id, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{bap_send_past.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -513,7 +513,7 @@ def bap_send_past(src_id, bd_addr_type=None, bd_addr=None):
 
 
 def bap_ev_discovery_completed_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_discovery_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sB'
     if len(data) < struct.calcsize(fmt):
@@ -523,28 +523,28 @@ def bap_ev_discovery_completed_(bap, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'BAP Discovery completed: addr {addr} addr_type '
-                  f'{addr_type} status {status}')
+    logging.debug("BAP Discovery completed: addr %r addr_type %r status %r",
+                  addr, addr_type, status)
 
     bap.event_received(defs.BTP_BAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
 
 
 def bap_ev_codec_cap_found_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_codec_cap_found_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBBHBIB'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr, pac_dir, coding_format, frequencies, frame_durations,\
+    addr_type, addr, pac_dir, coding_format, frequencies, frame_durations, \
         octets_per_frame, channel_counts = struct.unpack_from(fmt, data)
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'Found codec capabilities: addr {addr} addr_type '
-                  f'{addr_type} pac_dir {pac_dir} coding {coding_format:#x} '
-                  f'freq {frequencies:#b} duration {frame_durations:#b} '
-                  f'frame_len {octets_per_frame:#x} channel_counts {channel_counts:#b}')
+    logging.debug("Found codec capabilities: addr %r, addr_type %r, pac_dir %r, coding %r,"
+                  "frequencies %r, duration %r, frame_len %r, channel_counts %r",
+                  addr, addr_type, pac_dir, coding_format, frequencies,
+                  frame_durations, octets_per_frame, channel_counts)
 
     bap.event_received(defs.BTP_BAP_EV_CODEC_CAP_FOUND,
                        (addr_type, addr, pac_dir, coding_format, frequencies,
@@ -552,7 +552,7 @@ def bap_ev_codec_cap_found_(bap, data, data_len):
 
 
 def bap_ev_ase_found_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_ase_found_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBB'
     if len(data) < struct.calcsize(fmt):
@@ -562,14 +562,13 @@ def bap_ev_ase_found_(bap, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'Found ASE: addr {addr} addr_type {addr_type}'
-                  f' dir {ase_dir} ID {ase_id}')
+    logging.debug("Found ASE: addr %r addr_type %r dir %r ID %r", addr, addr_type, ase_dir, ase_id)
 
     bap.event_received(defs.BTP_BAP_EV_ASE_FOUND, (addr_type, addr, ase_dir, ase_id))
 
 
 def bap_ev_stream_received_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_stream_received_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBB'
     fmt_len = struct.calcsize(fmt)
@@ -581,14 +580,14 @@ def bap_ev_stream_received_(bap, data, data_len):
     addr = le_bytes_to_hex_str(addr)
     iso_data = data[fmt_len:]
 
-    logging.debug(f'Stream received: addr {addr} addr_type {addr_type}'
-                  f' ID {ase_id} data {iso_data}')
+    logging.debug("Stream received: addr %r addr_type %r ID %r data %r",
+                  addr, addr_type, ase_id, iso_data)
 
     bap.event_received(defs.BTP_BAP_EV_STREAM_RECEIVED, (addr_type, addr, ase_id, iso_data))
 
 
 def bap_ev_baa_found_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_baa_found_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s3sBH'
     fmt_len = struct.calcsize(fmt)
@@ -607,13 +606,13 @@ def bap_ev_baa_found_(bap, data, data_len):
           'advertiser_sid': advertiser_sid,
           'padv_interval': padv_interval}
 
-    logging.debug(f'Broadcast Audio Announcement received: {ev}')
+    logging.debug("Broadcast Audio Announcement received: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_BAA_FOUND, ev)
 
 
 def bap_ev_bis_found_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_bis_found_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s3s3sBBBHHB'
     fmt_len = struct.calcsize(fmt)
@@ -639,13 +638,13 @@ def bap_ev_bis_found_(bap, data, data_len):
           'cid': cid,
           'ltvs': ltvs}
 
-    logging.debug(f'BIS found: {ev}')
+    logging.debug("BIS found: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_BIS_FOUND, ev)
 
 
 def bap_ev_bis_synced_received_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_bis_synced_received_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s3sB'
     fmt_len = struct.calcsize(fmt)
@@ -662,13 +661,13 @@ def bap_ev_bis_synced_received_(bap, data, data_len):
           'broadcast_id': broadcast_id,
           'bis_id': bis_id}
 
-    logging.debug(f'BIS synced: {ev}')
+    logging.debug("BIS synced: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_BIS_SYNCED, ev)
 
 
 def bap_ev_bis_stream_received_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_bis_stream_received_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s3sBB'
     fmt_len = struct.calcsize(fmt)
@@ -688,13 +687,13 @@ def bap_ev_bis_stream_received_(bap, data, data_len):
           'bis_id': bis_id,
           'bid_data': bis_data}
 
-    logging.debug(f'BIS data received: {ev}')
+    logging.debug("BIS data received: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_BIS_STREAM_RECEIVED, ev)
 
 
 def bap_ev_scan_delegator_found_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_scan_delegator_found_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s'
     fmt_len = struct.calcsize(fmt)
@@ -708,13 +707,13 @@ def bap_ev_scan_delegator_found_(bap, data, data_len):
     ev = {'addr_type': addr_type,
           'addr': addr}
 
-    logging.debug(f'Scan Delegator found: {ev}')
+    logging.debug("Scan Delegator found: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_SCAN_DELEGATOR_FOUND, ev)
 
 
 def bap_ev_broadcast_receive_state_(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_broadcast_receive_state_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBB6sB3sBBB'
     fmt_len = struct.calcsize(fmt)
@@ -743,13 +742,13 @@ def bap_ev_broadcast_receive_state_(bap, data, data_len):
           'subgroups': subgroups,
           }
 
-    logging.debug(f'Broadcast Receive State event: {ev}')
+    logging.debug("Broadcast Receive State event: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_BROADCAST_RECEIVE_STATE, ev)
 
 
 def bap_ev_pa_syn_req(bap, data, data_len):
-    logging.debug('%s %r', bap_ev_pa_syn_req.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sBB3sBH'
     fmt_len = struct.calcsize(fmt)
@@ -771,7 +770,7 @@ def bap_ev_pa_syn_req(bap, data, data_len):
           'pa_interval': pa_interval,
           }
 
-    logging.debug(f'PA Sync Request event: {ev}')
+    logging.debug("PA Sync Request event: %r", ev)
 
     bap.event_received(defs.BTP_BAP_EV_PA_SYNC_REQ, ev)
 

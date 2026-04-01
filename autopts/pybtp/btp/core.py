@@ -20,7 +20,7 @@ from autopts.pybtp import defs
 
 
 def core_iut_ready_ev(core, data, data_len):
-    logging.debug("%s", core_iut_ready_ev.__name__)
+    logging.debug("")
 
     core.event_received(defs.BTP_CORE_EV_IUT_READY, True)
 

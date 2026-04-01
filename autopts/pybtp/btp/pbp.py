@@ -43,7 +43,7 @@ PBP = {
 
 
 def pbp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", pbp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -56,7 +56,7 @@ def pbp_command_rsp_succ(timeout=20.0):
 
 
 def pbp_set_public_broadcast_announcement(features, metadata):
-    logging.debug(f"{pbp_set_public_broadcast_announcement.__name__}")
+    logging.debug("")
 
     data = bytearray()
     metadata_len = len(metadata)
@@ -72,7 +72,7 @@ def pbp_set_public_broadcast_announcement(features, metadata):
 
 
 def pbp_set_broadcast_name(name):
-    logging.debug(f"{pbp_set_broadcast_name.__name__}")
+    logging.debug("")
 
     name_data = name.encode('utf-8')
     data = bytearray()
@@ -86,7 +86,7 @@ def pbp_set_broadcast_name(name):
 
 
 def pbp_broadcast_scan_start():
-    logging.debug(f"{pbp_broadcast_scan_start.__name__}")
+    logging.debug("")
 
     data = bytearray()
     iutctl = get_iut()
@@ -96,7 +96,7 @@ def pbp_broadcast_scan_start():
 
 
 def pbp_broadcast_scan_stop():
-    logging.debug(f"{pbp_broadcast_scan_stop.__name__}")
+    logging.debug("")
 
     data = bytearray()
     iutctl = get_iut()
@@ -106,7 +106,7 @@ def pbp_broadcast_scan_stop():
 
 
 def pbp_ev_public_broadcast_announcement_found(pbp, data, data_len):
-    logging.debug('%s %r', pbp_ev_public_broadcast_announcement_found.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6s3sBHBB'
     fmt_len = struct.calcsize(fmt)
@@ -129,7 +129,7 @@ def pbp_ev_public_broadcast_announcement_found(pbp, data, data_len):
           'pba_features': pba_features,
           'broadcast_name': broadcast_name}
 
-    logging.debug(f'Public Broadcast Announcement received: {ev}')
+    logging.debug("Public Broadcast Announcement received: %r", ev)
 
     pbp.event_received(defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND, ev)
 

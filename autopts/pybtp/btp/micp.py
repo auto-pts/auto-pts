@@ -39,7 +39,7 @@ MICP = {
 
 
 def micp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", micp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -60,7 +60,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def micp_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{micp_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -71,7 +71,7 @@ def micp_discover(bd_addr_type=None, bd_addr=None):
 
 
 def micp_mute(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{micp_mute.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -82,7 +82,7 @@ def micp_mute(bd_addr_type=None, bd_addr=None):
 
 
 def micp_mute_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{micp_mute_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -93,7 +93,7 @@ def micp_mute_read(bd_addr_type=None, bd_addr=None):
 
 
 def micp_ev_discovery_completed_(micp, data, data_len):
-    logging.debug('%s %r', micp_ev_discovery_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -104,11 +104,10 @@ def micp_ev_discovery_completed_(micp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MICP Discovery completed: addr {addr}, addr_type {addr_type}, '
-                  f'att_status {att_status} mute handle {mute_handle},'
-                  f' state handle {state_handle}, gain handle {gain_handle},'
-                  f' type handle {type_handle}, status handle {status_handle},'
-                  f' control handle {control_handle}, description handle {desc_handle}')
+    logging.debug("MICP Discovery completed: addr %r, addr_type %r, att_status %r, mute handle %r, state handle %r,"
+                  "gain handle %r, type handle %r, status handle %r, control handle %r, description handle %r",
+                  addr, addr_type, att_status, mute_handle, state_handle, gain_handle, type_handle, status_handle,
+                  control_handle, desc_handle)
 
     micp.event_received(defs.BTP_MICP_EV_DISCOVERED, (addr_type, addr, att_status, mute_handle,
                                                   state_handle, gain_handle, type_handle,
@@ -116,7 +115,7 @@ def micp_ev_discovery_completed_(micp, data, data_len):
 
 
 def micp_mute_state_ev(micp, data, data_len):
-    logging.debug('%s %r', micp_mute_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -126,8 +125,8 @@ def micp_mute_state_ev(micp, data, data_len):
 
     addr = le_bytes_to_hex_str(addr)
 
-    logging.debug(f'MICP Mute Read: addr {addr} addr_type '
-                  f'{addr_type}, att_status {att_status} mute {mute}')
+    logging.debug("MICP Mute Read: addr %r, addr_type %r, att_status %r, mute %r",
+                  addr, addr_type, att_status, mute)
 
     micp.event_received(defs.BTP_MICP_EV_MUTE_STATE, (addr_type, addr, att_status, mute))
 

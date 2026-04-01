@@ -158,8 +158,8 @@ class BTPSocket:
 
     def send(self, svc_id, op, ctrl_index, data):
         """Send BTP formated data over socket"""
-        logging.debug("%s, %r %r %r %r",
-                      self.send.__name__, svc_id, op, ctrl_index, str(data))
+        logging.debug("%r %r %r %r",
+                      svc_id, op, ctrl_index, str(data))
 
         frame = enc_frame(svc_id, op, ctrl_index, data)
 
@@ -336,7 +336,7 @@ class BTPWorker:
         flag.clear()
 
     def read(self, timeout=20.0):
-        logging.debug("%s", self.read.__name__)
+        logging.debug("")
 
         flag = threading.Event()
         flag.set()
@@ -399,7 +399,7 @@ class BTPWorker:
             self._rx_queue.task_done()
 
     def accept(self, timeout=10.0):
-        logging.debug("%s", self.accept.__name__)
+        logging.debug("")
 
         self._socket.accept(timeout)
 
