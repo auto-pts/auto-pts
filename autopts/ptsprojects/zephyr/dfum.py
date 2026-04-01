@@ -39,35 +39,13 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("DFUM", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("DFUM", "TSPX_time_guard", "300000")
-    pts.set_pixit("DFUM", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("DFUM", "TSPX_tester_database_file",
-                  r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
-    pts.set_pixit("DFUM", "TSPX_mtu_size", "23")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("DFUM", "TSPX_delete_link_key", "TRUE")
     pts.set_pixit("DFUM", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("DFUM", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("DFUM", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("DFUM", "TSPX_scan_interval", "30")
-    pts.set_pixit("DFUM", "TSPX_scan_window", "30")
-    pts.set_pixit("DFUM", "TSPX_scan_filter", "00")
-    pts.set_pixit("DFUM", "TSPX_advertising_interval_min", "160")
-    pts.set_pixit("DFUM", "TSPX_advertising_interval_max", "160")
     pts.set_pixit("DFUM", "TSPX_device_uuid", "00000000000000000000000000000000")
     pts.set_pixit("DFUM", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
-    pts.set_pixit("DFUM", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts.set_pixit("DFUM", "TSPX_enable_IUT_provisioner", "FALSE")
-    pts.set_pixit("DFUM", "TSPX_Procedure_Timeout", "60")
-    pts.set_pixit("DFUM", "TSPX_Client_BLOB_ID", "1100000000000011")
     pts.set_pixit("DFUM", "TSPX_Client_BLOB_Data", r"data.txt")
-    pts.set_pixit("DFUM", "TSPX_TTL", "2")
-    pts.set_pixit("MBTM", "TSPX_Server_Timeout_Base", "5")
-    pts.set_pixit("DFUM", "TSPX_Firmware_ID", "11000011")
-    pts.set_pixit("DFUM", "TSPX_Firmware_Metadata", "1100000000000011")
-    pts.set_pixit("DFUM", "TSPX_Firmware_Update_URI", "http://www.dummy.com")
     pts.set_pixit("DFUM", "TSPX_New_Firmware_Image", r"data2.txt")
-    pts.set_pixit("DFUM", "TSPX_Update_Firmware_Image_Index", "0")
 
 
 def test_cases(ptses):

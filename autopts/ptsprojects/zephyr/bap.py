@@ -40,44 +40,19 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("BAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("BAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("BAP", "TSPX_time_guard", "180000")
-    pts.set_pixit("BAP", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("BAP", "TSPX_mtu_size", "64")
-    pts.set_pixit("BAP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("BAP", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("BAP", "TSPX_pin_code", "0000")
-    pts.set_pixit("BAP", "TSPX_use_dynamic_pin", "FALSE")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("BAP", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("BAP", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
-    """
-    TODO this should be set to -1 but PTS is return error when setting this with RPC so leave
-    this on workspace default
-    pts.set_pixit("BAP", "TSPX_Broadcast_ID", "0")
-    """
-    pts.set_pixit("BAP", "TSPX_Broadcast_ID_2", "0")
 
     if len(ptses) < 2:
         return
 
     pts2 = ptses[1]
-    pts2.set_pixit("BAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts2.set_pixit("BAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts2.set_pixit("BAP", "TSPX_time_guard", "180000")
-    pts2.set_pixit("BAP", "TSPX_use_implicit_send", "TRUE")
-    pts2.set_pixit("BAP", "TSPX_mtu_size", "64")
-    pts2.set_pixit("BAP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts2.set_pixit("BAP", "TSPX_delete_link_key", "FALSE")
-    pts2.set_pixit("BAP", "TSPX_pin_code", "0000")
-    pts2.set_pixit("BAP", "TSPX_use_dynamic_pin", "FALSE")
+
+    """" Set only IXITs that require non-default value """
     pts2.set_pixit("BAP", "TSPX_delete_ltk", "TRUE")
-    pts2.set_pixit("BAP", "TSPX_security_enabled", "FALSE")
-    pts2.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts2.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
