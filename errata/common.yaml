@@ -2,10 +2,6 @@
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
 
-BASS/SR/CP/BV-15-C: https://support.bluetooth.com/hc/en-us/requests/181225
-
-CSIP/CL/SP/BV-07-C: Request ID 170874
-
 GAP/CONN/CPUP/BV-08-C: Laird PTS LE-only dongle required
 GAP/CONN/CPUP/BV-10-C: Laird PTS LE-only dongle required
 GAP/CONN/DCON/BV-05-C: Request ID 183721
@@ -20,7 +16,5 @@ L2CAP/COS/CED/BI-29-C: ES-28495
 
 GTBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
 GTBS/SR/CP/BV-11-C: https://bluetooth.atlassian.net/browse/ES-29033
-GTBS/SR/SPE/BI-05-C: https://support.bluetooth.com/hc/en-us/requests/183919
 TBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
 TBS/SR/CP/BV-11-C: https://bluetooth.atlassian.net/browse/ES-29033
-TBS/SR/SPE/BI-05-C: https://support.bluetooth.com/hc/en-us/requests/183919
