@@ -41,7 +41,7 @@ SDP = {
 
 
 def sdp_search_req(bd_addr=None, bd_addr_type=None, uuid=0x0100):
-    logging.debug("%s %r %r", sdp_search_req.__name__, bd_addr, uuid)
+    logging.debug("%r %r", bd_addr, uuid)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -58,7 +58,7 @@ def sdp_search_req(bd_addr=None, bd_addr_type=None, uuid=0x0100):
 
 
 def sdp_attr_req(bd_addr=None, bd_addr_type=None, service_record_handle=0):
-    logging.debug("%s %r %r", sdp_attr_req.__name__, bd_addr, service_record_handle)
+    logging.debug("%r %r", bd_addr, service_record_handle)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -73,7 +73,7 @@ def sdp_attr_req(bd_addr=None, bd_addr_type=None, service_record_handle=0):
 
 
 def sdp_search_attr_req(bd_addr=None, bd_addr_type=None, uuid=0x0100):
-    logging.debug("%s %r %r", sdp_search_attr_req.__name__, bd_addr, uuid)
+    logging.debug("%r %r", bd_addr, uuid)
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -96,7 +96,7 @@ def sdp_wait_for_service_record_handle(timeout=30, addr=None):
 
 
 def sdp_service_record_handle_ev_(sdp, data, data_len):
-    logging.debug("%s %r", sdp_service_record_handle_ev_.__name__, data)
+    logging.debug("%r", data)
 
     hdr_fmt = '<B6sB'
     hdr_len = struct.calcsize(hdr_fmt)

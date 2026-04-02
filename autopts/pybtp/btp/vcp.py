@@ -60,7 +60,7 @@ VCP = {
 
 
 def vcp_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", vcp_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -81,7 +81,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -92,7 +92,7 @@ def vcp_discover(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_state_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_state_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -103,7 +103,7 @@ def vcp_state_read(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_volume_flags_read(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_volume_flags_read.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -114,7 +114,7 @@ def vcp_volume_flags_read(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_volume_down(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_volume_down.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -125,7 +125,7 @@ def vcp_volume_down(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_volume_up(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_volume_up.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -136,7 +136,7 @@ def vcp_volume_up(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_unmute_vol_down(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_unmute_vol_down.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -147,7 +147,7 @@ def vcp_unmute_vol_down(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_unmute_vol_up(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_unmute_vol_up.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -158,7 +158,7 @@ def vcp_unmute_vol_up(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_set_vol(volume, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_set_vol.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -173,7 +173,7 @@ def vcp_set_vol(volume, bd_addr_type=None, bd_addr=None):
 
 
 def vcp_unmute(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_unmute.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -184,7 +184,7 @@ def vcp_unmute(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_mute(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{vcp_mute.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
@@ -195,7 +195,7 @@ def vcp_mute(bd_addr_type=None, bd_addr=None):
 
 
 def vcp_ev_discovery_completed_(vcp, data, data_len):
-    logging.debug('%s %r', vcp_ev_discovery_completed_.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbHHHHHHHHHHHHH'
     if len(data) < struct.calcsize(fmt):
@@ -232,7 +232,7 @@ def vcp_ev_discovery_completed_(vcp, data, data_len):
 
 
 def vcp_state_ev(vcp, data, data_len):
-    logging.debug('%s %r', vcp_state_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbbb'
     if len(data) < struct.calcsize(fmt):
@@ -249,7 +249,7 @@ def vcp_state_ev(vcp, data, data_len):
 
 
 def vcp_flags_ev(vcp, data, data_len):
-    logging.debug('%s %r', vcp_flags_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
@@ -266,7 +266,7 @@ def vcp_flags_ev(vcp, data, data_len):
 
 
 def vcp_procedure_ev(vcp, data, data_len):
-    logging.debug('%s %r', vcp_procedure_ev.__name__, data)
+    logging.debug('%r', data)
 
     fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):

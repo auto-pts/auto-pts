@@ -80,6 +80,7 @@ AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
 
 def logger_log(self, *args, **kwargs):
     with log_lock:
+        kwargs['stacklevel'] = kwargs.get('stacklevel', 1) + 1
         self.original_log(*args, **kwargs)
 
 

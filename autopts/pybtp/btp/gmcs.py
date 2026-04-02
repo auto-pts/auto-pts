@@ -45,7 +45,7 @@ GMCS = {
 
 
 def gmcs_command_rsp_succ(timeout=20.0):
-    logging.debug("%s", gmcs_command_rsp_succ.__name__)
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -66,7 +66,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 
 def gmcs_control_point_cmd(opcode, use_param, param=None):
-    logging.debug(f"{gmcs_control_point_cmd.__name__}")
+    logging.debug("")
 
     data = bytearray()
     data.extend(struct.pack("b", opcode))
@@ -83,7 +83,7 @@ def gmcs_control_point_cmd(opcode, use_param, param=None):
 
 
 def gmcs_current_track_obj_id_get():
-    logging.debug(f"{gmcs_current_track_obj_id_get.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -102,7 +102,7 @@ def gmcs_current_track_obj_id_get():
 
 
 def gmcs_next_track_obj_id_get():
-    logging.debug(f"{gmcs_next_track_obj_id_get.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -121,7 +121,7 @@ def gmcs_next_track_obj_id_get():
 
 
 def gmcs_inactive_state_set():
-    logging.debug(f"{gmcs_inactive_state_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -139,7 +139,7 @@ def gmcs_inactive_state_set():
 
 
 def gmcs_parent_group_set():
-    logging.debug(f"{gmcs_parent_group_set.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 

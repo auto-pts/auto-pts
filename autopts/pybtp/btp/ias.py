@@ -20,7 +20,7 @@ from autopts.pybtp import defs
 
 
 def ias_ev_out_alert_action(ias, data, data_len):
-    logging.debug("%s %r", ias_ev_out_alert_action.__name__, data)
+    logging.debug("%r", data)
     stack = get_stack()
 
     alert_lvl = int.from_bytes(data, "little")

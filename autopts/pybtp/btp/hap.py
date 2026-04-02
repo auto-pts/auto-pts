@@ -76,7 +76,7 @@ HAP = {
 
 
 def hap_command_rsp_succ(timeout=20.0, exp_op=None):
-    logging.debug(f"{hap_command_rsp_succ.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
 
@@ -88,7 +88,7 @@ def hap_command_rsp_succ(timeout=20.0, exp_op=None):
 
 
 def hap_read_supported_cmds():
-    logging.debug(f"{hap_read_supported_cmds.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*HAP['read_supported_cmds'])
@@ -98,7 +98,7 @@ def hap_read_supported_cmds():
 
 
 def hap_ha_init(hap_type, options):
-    logging.debug(f"{hap_ha_init.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     data = bytearray()
@@ -111,7 +111,7 @@ def hap_ha_init(hap_type, options):
 
 
 def hap_harc_init():
-    logging.debug(f"{hap_harc_init.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*HAP['harc_init'])
@@ -120,7 +120,7 @@ def hap_harc_init():
 
 
 def hap_hauc_init():
-    logging.debug(f"{hap_hauc_init.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*HAP['hauc_init'])
@@ -129,7 +129,7 @@ def hap_hauc_init():
 
 
 def hap_iac_init():
-    logging.debug(f"{hap_iac_init.__name__}")
+    logging.debug("")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*HAP['iac_init'])
@@ -138,7 +138,7 @@ def hap_iac_init():
 
 
 def hap_iac_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_iac_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -149,7 +149,7 @@ def hap_iac_discover(bd_addr_type=None, bd_addr=None):
 
 
 def hap_iac_set_alert(bd_addr_type=None, bd_addr=None, alert=None):
-    logging.debug(f"{hap_iac_set_alert.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', alert)
@@ -161,7 +161,7 @@ def hap_iac_set_alert(bd_addr_type=None, bd_addr=None, alert=None):
 
 
 def hap_hauc_discover(bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_hauc_discover.__name__}")
+    logging.debug("")
 
     data = address_to_ba(bd_addr_type, bd_addr)
 
@@ -172,7 +172,7 @@ def hap_hauc_discover(bd_addr_type=None, bd_addr=None):
 
 
 def hap_read_presets(start_index, num_presets, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_read_presets.__name__}, start_index {start_index}, num_presets {num_presets}")
+    logging.debug(f"start_index {start_index}, num_presets {num_presets}")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', start_index)
@@ -185,7 +185,7 @@ def hap_read_presets(start_index, num_presets, bd_addr_type=None, bd_addr=None):
 
 
 def hap_write_preset_name(index, name, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_write_preset_name.__name__}, index {index}, name {name}")
+    logging.debug(f"index {index}, name {name}")
     encoded_name = name.encode()
     size = len(encoded_name)
 
@@ -201,7 +201,7 @@ def hap_write_preset_name(index, name, bd_addr_type=None, bd_addr=None):
 
 
 def hap_set_active_preset(index, synchronize_locally=0, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_set_active_preset.__name__}, index {index}, synchronize_locally {synchronize_locally}")
+    logging.debug(f"index {index}, synchronize_locally {synchronize_locally}")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', index)
@@ -214,7 +214,7 @@ def hap_set_active_preset(index, synchronize_locally=0, bd_addr_type=None, bd_ad
 
 
 def hap_set_next_preset(synchronize_locally=0, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_set_next_preset.__name__}, synchronize_locally {synchronize_locally}")
+    logging.debug(f"synchronize_locally {synchronize_locally}")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', synchronize_locally)
@@ -226,7 +226,7 @@ def hap_set_next_preset(synchronize_locally=0, bd_addr_type=None, bd_addr=None):
 
 
 def hap_set_previous_preset(synchronize_locally=0, bd_addr_type=None, bd_addr=None):
-    logging.debug(f"{hap_set_previous_preset.__name__}, synchronize_locally {synchronize_locally}")
+    logging.debug(f"synchronize_locally {synchronize_locally}")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', synchronize_locally)
@@ -238,7 +238,7 @@ def hap_set_previous_preset(synchronize_locally=0, bd_addr_type=None, bd_addr=No
 
 
 def hap_ev_iac_discovery_complete_(hap, data, data_len):
-    logging.debug("%s %r", hap_ev_iac_discovery_complete_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sB'
     if len(data) < struct.calcsize(fmt):
@@ -254,7 +254,7 @@ def hap_ev_iac_discovery_complete_(hap, data, data_len):
 
 
 def hap_ev_hauc_discovery_complete_(hap, data, data_len):
-    logging.debug("%s %r", hap_ev_hauc_discovery_complete_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sbHHH'
     if len(data) < struct.calcsize(fmt):
@@ -279,7 +279,7 @@ def hap_ev_hauc_discovery_complete_(hap, data, data_len):
 
 
 def hap_ev_preset_changed_(hap, data, data_len):
-    logging.debug("%s %r", hap_ev_preset_changed_.__name__, data)
+    logging.debug("%r", data)
 
     fmt = '<B6sBBBBBB'
     fixed_size = struct.calcsize(fmt)
