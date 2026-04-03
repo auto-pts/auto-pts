@@ -641,7 +641,7 @@ def gap_wait_for_sec_lvl_change(level, timeout=30):
     return stack.gap.gap_wait_for_sec_lvl_change(level, timeout)
 
 
-def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
+def gap_start_advertising(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
     logging.debug("%r %r", ad, sd)
 
     if ad is None:
@@ -704,7 +704,7 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
     __gap_current_settings_update(tuple_data)
 
 
-def gap_adv_off():
+def gap_stop_advertising():
     logging.debug("")
 
     stack = get_stack()
@@ -721,7 +721,7 @@ def gap_adv_off():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
+def gap_start_direct_adv(addr, addr_type, high_duty=0, peer_rpa=0):
     logging.debug("%r %r %r %r", addr,
                   addr_type, high_duty, peer_rpa)
 
@@ -753,10 +753,10 @@ def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
     __gap_current_settings_update(tuple_data)
 
 
-def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_identity_address):
+def gap_connect(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_identity_address):
     logging.debug("%r %r", bd_addr, bd_addr_type)
-    iutctl = get_iut()
 
+    iutctl = get_iut()
     data_ba = bytearray()
     bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = struct.pack('B', pts_addr_type_get(bd_addr_type))
@@ -769,7 +769,7 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
     iutctl.btp_socket.send_wait_rsp(*GAP['conn'], data=data_ba)
 
 
-def set_filter_accept_list(address_list=None):
+def gap_set_filter_accept_list(address_list=None):
     """ Send tuples (address_type, address) to IUT
         and save them to the filter accept list.
         If address_list=None, PTS's (type, address) will be sent.
@@ -800,7 +800,7 @@ def set_filter_accept_list(address_list=None):
     gap_command_rsp_succ()
 
 
-def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
+def gap_connect_using_rpa(description, own_addr_type=OwnAddrType.le_identity_address):
     """Initiate connection with PTS using RPA address provided
     in MMI description. Function returns True.
 
@@ -825,8 +825,9 @@ def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
     return True
 
 
-def gap_disconn(bd_addr=None, bd_addr_type=None):
+def gap_disconnect(bd_addr=None, bd_addr_type=None):
     logging.debug("%r %r", bd_addr, bd_addr_type)
+
     iutctl = get_iut()
 
     stack = get_stack()
@@ -851,8 +852,9 @@ def verify_not_connected(description):
     return True
 
 
-def gap_set_io_cap(io_cap):
+def gap_set_io_capability(io_cap):
     logging.debug("%r", io_cap)
+
     iutctl = get_iut()
     stack = get_stack()
     stack.gap.io_cap = io_cap
@@ -919,9 +921,9 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ(defs.BTP_GAP_CMD_UNPAIR)
 
 
-def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
-    logging.debug("%r %r", bd_addr,
-                  bd_addr_type)
+def gap_passkey_entry_response(bd_addr, bd_addr_type, passkey):
+    logging.debug("%r %r", bd_addr, bd_addr_type)
+
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -941,9 +943,9 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     gap_command_rsp_succ()
 
 
-def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
-    logging.debug("%r %r", bd_addr,
-                  bd_addr_type)
+def gap_confirm_passkey(bd_addr, bd_addr_type, passkey):
+    logging.debug("%r %r", bd_addr, bd_addr_type)
+
     iutctl = get_iut()
 
     data_ba = bytearray()
@@ -973,7 +975,7 @@ def gap_reset():
     gap_command_rsp_succ()
 
 
-def gap_set_conn():
+def gap_set_connectable():
     logging.debug("")
 
     stack = get_stack()
@@ -990,7 +992,7 @@ def gap_set_conn():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_set_nonconn():
+def gap_set_non_connectable():
     logging.debug("")
 
     stack = get_stack()
@@ -1007,7 +1009,7 @@ def gap_set_nonconn():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_set_nondiscov():
+def gap_set_non_discoverable():
     logging.debug("")
 
     stack = get_stack()
@@ -1024,7 +1026,7 @@ def gap_set_nondiscov():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_set_gendiscov():
+def gap_set_general_discoverable():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1035,7 +1037,7 @@ def gap_set_gendiscov():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_set_limdiscov():
+def gap_set_limited_discoverable():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1139,7 +1141,7 @@ def gap_start_discov(transport='le', discov_type='active', mode='general'):
     gap_command_rsp_succ()
 
 
-def gap_stop_discov():
+def gap_stop_discovery():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1152,7 +1154,7 @@ def gap_stop_discov():
     stack.gap.discoverying.data = False
 
 
-def gap_read_ctrl_info():
+def gap_read_controller_info():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1200,10 +1202,11 @@ def gap_command_rsp_succ(op=None):
     return tuple_data
 
 
-def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
-                          conn_itvl_max, conn_latency, supervision_timeout):
+def gap_update_connection_parameters(bd_addr, bd_addr_type, conn_itvl_min,
+                                     conn_itvl_max, conn_latency, supervision_timeout):
     logging.debug("%r %r 0x%04x 0x%04x 0x%04x 0x%04x",
                   bd_addr, bd_addr_type, conn_itvl_min, conn_itvl_max, conn_latency, supervision_timeout)
+
     iutctl = get_iut()
 
     gap_wait_for_connection()
@@ -1280,7 +1283,7 @@ def gap_oob_sc_set_remote_data(r, c):
     gap_command_rsp_succ()
 
 
-def gap_set_mitm_on():
+def gap_enable_mitm_protection():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1290,7 +1293,7 @@ def gap_set_mitm_on():
     gap_command_rsp_succ()
 
 
-def gap_set_mitm_off():
+def gap_disable_mitm_protection():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1334,7 +1337,7 @@ def gap_set_privacy_off():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_set_sc_only_on():
+def gap_enable_secure_connections_only():
     logging.debug("")
 
     stack = get_stack()
@@ -1351,7 +1354,7 @@ def gap_set_sc_only_on():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_set_sc_only_off():
+def gap_disable_secure_connections_only():
     logging.debug("")
 
     stack = get_stack()
@@ -1382,7 +1385,7 @@ def gap_set_min_enc_key_size(enc_key_size):
     gap_command_rsp_succ()
 
 
-def gap_set_sc_on():
+def gap_enable_secure_connections():
     logging.debug("")
 
     stack = get_stack()
@@ -1464,7 +1467,7 @@ def parse_eir_data(eir):
     return data
 
 
-def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, uuids=None, svc_data=None):
+def check_discovery_results(addr_type=None, addr=None, discovered=True, eir=None, uuids=None, svc_data=None):
     addr = pts_addr_get(addr)
     addr_type = pts_addr_type_get(addr_type)
 
@@ -1514,7 +1517,7 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, u
     return False
 
 
-def check_scan_rep_and_rsp(report, response):
+def check_scan_report_and_response(report, response):
     stack = get_stack()
     devices = stack.gap.found_devices.data
 
@@ -1598,7 +1601,7 @@ def verify_ead_payload(decrypted, expected):
     return decrypted == b''.fromhex(expected)
 
 
-def create_ead_adv(payload):
+def gap_create_encrypted_adv_data(payload):
     """Create Encrypted Advertising Data (EAD) by encrypting the given payload.
 
     Arguments:
@@ -1606,7 +1609,7 @@ def create_ead_adv(payload):
 
     Returns encrypted EAD data (without length byte).
     """
-    logging.debug("create_ead_adv %r", payload)
+    logging.debug("create_encrypted_adv_data %r", payload)
     iutctl = get_iut()
     payload_ba = bytearray(struct.pack("B", len(payload))) + payload
     _setup_ead_key_material()
@@ -1854,7 +1857,7 @@ def gap_set_broadcast_code(broadcast_code):
     stack.gap.big_broadcast_code = broadcast_code
 
 
-def gap_set_uuid16_svc_data(advData, uuid, service_data=None):
+def gap_set_uuid16_svc_data(adv_data, uuid, service_data=None):
     """Update service data. Will overwrite existing UUID16 service data if present"""
     # Convert uuid to integer if it's a string
     if not isinstance(uuid, int):
@@ -1872,15 +1875,15 @@ def gap_set_uuid16_svc_data(advData, uuid, service_data=None):
             raise TypeError(f"service_data must be bytes, got {type(service_data).__name__}")
 
     # Initialize uuid16_svc_data if it doesn't exist
-    if AdType.uuid16_svc_data not in advData:
-        advData[AdType.uuid16_svc_data] = []
+    if AdType.uuid16_svc_data not in adv_data:
+        adv_data[AdType.uuid16_svc_data] = []
 
-    for entry in advData[AdType.uuid16_svc_data]:
+    for entry in adv_data[AdType.uuid16_svc_data]:
         existing_uuid = struct.unpack_from('<H', entry[:2])[0]
         if existing_uuid == uuid:
-            advData[AdType.uuid16_svc_data].remove(entry)
+            adv_data[AdType.uuid16_svc_data].remove(entry)
             break
     if service_data is None:
-        advData[AdType.uuid16_svc_data] += [struct.pack('<H', uuid)]
+        adv_data[AdType.uuid16_svc_data] += [struct.pack('<H', uuid)]
     else:
-        advData[AdType.uuid16_svc_data] += [struct.pack('<H', uuid) + service_data]
+        adv_data[AdType.uuid16_svc_data] += [struct.pack('<H', uuid) + service_data]
