@@ -250,7 +250,7 @@ in `autopts/pybtp/btp/gap.py`. So the handler of MMI 20100 is implemented as fal
 
 ```python
 def hdl_wid_20100(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 ```
 
@@ -280,9 +280,9 @@ def test_cases(ptses):
     # Custom preconditions
     pre_conditions_server = pre_conditions + [
         TestFunc(btp.gap_set_extended_advertising_on),
-        TestFunc(lambda: btp.gap_adv_ind_on(ad=ad)),
+        TestFunc(lambda: btp.gap_start_advertising(ad=ad)),
     ]
-    
+
     test_case_name_list = pts.get_test_case_list('PROFILE')
     tc_list = []
 

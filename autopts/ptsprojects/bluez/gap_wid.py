@@ -32,25 +32,25 @@ def gap_wid_hdl(wid, description, test_case_name):
 def hdl_wid_47(_: WIDParams):
     stack = get_stack()
 
-    btp.gap_set_nonconn()
+    btp.gap_set_non_connectable()
 
     # Name cannot be used for AD Data in BlueZ because BlueZ alwasy use Name
     # for SD Data. So, override the AD data here.
     stack.gap.ad = {AdType.manufacturer_data: 'FFFFABCD'}
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
 
 def hdl_wid_77(_: WIDParams):
     time.sleep(2)
-    btp.gap_disconn()
+    btp.gap_disconnect()
     return True
 
 
 def hdl_wid_78(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     btp.gap_wait_for_connection()
     return True
 
@@ -62,16 +62,16 @@ def hdl_wid_79(params: WIDParams):
 def hdl_wid_80(_: WIDParams):
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_set_nonconn()
-    btp.gap_set_nondiscov()
+    btp.gap_stop_advertising()
+    btp.gap_set_non_connectable()
+    btp.gap_set_non_discoverable()
 
     # Name cannot be used for AD Data in BlueZ because BlueZ alwasy use Name
     # for SD Data. So, override the AD data here.
     stack.gap.ad = {}
     stack.gap.ad[AdType.manufacturer_data] = 'FFFFABCD'
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 

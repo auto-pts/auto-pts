@@ -100,7 +100,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_mesh),
         TestFunc(btp.mesh_init),
         TestFunc(btp.core_reg_svc_mmdl),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(stack.gap_init, iut_device_name),
         TestFunc(stack.mesh_init, device_uuid, device_uuid2),
         TestFunc(lambda: stack.mesh.set_prov_data(oob, out_size, rand_out_actions, in_size,

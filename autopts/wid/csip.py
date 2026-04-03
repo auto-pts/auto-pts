@@ -70,9 +70,9 @@ def hdl_wid_5(params: WIDParams):
 
     key = gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]
     if stack.gap.current_settings_get(key):
-        btp.gap_adv_off()
+        btp.gap_stop_advertising()
 
-    btp.gap_adv_ind_on(ad=advdata, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_start_advertising(ad=advdata, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
 
 
@@ -186,7 +186,7 @@ def hdl_wid_20100(params: WIDParams):
         addr_type = btp.pts_addr_type_get()
         addr = btp.pts_addr_get()
 
-    btp.gap_conn(addr, addr_type)
+    btp.gap_connect(addr, addr_type)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
     sec_lvl = stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=10, addr=addr)
 
@@ -375,7 +375,7 @@ def hdl_wid_20115(params: WIDParams):
         addr_type = btp.pts_addr_type_get()
         addr = btp.pts_addr_get()
 
-    btp.gap_disconn(addr, addr_type)
+    btp.gap_disconnect(addr, addr_type)
 
     return True
 

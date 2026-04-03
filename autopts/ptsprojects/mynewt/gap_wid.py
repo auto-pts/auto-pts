@@ -65,10 +65,10 @@ def hdl_wid_112(params: WIDParams):
 
 
 def hdl_wid_204(_: WIDParams):
-    btp.gap_start_discov(discov_type='passive', mode='observe')
+    btp.gap_start_discovery(discov_type='passive', mode='observe')
     sleep(10)
-    btp.gap_stop_discov()
-    return btp.check_discov_results(addr_type=0x02)
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results(addr_type=0x02)
 
 
 def hdl_wid_1002(_: WIDParams):

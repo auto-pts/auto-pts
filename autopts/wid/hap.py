@@ -519,8 +519,8 @@ def hdl_wid_20001(_: WIDParams):
         Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
     """
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
@@ -537,7 +537,7 @@ def hdl_wid_20100(params: WIDParams):
         addr_type = pts_addr_type_get()
 
     stack = get_stack()
-    btp.gap_conn(addr, addr_type)
+    btp.gap_connect(addr, addr_type)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
     stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 

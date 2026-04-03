@@ -83,7 +83,7 @@ def test_cases(ptses):
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(btp.core_reg_svc_sdp),
         TestFunc(stack.sdp_init),
         TestFunc(lambda: pts.update_pixit_param(
@@ -91,9 +91,9 @@ def test_cases(ptses):
                  stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param("SDP", "TSPX_delete_link_key", "TRUE")),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-        TestFunc(btp.gap_set_conn),
-        TestFunc(btp.gap_set_gendiscov),
+        TestFunc(btp.gap_set_io_capability, IOCap.no_input_output),
+        TestFunc(btp.gap_set_connectable),
+        TestFunc(btp.gap_set_general_discoverable),
     ]
 
     custom_test_cases = [

@@ -37,7 +37,7 @@ def gatt_wid_hdl(wid, description, test_case_name):
 
 def hdl_wid_3(_: WIDParams):
     time.sleep(2)
-    btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
+    btp.gap_disconnect(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
 

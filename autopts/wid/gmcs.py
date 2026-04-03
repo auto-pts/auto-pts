@@ -222,8 +222,8 @@ def hdl_wid_20001(params: WIDParams):
         MEDIA_PROXY_OP_PLAY = 0x01
         btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PLAY, 0)
 
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     if params.test_case_name == "GMCS/SR/SP/BV-01-C":
         btp.gmcs_parent_group_set()

@@ -149,7 +149,7 @@ def test_cases_server(ptses):
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                        TestFunc(btp.gap_read_ctrl_info),
+                        TestFunc(btp.gap_read_controller_info),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
                             stack.gap.iut_addr_get_str())),
@@ -157,15 +157,15 @@ def test_cases_server(ptses):
 
     pre_conditions_2 = [TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatt),
-                        TestFunc(btp.gap_read_ctrl_info),
+                        TestFunc(btp.gap_read_controller_info),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
                             stack.gap.iut_addr_get_str())),
                         TestFunc(lambda: set_addr(
                             stack.gap.iut_addr_get_str())),
-                        TestFunc(btp.gap_set_gendiscov),
+                        TestFunc(btp.gap_set_general_discoverable),
                         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                        TestFunc(btp.gap_set_conn)]
+                        TestFunc(btp.gap_set_connectable)]
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/SR/GAN/BV-02-C",
@@ -182,7 +182,7 @@ def test_cases_server(ptses):
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   edit1_wids={2000: btp.var_store_get_passkey},
                   cmds=pre_conditions_2 +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=1),
+                  [TestFunc(btp.gap_start_advertising, start_wid=1),
                    # Service Changed is triggered for bonded devices only
                    TestFunc(btp.gap_wait_for_connection,
                             start_wid=1),
@@ -242,7 +242,7 @@ def test_cases_client(pts):
     stack = get_stack()
 
     pre_conditions_cl = [TestFunc(btp.core_reg_svc_gap),
-                         TestFunc(btp.gap_read_ctrl_info),
+                         TestFunc(btp.gap_read_controller_info),
                          TestFunc(lambda: pts.update_pixit_param(
                              "GATT", "TSPX_bd_addr_iut",
                              stack.gap.iut_addr_get_str())),

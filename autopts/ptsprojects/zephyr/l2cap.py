@@ -88,7 +88,7 @@ def test_cases(ptses):
 
     common = [TestFunc(btp.core_reg_svc_gap),
               TestFunc(btp.core_reg_svc_l2cap),
-              TestFunc(btp.gap_read_ctrl_info),
+              TestFunc(btp.gap_read_controller_info),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_bd_addr_iut",
                   stack.gap.iut_addr_get_str())),
@@ -133,7 +133,7 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_delete_link_key", "FALSE")),
         TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_delete_ltk", "FALSE")),
         TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "False")),
-        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+        TestFunc(btp.gap_set_io_capability, IOCap.no_input_output),
     ]
 
     br_l2cap = br_pre_cond + [

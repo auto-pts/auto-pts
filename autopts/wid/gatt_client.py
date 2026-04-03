@@ -44,9 +44,9 @@ def hdl_wid_1(_: WIDParams):
     can accept GATT connect request from PTS.
     """
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
@@ -57,7 +57,7 @@ def hdl_wid_2(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can
     initiate GATT connect request to PTS.
     """
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -68,7 +68,7 @@ def hdl_wid_3(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can
     initiate GATT disconnect request to PTS.
     """
-    btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
+    btp.gap_disconnect(btp.pts_addr_get(), btp.pts_addr_type_get())
     return get_stack().gap.wait_for_disconnection(30)
 
 
@@ -80,7 +80,7 @@ def hdl_wid_4(_: WIDParams):
     that no authentication or authorization procedure has been performed
     between the IUT and the test system.
     """
-    btp.gap_set_io_cap(IOCap.no_input_output)
+    btp.gap_set_io_capability(IOCap.no_input_output)
     return True
 
 

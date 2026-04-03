@@ -35,7 +35,7 @@ def hdl_wid_143(_):
 
     zephyrctl.wait_iut_ready_event()
     btp.core_reg_svc_gap()
-    btp.gap_read_ctrl_info()
+    btp.gap_read_controller_info()
 
     return True
 
