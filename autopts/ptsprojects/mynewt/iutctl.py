@@ -16,18 +16,23 @@
 
 import logging
 
-from autopts.ptsprojects.iutctl import IutCtl
+from autopts.ptsprojects.iutctl import IutCtl, IutCtlWrapper
 
 log = logging.debug
 MYNEWT = None
 
 
-class MynewtCtl(IutCtl):
-    """Mynewt OS Control Class"""
+def create_mynewt_ctl_class(use_wrapper: bool):
+    base = IutCtlWrapper if use_wrapper else IutCtl
 
-    def __init__(self, args):
-        super().__init__(args)
-        self._rtt_logger_name = 'Terminal'
+    class MynewtCtl(base):
+        """Mynewt OS Control Class"""
+
+        def __init__(self, args):
+            super().__init__(args)
+            self._rtt_logger_name = 'Terminal'
+
+    return MynewtCtl
 
 
 def get_iut():
@@ -43,7 +48,10 @@ def init(args):
     """
     global MYNEWT
 
-    MYNEWT = MynewtCtl(args)
+    use_wrapper = args.iut_targets is not None
+    mynewt_ctl_class = create_mynewt_ctl_class(use_wrapper)
+
+    MYNEWT = mynewt_ctl_class(args)
 
 
 def cleanup():
