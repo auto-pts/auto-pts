@@ -31,7 +31,7 @@ def sm_wid_hdl(wid, description, test_case_name):
 
 
 def hdl_wid_100(params: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     get_stack().gap.wait_for_connection(30)
 
     if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C',
@@ -42,7 +42,7 @@ def hdl_wid_100(params: WIDParams):
 
 
 def hdl_wid_101(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -60,16 +60,16 @@ def hdl_wid_102(params: WIDParams):
 
     if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C']:
         if SM_ACL_DISCONN_ROUND == 1:
-            btp.gap_disconn()
+            btp.gap_disconnect()
         else:
-            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+            btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     elif params.test_case_name in ['SM/CEN/SCCT/BV-07-C', 'SM/CEN/SCCT/BV-09-C']:
         if SM_ACL_DISCONN_ROUND == 1:
-            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+            btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
-            btp.gap_disconn()
+            btp.gap_disconnect()
     else:
-        btp.gap_disconn()
+        btp.gap_disconnect()
 
     SM_ACL_DISCONN_ROUND = SM_ACL_DISCONN_ROUND + 1
 
@@ -82,7 +82,7 @@ def hdl_wid_104(params: WIDParams):
         bd_addr = btp.pts_addr_get()
         bd_addr_type = btp.pts_addr_type_get()
         passkey = stack.gap.get_passkey()
-        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+        btp.gap_passkey_entry_response(bd_addr, bd_addr_type, passkey)
     return btp.var_store_get_passkey(params.description)
 
 
@@ -97,7 +97,7 @@ def hdl_wid_107(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+    btp.gap_passkey_entry_response(bd_addr, bd_addr_type, passkey)
     return True
 
 
@@ -136,9 +136,9 @@ def hdl_wid_111(_: WIDParams):
 def hdl_wid_115(_: WIDParams):
     stack = get_stack()
 
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd)
     return True
 
 
@@ -165,7 +165,7 @@ def hdl_wid_142(params: WIDParams):
     if stack.gap.get_passkey() is None:
         return False
 
-    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    btp.gap_passkey_confirm_response(bd_addr, bd_addr_type, passkey)
     match = stack.gap.passkey.data == passkey
 
     # clear passkey for repeated pairing attempts
@@ -290,13 +290,13 @@ def hdl_wid_1009(params: WIDParams):
 
 def hdl_wid_20001(_: WIDParams):
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
 def hdl_wid_20100(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -305,7 +305,7 @@ def hdl_wid_20011(params: WIDParams):
 
 
 def hdl_wid_20115(_: WIDParams):
-    btp.gap_disconn()
+    btp.gap_disconnect()
     return True
 
 
@@ -313,7 +313,7 @@ def hdl_wid_172(_: WIDParams):
     '''
     Please initiate a connection over BR/EDR to the PTS, and initiate pairing process.
     '''
-    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     btp.gap_wait_for_connection()
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     return True
@@ -338,6 +338,6 @@ def hdl_wid_171(_: WIDParams):
     '''
     Please prepare IUT into a connectable mode in BR/EDR.
     '''
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
     return True

@@ -119,12 +119,12 @@ def test_cases(ptses):
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
-        TestFunc(btp.gap_set_conn),
-        TestFunc(btp.gap_set_gendiscov),
+        TestFunc(btp.gap_set_connectable),
+        TestFunc(btp.gap_set_general_discoverable),
         TestFunc(btp.core_reg_svc_mics),
         TestFunc(btp.core_reg_svc_vcs),
         TestFunc(btp.vcs_register, 1, False, 100),
@@ -182,7 +182,7 @@ def test_cases(ptses):
         TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
                           struct.pack('<BHHB', BAPAnnouncement.GENERAL, SINK_CONTEXTS, SOURCE_CONTEXTS, 0)),
         TestFunc(announcements, adv_data),
-        TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
+        TestFunc(btp.gap_start_advertising, ad=adv_data, sd=rsp_data),
     ]
 
     targeted_conditions = [
@@ -191,7 +191,7 @@ def test_cases(ptses):
         TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
                           struct.pack('<BHHB', BAPAnnouncement.TARGETED, SINK_CONTEXTS, SOURCE_CONTEXTS, 0)),
         TestFunc(announcements, adv_data),
-        TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
+        TestFunc(btp.gap_start_advertising, ad=adv_data, sd=rsp_data),
     ]
 
     custom_test_cases = [

@@ -67,17 +67,17 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
         TestFunc(btp.core_reg_svc_gatt),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(lambda: pts.update_pixit_param(
             "MICS", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: set_addr(
             stack.gap.iut_addr_get_str())),
-        TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+        TestFunc(btp.gap_set_io_capability, IOCap.display_only),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
-        TestFunc(btp.gap_set_conn),
-        TestFunc(btp.gap_set_gendiscov),
+        TestFunc(btp.gap_set_connectable),
+        TestFunc(btp.gap_set_general_discoverable),
         TestFunc(btp.core_reg_svc_mics),
         TestFunc(lambda: pts.update_pixit_param(
             "MICS", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),

@@ -74,14 +74,14 @@ def hdl_wid_102(params: WIDParams):
     '''
     global SDP_RECORD_HANDLE
 
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+    if not btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
 
-    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     btp.gap_wait_for_connection()
     if params.test_case_name in ["SDP/CL/SSA/BV-01-C"]:
         btp.sdp_search_attr_req(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, uuid=0x0100)

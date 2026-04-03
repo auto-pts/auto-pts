@@ -60,8 +60,8 @@ def hdl_wid_20001(params: WIDParams):
     """Please prepare IUT into a connectable mode. Verify that the
     Implementation Under Test (IUT) can accept GATT connect request from PTS."""
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 

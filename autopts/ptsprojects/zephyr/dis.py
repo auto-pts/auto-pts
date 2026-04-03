@@ -71,7 +71,7 @@ def test_cases(ptses):
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
                  iut_svcs),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(lambda: pts.update_pixit_param(
             "DIS", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),

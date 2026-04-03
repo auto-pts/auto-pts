@@ -943,7 +943,7 @@ def gap_passkey_entry_response(bd_addr, bd_addr_type, passkey):
     gap_command_rsp_succ()
 
 
-def gap_confirm_passkey(bd_addr, bd_addr_type, passkey):
+def gap_passkey_confirm_response(bd_addr, bd_addr_type, passkey):
     logging.debug("%r %r", bd_addr, bd_addr_type)
 
     iutctl = get_iut()
@@ -1104,7 +1104,7 @@ def gap_set_bondable_off():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_start_discov(transport='le', discov_type='active', mode='general'):
+def gap_start_discovery(transport='le', discov_type='active', mode='general'):
     """GAP Start Discovery function.
 
     Possible options (key: <values>):
@@ -1283,7 +1283,7 @@ def gap_oob_sc_set_remote_data(r, c):
     gap_command_rsp_succ()
 
 
-def gap_enable_mitm_protection():
+def gap_set_mitm_on():
     logging.debug("")
 
     iutctl = get_iut()
@@ -1293,7 +1293,7 @@ def gap_enable_mitm_protection():
     gap_command_rsp_succ()
 
 
-def gap_disable_mitm_protection():
+def gap_set_mitm_off():
     logging.debug("")
 
     iutctl = get_iut()

@@ -73,9 +73,9 @@ def hdl_wid_15(_: WIDParams):
     description: Action: Place the IUT in connectable mode.
     """
     stack = btp.get_stack()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -99,10 +99,10 @@ def hdl_wid_22(params: WIDParams):
                                  'L2CAP/EWC/BV-03-C', 'L2CAP/COS/CFD/BV-09-C',
                                  'L2CAP/COS/CED/BV-01-C', 'L2CAP/CLS/CLR/BV-01-C',
                                  'L2CAP/CLS/UCD/BV-02-C', 'L2CAP/CLS/UCD/BV-03-C']:
-        btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
-    btp.gap_disconn()
+    btp.gap_disconnect()
 
     return True
 
@@ -244,7 +244,7 @@ def hdl_wid_51(_: WIDParams):
     description: Initiate or create LE ACL connection to the PTS.
     """
     btp.gap_wait_for_disconnection(5)
-    btp.gap_conn()
+    btp.gap_connect()
 
     return True
 
@@ -308,9 +308,9 @@ def hdl_wid_56(_: WIDParams):
     description: Action: Place the IUT in connectable mode.
     """
     stack = btp.get_stack()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -334,7 +334,7 @@ def hdl_wid_58(_: WIDParams):
 
 
 def hdl_wid_59(_: WIDParams):
-    btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
+    btp.gap_update_connection_parameters(btp.pts_addr_get(), btp.pts_addr_type_get(),
                               720, 864, 0, 400)
     return True
 
@@ -703,14 +703,14 @@ def hdl_wid_2000(_: WIDParams):
 
 def hdl_wid_20001(_: WIDParams):
     stack = btp.get_stack()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
 def hdl_wid_20100(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -732,7 +732,7 @@ def hdl_wid_49(params: WIDParams):
     '''
     Using the Implementation Under Test(IUT), initiate ACL Create Connection Request to the PTS.
     '''
-    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     btp.gap_wait_for_connection()
     l2cap = btp.get_stack().l2cap
 

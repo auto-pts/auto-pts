@@ -155,13 +155,13 @@ def test_cases_server(ptses):
                     TestFunc(btp.core_reg_svc_gap),
                     TestFunc(stack.gap_init, iut_device_name),
                     TestFunc(btp.core_reg_svc_gatt),
-                    TestFunc(btp.gap_read_ctrl_info),
+                    TestFunc(btp.gap_read_controller_info),
                     TestFunc(lambda: pts.update_pixit_param(
                         "GATT", "TSPX_bd_addr_iut",
                         stack.gap.iut_addr_get_str())),
                     TestFunc(lambda: set_addr(
                         stack.gap.iut_addr_get_str())),
-                    TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                    TestFunc(btp.gap_set_io_capability, IOCap.display_only),
                     TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public),
                     TestFunc(stack.gatt_init)
     ]
@@ -375,7 +375,7 @@ def test_cases_client(pts):
     pre_conditions = [
         TestFunc(stack.gap_init, iut_device_name),
         TestFunc(btp.core_reg_svc_gap),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(lambda: pts.update_pixit_param(
             "GATT", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),

@@ -47,8 +47,8 @@ def gap_wid_hdl(wid, description, test_case_name):
 # wid handlers section begin
 def hdl_wid_4(_: WIDParams):
     sleep(10)  # Give some time to discover devices
-    btp.gap_stop_discov()
-    return btp.check_discov_results()
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results()
 
 
 def hdl_wid_5(_: WIDParams):
@@ -57,53 +57,53 @@ def hdl_wid_5(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_nonconn()
-    btp.gap_set_nondiscov()
+    btp.gap_set_non_connectable()
+    btp.gap_set_non_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd)
     return True
 
 
 def hdl_wid_9(_: WIDParams):
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_stop_advertising()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
 def hdl_wid_10(_: WIDParams):
-    btp.gap_stop_discov()
-    return btp.check_discov_results(discovered=True)
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results(discovered=True)
 
 
 def hdl_wid_11(_: WIDParams):
-    btp.gap_stop_discov()
-    return btp.check_discov_results(discovered=False)
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results(discovered=False)
 
 
 def hdl_wid_12(_: WIDParams):
-    btp.gap_start_discov(discov_type='passive', mode='observe')
+    btp.gap_start_discovery(discov_type='passive', mode='observe')
     return True
 
 
 def hdl_wid_13(_: WIDParams):
-    btp.gap_start_discov(mode='limited')
+    btp.gap_start_discovery(mode='limited')
     return True
 
 
 def hdl_wid_14(_: WIDParams):
-    btp.gap_stop_discov()
-    return btp.check_discov_results(discovered=True)
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results(discovered=True)
 
 
 def hdl_wid_20(_: WIDParams):
     stack = btp.get_stack()
-    btp.gap_set_nonconn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_non_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
@@ -113,15 +113,15 @@ def hdl_wid_21(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_conn()
+    btp.gap_set_connectable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
 
 def hdl_wid_23(_: WIDParams):
-    btp.gap_start_discov()
+    btp.gap_start_discovery()
     return True
 
 
@@ -131,7 +131,7 @@ def hdl_wid_24(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -145,7 +145,7 @@ def hdl_wid_25(_: WIDParams):
     if stack.gap.flags:
         stack.gap.ad[AdType.flags] = stack.gap.flags
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -158,7 +158,7 @@ def hdl_wid_26(_: WIDParams):
 
     stack.gap.ad[AdType.manufacturer_data] = stack.gap.manufacturer_data
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -171,7 +171,7 @@ def hdl_wid_27(_: WIDParams):
 
     stack.gap.ad[AdType.tx_power] = '00'
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -184,7 +184,7 @@ def hdl_wid_29(_: WIDParams):
 
     stack.gap.ad[AdType.slave_conn_interval_range] = 'ffffffff'
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -198,13 +198,13 @@ def hdl_wid_35(_: WIDParams):
     if stack.gap.svcs:
         stack.gap.ad[AdType.uuid16_some] = stack.gap.svcs
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
 
 def hdl_wid_40(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -212,7 +212,7 @@ def hdl_wid_44(params: WIDParams):
     if params.test_case_name in ['GAP/SEC/AUT/BV-21-C']:
         btp.gap_wait_for_lost_bond(5)
 
-    btp.gap_disconn()
+    btp.gap_disconnect()
     return True
 
 
@@ -230,7 +230,7 @@ def hdl_wid_46(_: WIDParams):
 
     new_params.conn_latency += 1
 
-    btp.gap_conn_param_update(bd_addr, bd_addr_type,
+    btp.gap_update_connection_parameters(bd_addr, bd_addr_type,
                               new_params.conn_itvl_min,
                               new_params.conn_itvl_max,
                               new_params.conn_latency,
@@ -242,10 +242,10 @@ def hdl_wid_46(_: WIDParams):
 def hdl_wid_47(_: WIDParams):
     stack = get_stack()
 
-    btp.gap_set_nonconn()
-    btp.gap_set_nondiscov()
+    btp.gap_set_non_connectable()
+    btp.gap_set_non_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -258,9 +258,9 @@ def hdl_wid_49(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_limdiscov()
+    btp.gap_set_limited_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -273,11 +273,11 @@ def hdl_wid_50(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_set_limdiscov()
-    btp.gap_set_conn()
+    btp.gap_stop_advertising()
+    btp.gap_set_limited_discoverable()
+    btp.gap_set_connectable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -289,9 +289,9 @@ def hdl_wid_51(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_nonconn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_non_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -303,11 +303,11 @@ def hdl_wid_52(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_stop_advertising()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -330,10 +330,10 @@ def hdl_wid_54(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_nonconn()
-    btp.gap_set_gendiscov()
+    btp.gap_set_non_connectable()
+    btp.gap_set_general_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -345,10 +345,10 @@ def hdl_wid_55(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_nonconn()
-    btp.gap_set_limdiscov()
+    btp.gap_set_non_connectable()
+    btp.gap_set_limited_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -362,7 +362,7 @@ def hdl_wid_56(_: WIDParams):
 
     stack.gap.ad[AdType.uuid16_svc_solicit] = stack.gap.svc_data
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -376,7 +376,7 @@ def hdl_wid_57(_: WIDParams):
     if stack.gap.svc_data:
         stack.gap.ad[AdType.uuid16_svc_data] = stack.gap.svc_data
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -387,10 +387,10 @@ def hdl_wid_59(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_nonconn()
-    btp.gap_set_limdiscov()
+    btp.gap_set_non_connectable()
+    btp.gap_set_limited_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -399,13 +399,13 @@ def hdl_wid_60(_: WIDParams):
     """
         Please start sending Directed connectable advertising report event to the PTS.
     """
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
 
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gap_direct_adv_on(bd_addr, bd_addr_type)
+    btp.gap_start_direct_adv(bd_addr, bd_addr_type)
 
     return True
 
@@ -417,10 +417,10 @@ def hdl_wid_72(_: WIDParams):
 
     stack = get_stack()
 
-    btp.gap_set_conn()
-    btp.gap_set_nondiscov()
+    btp.gap_set_connectable()
+    btp.gap_set_non_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -462,10 +462,10 @@ def hdl_wid_75(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -477,10 +477,10 @@ def hdl_wid_76(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_conn()
-    btp.gap_set_limdiscov()
+    btp.gap_set_connectable()
+    btp.gap_set_limited_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -498,7 +498,7 @@ def hdl_wid_77(params: WIDParams):
     try:
         if params.test_case_name in ['GAP/DM/LEP/BV-09-C']:
             get_stack().gap.wait_for_connection(timeout=5, conn_count=2)
-            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+            btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
             btp.gap_wait_for_connection(5)
 
@@ -508,19 +508,19 @@ def hdl_wid_77(params: WIDParams):
                                      'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
                                      'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C',
                                      'GAP/DM/LEP/BV-17-C', 'GAP/SEC/SEM/BV-06-C']:
-            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+            btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         elif params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-13-C']:
             if get_stack().gap.get_mmi_round(77) == 1:
-                btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+                btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
             else:
-                btp.gap_disconn()
+                btp.gap_disconnect()
         elif params.test_case_name in ['GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C']:
             if get_stack().gap.get_mmi_round(77) == 1:
-                btp.gap_disconn()
+                btp.gap_disconnect()
             else:
-                btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+                btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
-            btp.gap_disconn()
+            btp.gap_disconnect()
     except types.BTPError:
         logging.debug("Ignoring expected error on disconnect")
     else:
@@ -534,9 +534,9 @@ def hdl_wid_77(params: WIDParams):
 def hdl_wid_78(params: WIDParams):
     if params.test_case_name.startswith("GAP/CONN/ACEP"):
         # Use LE ANY addr to trigger auto connection establishment procedure
-        btp.gap_conn(b"00:00:00:00:00:00", 0)
+        btp.gap_connect(b"00:00:00:00:00:00", 0)
     else:
-        btp.gap_conn()
+        btp.gap_connect()
 
     return True
 
@@ -544,33 +544,33 @@ def hdl_wid_78(params: WIDParams):
 def hdl_wid_79(_: WIDParams):
     """ Please send non-connectable undirected advertising report with non-resolvable private address. """
     stack = get_stack()
-    btp.gap_set_nonconn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_non_resolvable_private_address)
+    btp.gap_set_non_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_non_resolvable_private_address)
     return True
 
 
 def hdl_wid_80(params: WIDParams):
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_set_nonconn()
-    btp.gap_set_nondiscov()
+    btp.gap_stop_advertising()
+    btp.gap_set_non_connectable()
+    btp.gap_set_non_discoverable()
 
     if params.test_case_name in ['GAP/BROB/BCST/BV-05-C']:
         """ make sure we add non-pts address to allow list, alter first bytes of address """
         non_pts_addr = btp.pts_addr_get()
         non_pts_addr = f'{(bytes.fromhex(non_pts_addr)[0] + 1) % 256:x}' + non_pts_addr[2:]
         address_list = [(btp.pts_addr_type_get(), non_pts_addr)]
-        btp.set_filter_accept_list(address_list)
+        btp.gap_set_filter_accept_list(address_list)
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
 
     return True
 
 
 def hdl_wid_82(_: WIDParams):
     """Please prepare IUT into the Auto Connection Establishment Procedure."""
-    btp.set_filter_accept_list()
+    btp.gap_set_filter_accept_list()
 
     return True
 
@@ -597,11 +597,11 @@ def hdl_wid_90(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_stop_advertising()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_start_advertising(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
 
     return True
 
@@ -612,9 +612,9 @@ def hdl_wid_91(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_conn()
+    btp.gap_set_connectable()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -673,7 +673,7 @@ def hdl_wid_108(params: WIDParams):
     if params.test_case_name in ['GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-53-C']:
         passkey = stack.gap.get_passkey()
         if passkey is not None:
-            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+            btp.gap_passkey_confirm_response(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
 
     return True
 
@@ -727,8 +727,8 @@ def hdl_wid_121(_: WIDParams):
     """
         Please enter Limited Discoverable and Non-Connectable mode.
     """
-    btp.gap_set_limdiscov()
-    btp.gap_set_nonconn()
+    btp.gap_set_limited_discoverable()
+    btp.gap_set_non_connectable()
 
     return True
 
@@ -737,8 +737,8 @@ def hdl_wid_122(_: WIDParams):
     """
         Please enter Limited Discoverable and Non-Connectable mode.
     """
-    btp.gap_set_nonconn()
-    btp.gap_set_gendiscov()
+    btp.gap_set_non_connectable()
+    btp.gap_set_general_discoverable()
 
     return True
 
@@ -782,7 +782,7 @@ def hdl_wid_127(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gap_conn_param_update(bd_addr, bd_addr_type,
+    btp.gap_update_connection_parameters(bd_addr, bd_addr_type,
                               conn_itvl_min,
                               conn_itvl_max,
                               conn_latency,
@@ -846,10 +846,10 @@ def hdl_wid_137(params: WIDParams):
 
 
 def hdl_wid_138(_: WIDParams):
-    btp.gap_start_discov(transport='le', discov_type='active', mode='observe')
+    btp.gap_start_discovery(transport='le', discov_type='active', mode='observe')
     sleep(10)  # Give some time to discover devices
-    btp.gap_stop_discov()
-    return btp.check_discov_results()
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results()
 
 
 def hdl_wid_139(params: WIDParams):
@@ -984,7 +984,7 @@ def hdl_wid_141(params: WIDParams):
 
 
 def hdl_wid_142(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -1031,7 +1031,7 @@ def hdl_wid_144(params: WIDParams):
 
 
 def hdl_wid_148(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return not btp.gap_wait_for_connection(10)
 
 
@@ -1044,7 +1044,7 @@ def hdl_wid_149(_: WIDParams):
     if stack.gap.appearance:
         stack.gap.ad[AdType.gap_appearance] = stack.gap.appearance
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -1057,7 +1057,7 @@ def hdl_wid_152(_: WIDParams):
 
     stack.gap.ad[AdType.public_target_addr] = addr_str_to_le_bytes(btp.pts_addr_get()).hex()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -1070,7 +1070,7 @@ def hdl_wid_153(_: WIDParams):
 
     stack.gap.ad[AdType.random_target_addr] = addr_str_to_le_bytes(btp.pts_addr_get()).hex()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -1083,7 +1083,7 @@ def hdl_wid_154(_: WIDParams):
 
     stack.gap.ad[AdType.advertising_interval] = "0030"
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -1096,7 +1096,7 @@ def hdl_wid_155(_: WIDParams):
 
     stack.gap.ad[AdType.le_bt_device_addr] = device_addr
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -1106,17 +1106,17 @@ def hdl_wid_156(_: WIDParams):
 
     stack.gap.ad[AdType.le_role] = '02'
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
 
 def hdl_wid_157(params: WIDParams):
-    btp.gap_start_discov(transport='le', discov_type='active', mode='observe')
+    btp.gap_start_discovery(transport='le', discov_type='active', mode='observe')
     sleep(10)  # Give some time to discover devices
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
     report, response = re.findall(r'[a-fA-F0-9]{62}', params.description)
-    return btp.check_scan_rep_and_rsp(report, response)
+    return btp.check_scan_report_and_response(report, response)
 
 
 def hdl_wid_158(_: WIDParams):
@@ -1129,9 +1129,9 @@ def hdl_wid_159(_: WIDParams):
     # otherwise press cancel.
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.set_filter_accept_list()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_stop_advertising()
+    btp.gap_set_filter_accept_list()
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
 
 
@@ -1196,7 +1196,7 @@ def hdl_wid_162(params: WIDParams):
 
     new_params = ConnParams(0x0008, 0x00AA, 0x0000, 0x0800)
 
-    btp.gap_conn_param_update(bd_addr, bd_addr_type,
+    btp.gap_update_connection_parameters(bd_addr, bd_addr_type,
                               new_params.conn_itvl_min,
                               new_params.conn_itvl_max,
                               new_params.conn_latency,
@@ -1206,7 +1206,7 @@ def hdl_wid_162(params: WIDParams):
 
 
 def hdl_wid_169(_: WIDParams):
-    btp.gap_start_discov(discov_type='active', mode='observe')
+    btp.gap_start_discovery(discov_type='active', mode='observe')
     return True
 
 
@@ -1227,13 +1227,13 @@ def hdl_wid_173(_: WIDParams):
     stack.gap.sd.clear()
     stack.gap.sd[AdType.uri] = stack.gap.uri
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd)
 
     return True
 
 
 def hdl_wid_174(params: WIDParams):
-    btp.gap_rpa_conn(params.description)
+    btp.gap_connect_using_rpa(params.description)
     return True
 
 
@@ -1254,10 +1254,10 @@ def hdl_wid_179(_: WIDParams):
 
 
 def hdl_wid_204(_: WIDParams):
-    btp.gap_start_discov(discov_type='passive', mode='observe')
+    btp.gap_start_discovery(discov_type='passive', mode='observe')
     sleep(10)
-    btp.gap_stop_discov()
-    return btp.check_discov_results()
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results()
 
 
 def hdl_wid_206(params: WIDParams):
@@ -1272,7 +1272,7 @@ def hdl_wid_206(params: WIDParams):
     _ = stack.gap.get_passkey()
 
     try:
-        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+        btp.gap_passkey_entry_response(bd_addr, bd_addr_type, passkey)
     except types.BTPError:
         if not stack.gap.is_connected():
             logging.debug("Ignoring expected error on disconnected")
@@ -1395,7 +1395,7 @@ def hdl_wid_232(_: WIDParams):
     """
     stack = get_stack()
     stack.gap.ad[AdType.advertising_interval_long] = "000030"
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -1529,7 +1529,7 @@ def hdl_wid_240(_: WIDParams):
         Please configures the IUT into LE Security Mode 1 Level 2.
         Press OK to continue.
     """
-    btp.gap_set_io_cap(IOCap.no_input_output)
+    btp.gap_set_io_capability(IOCap.no_input_output)
     return True
 
 
@@ -1538,7 +1538,7 @@ def hdl_wid_241(_: WIDParams):
         Please configures the IUT into LE Security Mode 1 Level 3.
         Press OK to continue.
     """
-    btp.gap_set_io_cap(IOCap.keyboard_display)
+    btp.gap_set_io_capability(IOCap.keyboard_display)
     return True
 
 
@@ -1566,7 +1566,7 @@ def hdl_wid_243(_: WIDParams):
     stack.gap.sd.clear()
     stack.gap.sd[AdType.le_supp_feat] = stack.gap.le_supp_feat
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd)
 
     return True
 
@@ -1874,9 +1874,9 @@ def hdl_wid_313(params: WIDParams):
 
 
 def hdl_wid_400(_: WIDParams):
-    btp.set_filter_accept_list()
+    btp.gap_set_filter_accept_list()
     bd_addr = '000000000000'
-    btp.gap_conn(bd_addr)
+    btp.gap_connect(bd_addr)
     return True
 
 
@@ -1888,7 +1888,7 @@ def hdl_wid_402(_: WIDParams):
     if not stack.gap.iut_has_privacy():
         return False
 
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -1900,7 +1900,7 @@ def hdl_wid_403(_: WIDParams):
     if not stack.gap.iut_has_privacy():
         return False
 
-    btp.gap_conn()
+    btp.gap_connect()
 
     return True
 
@@ -1911,8 +1911,8 @@ def hdl_wid_404(_: WIDParams):
     """
     stack = get_stack()
 
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
 
     return True
 
@@ -1936,8 +1936,8 @@ def hdl_wid_406(_: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gap_set_conn()
-    btp.gap_direct_adv_on(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
+    btp.gap_set_connectable()
+    btp.gap_start_direct_adv(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
 
     return True
 
@@ -1950,11 +1950,11 @@ def hdl_wid_407(_: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gap_set_conn()
+    btp.gap_set_connectable()
 
     # We verify that IUT rejects this request.
     try:
-        btp.gap_direct_adv_on(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
+        btp.gap_start_direct_adv(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
     except types.BTPError:
         return True
 
@@ -2021,12 +2021,12 @@ def _send_ead_adv(payload):
     """
     stack = get_stack()
     adv_data = {}
-    encrypted = btp.create_ead_adv(payload)
+    encrypted = btp.gap_create_encrypted_adv_data(payload)
     # Only stop advertising if it's currently running
     if stack.gap.current_settings_get(gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
-        btp.gap_adv_off()
+        btp.gap_stop_advertising()
     adv_data[AdType.encrypted_data] = struct.pack(f'<{len(encrypted)}B', *encrypted)
-    btp.gap_adv_ind_on(ad=adv_data)
+    btp.gap_start_advertising(ad=adv_data)
     return True
 
 
@@ -2055,9 +2055,9 @@ def hdl_wid_502(params: WIDParams):
     expected_payload = max(payload_candidates, key=len)
     log(f'expected payload: {expected_payload}')
     # scan for a while to get encrypted adv packet
-    btp.gap_start_discov(discov_type='passive', mode='observe')
+    btp.gap_start_discovery(discov_type='passive', mode='observe')
     sleep(5)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
     decrypted = btp.decrypt_ead_from_devices()
     return btp.verify_ead_payload(decrypted, expected_payload)
 
@@ -2067,8 +2067,8 @@ def hdl_wid_1000(params: WIDParams):
     # Note: need to advertise with RPAs
     stack = get_stack()
 
-    btp.gap_adv_off()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_stop_advertising()
+    btp.gap_start_advertising(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
 
 
@@ -2093,7 +2093,7 @@ def hdl_wid_1003(params: WIDParams):
     if stack.gap.get_passkey() is None:
         return False
 
-    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    btp.gap_passkey_confirm_response(bd_addr, bd_addr_type, passkey)
     match = stack.gap.passkey.data == passkey
 
     # clear passkey for repeated pairing attempts
@@ -2147,9 +2147,9 @@ def hdl_wid_2001(params: WIDParams):
         return False
 
     if 'Please verify the passKey is correct' in params.description:
-        btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+        btp.gap_passkey_confirm_response(bd_addr, bd_addr_type, passkey)
     else:
-        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+        btp.gap_passkey_entry_response(bd_addr, bd_addr_type, passkey)
     return True
 
 
@@ -2166,7 +2166,7 @@ def hdl_wid_2004(params: WIDParams):
     if stack.gap.get_passkey() is None:
         return False
 
-    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    btp.gap_passkey_confirm_response(bd_addr, bd_addr_type, passkey)
     match = stack.gap.passkey.data == passkey
 
     # clear passkey for repeated pairing attempts
@@ -2191,14 +2191,14 @@ def hdl_wid_20001(_: WIDParams):
             stack.gap.current_settings_get('Extended Advertising'):
         return True
 
-    btp.gap_set_conn()
+    btp.gap_set_connectable()
 
     if stack.gap.iut_has_privacy():
         addr_type = OwnAddrType.le_resolvable_private_address
     else:
         addr_type = OwnAddrType.le_identity_address
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=addr_type)
+    btp.gap_start_advertising(ad=stack.gap.ad, own_addr_type=addr_type)
     return True
 
 
@@ -2208,15 +2208,15 @@ def hdl_wid_20115(params: WIDParams):
     """
     if params.test_case_name in ['GAP/DM/LEP/BI-01-C', 'GAP/SEC/SEM/BI-32-C',
                                  'GAP/SEC/SEM/BI-33-C']:
-        btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
-    btp.gap_disconn()
+    btp.gap_disconnect()
     return True
 
 
 def hdl_wid_20100(params: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     if params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-17-C',
                                  'GAP/DM/LEP/BV-18-C', 'GAP/DM/LEP/BV-13-C']:
         btp.gap_pair()
@@ -2224,7 +2224,7 @@ def hdl_wid_20100(params: WIDParams):
 
 
 def hdl_wid_2142(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     return True
 
 
@@ -2232,7 +2232,7 @@ def hdl_wid_31(_: WIDParams):
     """
     Please make IUT not discoverable. Press OK to continue.
     """
-    btp.gap_set_nondiscov()
+    btp.gap_set_non_discoverable()
     return True
 
 
@@ -2240,7 +2240,7 @@ def hdl_wid_32(_: WIDParams):
     """
     Please make IUT limited discoverable. Press OK to continue.
     """
-    btp.gap_set_limdiscov()
+    btp.gap_set_limited_discoverable()
     return True
 
 
@@ -2249,7 +2249,7 @@ def hdl_wid_160(_: WIDParams):
     Please set IUT to limited discovery mode. Lower tester is continue using
     GIAC to Inquiry and waiting for Inquiry result.
     """
-    btp.gap_set_limdiscov()
+    btp.gap_set_limited_discoverable()
     return True
 
 
@@ -2264,8 +2264,8 @@ def hdl_wid_33(params: WIDParams):
     """
     Please make IUT general discoverable.
     """
-    btp.gap_set_nondiscov()
-    btp.gap_set_gendiscov()
+    btp.gap_set_non_discoverable()
+    btp.gap_set_general_discoverable()
 
     if (
             params.test_case_name in ['GAP/SEC/SEM/BV-10-C']
@@ -2289,7 +2289,7 @@ def hdl_wid_34(_: WIDParams):
     """
     Please make IUT not connectable. Press OK to continue.
     """
-    btp.gap_set_nonconn()
+    btp.gap_set_non_connectable()
     return True
 
 
@@ -2297,8 +2297,8 @@ def hdl_wid_105(_: WIDParams):
     """
     Please make IUT connectable. Press OK to continue.
     """
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
     return True
 
 
@@ -2314,20 +2314,20 @@ def hdl_wid_146(_: WIDParams):
     Please start general inquiry. Click 'Yes' If IUT does discovers PTS and ready for PTS to
     initiate a create connection otherwise click 'No'.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
-    btp.gap_stop_discov()
-    return btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
 
 
 def hdl_wid_147(_: WIDParams):
     """
     Please start limited inquiry. Click 'Yes' If IUT does discovers PTS otherwise click 'No'.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='limited')
     sleep(10)
-    btp.gap_stop_discov()
-    return btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_stop_discovery()
+    return btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
 
 
 def hdl_wid_164(_: WIDParams):
@@ -2342,9 +2342,9 @@ def hdl_wid_165(params: WIDParams):
     """
     Please confirm that IUT has discovered PTS and retrieved its name 'PTS-GAP-E449'.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
     pattern = re.compile(r"'(.*)'")
     macthed = pattern.findall(params.description)
@@ -2355,7 +2355,7 @@ def hdl_wid_165(params: WIDParams):
     name = macthed[0]
     name = binascii.hexlify(name.encode()).decode()
 
-    return btp.check_scan_rep_and_rsp(name, name)
+    return btp.check_scan_report_and_response(name, name)
 
 
 def hdl_wid_102(params: WIDParams):
@@ -2369,14 +2369,14 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-04-C']:
         return True
 
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+    if not btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
 
-    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     if params.test_case_name in ['GAP/DM/LEP/BV-09-C']:
         get_stack().gap.wait_for_connection(timeout=30, conn_count=2)
     else:
@@ -2410,7 +2410,7 @@ def hdl_wid_102(params: WIDParams):
     if params.test_case_name in ['GAP/SEC/SEM/BV-25-C', 'GAP/SEC/SEM/BV-30-C']:
         passkey = get_stack().gap.get_passkey()
         if passkey is not None:
-            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+            btp.gap_passkey_confirm_response(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
 
     return True
 
@@ -2445,7 +2445,7 @@ def hdl_wid_231(_: WIDParams):
     After Bonding Procedure is completed, please send a disconnect request to terminate connection.
     """
     btp.gap_wait_for_sec_lvl_change(level=2)
-    btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_disconnect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     return True
 
 
@@ -2462,7 +2462,7 @@ def hdl_wid_103(params: WIDParams):
     stack.gap.set_passkey(None)
 
     if not stack.gap.is_connected():
-        btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         btp.gap_wait_for_connection()
 
     if params.test_case_name in ['GAP/SEC/SEM/BV-09-C', 'GAP/SEC/SEM/BV-53-C']:
@@ -2476,7 +2476,7 @@ def hdl_wid_103(params: WIDParams):
         if get_stack().gap.get_mmi_round(103) == 0:
             passkey = stack.gap.get_passkey()
             if passkey is not None:
-                btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+                btp.gap_passkey_confirm_response(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
             stack.l2cap_init(br_psm_2, stack.l2cap.initial_mtu)
             btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, stack.l2cap.psm, stack.l2cap.initial_mtu)
         else:
@@ -2522,7 +2522,7 @@ def hdl_wid_20117(params: WIDParams):
     if params.test_case_name in ['GAP/DM/LEP/BV-18-C']:
         passkey = get_stack().gap.get_passkey()
         if passkey is not None:
-            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+            btp.gap_passkey_confirm_response(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
     return True
 
 
@@ -2531,15 +2531,15 @@ def hdl_wid_36(_: WIDParams):
     Please start general discovery over BR/EDR and over LE. If IUT discovers PTS
     with both BR/EDR and LE method, press OK.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
-    btp.gap_start_discov(transport='le', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='le', discov_type='passive', mode='general')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+    if not btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
 
-    if not btp.check_discov_results():
+    if not btp.check_discovery_results():
         return False
 
     get_stack().gap.reset_discovery()
@@ -2551,15 +2551,15 @@ def hdl_wid_7(_: WIDParams):
     Please start limited discovery over BR/EDR and over LE. If IUT discovers PTS
     with both BR/EDR and LE method, press OK.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
-    btp.gap_start_discov(transport='le', discov_type='passive', mode='limited')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='limited')
+    btp.gap_start_discovery(transport='le', discov_type='passive', mode='limited')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+    if not btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
 
-    if not btp.check_discov_results():
+    if not btp.check_discovery_results():
         return False
 
     get_stack().gap.reset_discovery()
@@ -2571,15 +2571,15 @@ def hdl_wid_123(_: WIDParams):
     Please start limited discovery over BR/EDR and over LE. If IUT does not discovers PTS
     with both BR/EDR and LE method, press OK.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
-    btp.gap_start_discov(transport='le', discov_type='passive', mode='limited')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='limited')
+    btp.gap_start_discovery(transport='le', discov_type='passive', mode='limited')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    if btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+    if btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
 
-    if btp.check_discov_results():
+    if btp.check_discovery_results():
         return False
 
     get_stack().gap.reset_discovery()
@@ -2590,11 +2590,11 @@ def hdl_wid_86(_: WIDParams):
     """
     Please start device name discovery over BR/EDR . If IUT discovers PTS, press OK to continue.
     """
-    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discovery(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+    if not btp.check_discovery_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
     get_stack().gap.reset_discovery()
     return True
@@ -2788,10 +2788,10 @@ def hdl_wid_352(params: WIDParams):
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
 
-        btp.gap_start_discov(transport='le', discov_type='passive', mode='observe')
+        btp.gap_start_discovery(transport='le', discov_type='passive', mode='observe')
         sleep(10)
-        btp.gap_stop_discov()
-        if not btp.check_discov_results(addr_type=addr_type, addr=addr):
+        btp.gap_stop_discovery()
+        if not btp.check_discovery_results(addr_type=addr_type, addr=addr):
             log('Peer device not found.')
             return False
 

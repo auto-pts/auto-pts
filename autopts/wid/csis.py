@@ -107,8 +107,8 @@ def hdl_wid_20001(params: WIDParams):
         btp.csis_set_sirk_type(defs.CSIS_SIRK_TYPE_PLAINTEXT)
 
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 

@@ -273,6 +273,6 @@ def hdl_wid_20001(_: WIDParams):
     }
 
     btp.gap_set_extended_advertising_on()
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_start_advertising(ad=ad)
 
     return True

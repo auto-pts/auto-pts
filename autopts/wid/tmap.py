@@ -770,7 +770,7 @@ def hdl_wid_2004(params: WIDParams):
     if stack.gap.get_passkey() is None:
         return False
 
-    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    btp.gap_passkey_confirm_response(bd_addr, bd_addr_type, passkey)
     match = stack.gap.passkey.data == passkey
 
     # clear passkey for repeated pairing attempts
@@ -804,8 +804,8 @@ def hdl_wid_20001(params: WIDParams):
     if location is not None:
         btp.pacs_set_location(AudioDir.SINK, location)
 
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
 
 
@@ -822,7 +822,7 @@ def hdl_wid_20100(params: WIDParams):
         addr_type = pts_addr_type_get()
 
     stack = get_stack()
-    btp.gap_conn(addr, addr_type)
+    btp.gap_connect(addr, addr_type)
     stack.gap.wait_for_connection(timeout=5, addr=addr)
 
     # race condition: connect will cause pairing, which might trigger numeric comparison, but

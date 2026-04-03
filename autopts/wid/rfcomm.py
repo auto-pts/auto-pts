@@ -128,7 +128,7 @@ def hdl_wid_8(_: WIDParams):
     stack = get_stack()
 
     if not stack.gap.is_connected():
-        btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         btp.gap_wait_for_connection()
     btp.rfcomm_listen()
     return True
@@ -206,7 +206,7 @@ def hdl_wid_20(_: WIDParams):
     stack.gap.set_passkey(None)
 
     if not stack.gap.is_connected():
-        btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         btp.gap_wait_for_connection()
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
 
