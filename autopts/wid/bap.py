@@ -1052,6 +1052,7 @@ def hdl_wid_303(params: WIDParams):
                                                  frames_per_sdu)
         btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
         stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+        stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1119,6 +1120,7 @@ def hdl_wid_304(params: WIDParams):
                                              frames_per_sdu)
     btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1131,6 +1133,7 @@ def hdl_wid_304(params: WIDParams):
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
 
     # Enable streams
     btp.ascs_enable(ase_id)
@@ -1190,6 +1193,7 @@ def hdl_wid_305(params: WIDParams):
                                              frames_per_sdu)
     btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1202,10 +1206,12 @@ def hdl_wid_305(params: WIDParams):
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
 
     # Enable streams
     btp.ascs_enable(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 30)
 
     # Disable streams
     btp.ascs_disable(ase_id)
@@ -1265,6 +1271,7 @@ def hdl_wid_306(params: WIDParams):
                                              frames_per_sdu)
     btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1277,10 +1284,12 @@ def hdl_wid_306(params: WIDParams):
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
 
     # Enable streams
     btp.ascs_enable(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.ENABLING, 30)
 
     # Start streaming
     btp.ascs_receiver_start_ready(ase_id)
@@ -1312,6 +1321,7 @@ def hdl_wid_307(_: WIDParams):
     # Disable ASE
     btp.ascs_disable(config.ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type, config.addr, config.ase_id, ASCSState.DISABLING, 30)
 
     if config.audio_dir == AudioDir.SOURCE:
         # Initiate receiver Stop Ready
@@ -1430,6 +1440,10 @@ def config_codec(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
+    stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type,
+                                              config.addr,
+                                              config.ase_id,
+                                              ASCSState.CODEC_CONFIGURED, 30)
 
 
 def preconfig_qos(config):
@@ -1718,6 +1732,12 @@ def hdl_wid_311(params: WIDParams):
         if ev is None:
             return False
 
+        ev = stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type,
+                                                       config.addr,
+                                                       config.ase_id, ASCSState.QOS_CONFIGURED, 30)
+        if ev is None:
+            return False
+
     # Generate random data to stream to the SINK ASE
     stream_data = {}
     for config in stack.bap.ase_configs:
@@ -1871,6 +1891,7 @@ def hdl_wid_315(params: WIDParams):
                                                  frames_per_sdu)
         btp.ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs_bytes)
         stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+        stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
 
     # Perform Config QOS operation
     cig_id = 0x00
