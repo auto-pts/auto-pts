@@ -30,6 +30,8 @@ from autopts.pybtp.types import (
     OwnAddrType,
     Perm,
     Prop,
+    SecurityFlags,
+    SecurityModeLevel,
     WIDParams,
     addr_str_to_le_bytes,
     gap_settings_btp2txt,
@@ -1331,14 +1333,24 @@ def hdl_wid_225(_: WIDParams):
         Please configures the IUT into LE Secure Connections Only: Mode 1 Level 3.
         Press OK to continue.
     """
+    stack = get_stack()
+
+    if stack.is_command_supported('GAP', defs.BTP_GAP_CMD_CONFIGURE_SECURITY_MODE):
+        btp.gap_configure_security_mode(SecurityModeLevel.MODE_1_LEVEL_3, SecurityFlags.LE_SECURE_CONNECTIONS_ONLY)
+
     return True
 
 
 def hdl_wid_226(_: WIDParams):
     """
-        Please configures the IUT into LE Secure Connections Only: Mode 1 Level 3.
+        Please configures the IUT into LE Secure Connections Only: Mode 1 Level 4.
         Press OK to continue.
     """
+    stack = get_stack()
+
+    if stack.is_command_supported('GAP', defs.BTP_GAP_CMD_CONFIGURE_SECURITY_MODE):
+        btp.gap_configure_security_mode(SecurityModeLevel.MODE_1_LEVEL_4)
+
     return True
 
 
@@ -1529,7 +1541,13 @@ def hdl_wid_240(_: WIDParams):
         Please configures the IUT into LE Security Mode 1 Level 2.
         Press OK to continue.
     """
+    stack = get_stack()
+
     btp.gap_set_io_cap(IOCap.no_input_output)
+
+    if stack.is_command_supported('GAP', defs.BTP_GAP_CMD_CONFIGURE_SECURITY_MODE):
+        btp.gap_configure_security_mode(SecurityModeLevel.MODE_1_LEVEL_2)
+
     return True
 
 
@@ -1538,7 +1556,13 @@ def hdl_wid_241(_: WIDParams):
         Please configures the IUT into LE Security Mode 1 Level 3.
         Press OK to continue.
     """
+    stack = get_stack()
+
     btp.gap_set_io_cap(IOCap.keyboard_display)
+
+    if stack.is_command_supported('GAP', defs.BTP_GAP_CMD_CONFIGURE_SECURITY_MODE):
+        btp.gap_configure_security_mode(SecurityModeLevel.MODE_1_LEVEL_3)
+
     return True
 
 
@@ -2826,9 +2850,14 @@ def hdl_wid_352(params: WIDParams):
 
 
 def hdl_wid_353(_: WIDParams):
-    '''
+    """
     Please configure IUT security to Mode 3 Level 2 or Level 3.
-    '''
+    """
+    stack = get_stack()
+
+    if stack.is_command_supported('GAP', defs.BTP_GAP_CMD_CONFIGURE_SECURITY_MODE):
+        btp.gap_configure_security_mode(SecurityModeLevel.MODE_3_LEVEL_2)
+
     return True
 
 
