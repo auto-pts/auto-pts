@@ -916,6 +916,38 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x35 - Configure Security Mode and Level
+
+                Controller Index:       <controller id>
+                Command parameters:     Mode (1 octet)
+                                        Level (1 octet)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
+
+                This command can be used to configure IUT into specified
+                LE Security Mode and Level.
+                Possible values for the Security Mode and Level are defined
+                in Core Specification:
+                Mode 1:
+                        Level 1 - No security
+                        Level 2 - Unauthenticated pairing with encryption
+                        Level 3 - Authenticated pairing with encryption
+                        Level 4 - Authenticated LE Secure Connections pairing
+                        with encryption using a 128-bit strength encryption key
+                Mode 2:
+                        Level 1 - Unauthenticated pairing with data signing
+                        Level 2 - Authenticated pairing with data signing
+                Mode 3:
+                        Level 1 - No security (no authentication and no
+                                  encryption)
+                        Level 2 - Use of unauthenticated Broadcast_Code
+                        Level 3 - Use of authenticated Broadcast_Code
+
+                Valid Flag values:
+                        Bit 0 - LE Secure Connections Only
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - New Settings event
 
