@@ -328,6 +328,165 @@ AC_CONFIGS: Final[list[AudioConfigTest]] = [
 AC_CONFIGS_DICT: Final[dict[str, AudioConfigTest]] = {cfg.test_case_str: cfg for cfg in AC_CONFIGS}
 
 
+def ascs_config_codec(addr_type: int, addr: str, ase_id: int, coding_format: int,
+                      vid: int, cid: int, codec_ltvs_bytes: bytes) -> bool:
+    """
+    Configure codec for a given ASE and wait for completion and state transition to Codec Configured.
+
+    Args:
+        addr_type: Address type of the remote device.
+        addr: Bluetooth device address.
+        ase_id: ASE (Audio Stream Endpoint) identifier.
+        coding_format: Codec ID (coding format).
+        vid: Vendor ID for vendor-specific codecs.
+        cid: Codec ID for vendor-specific codecs.
+        codec_ltvs_bytes: Codec configuration encoded as LTV bytes.
+
+     Returns:
+          True on success, False on timeout/failure.
+    """
+    stack = get_stack()
+
+    btp.ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs_bytes, addr_type, addr)
+
+    ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if ev is None:
+        return False
+
+    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
+    if ev is None:
+        return False
+
+    return True
+
+
+def ascs_config_qos(addr_type: int, addr: str, ase_id: int, cig_id: int, cis_id: int,
+                    sdu_interval: int, framing: int, max_sdu: int,
+                    retransmission_number: int, max_transport_latency: int,
+                    presentation_delay: int) -> bool:
+    """
+    Configure QoS for a given ASE and wait for completion and state transition to QoS Configured.
+
+    Args:
+        addr_type: Address type of the remote device.
+        addr: Bluetooth device address.
+        ase_id: ASE (Audio Stream Endpoint) identifier.
+        cig_id: Connected Isochronous Group identifier.
+        cis_id: Connected Isochronous Stream identifier.
+        sdu_interval: SDU interval in microseconds.
+        framing: Framing mode.
+        max_sdu: Maximum SDU size in bytes.
+        retransmission_number: Number of retransmissions.
+        max_transport_latency: Maximum transport latency in milliseconds.
+        presentation_delay: Presentation delay in microseconds.
+
+    Returns:
+        True on success, False on timeout/failure.
+    """
+    stack = get_stack()
+
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, sdu_interval, framing, max_sdu,
+                        retransmission_number, max_transport_latency, presentation_delay, addr_type, addr)
+
+    ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if ev is None:
+        return False
+
+    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
+    if ev is None:
+        return False
+
+    return True
+
+
+def ascs_enable(addr_type: int, addr: str, ase_id: int) -> bool:
+    """
+    Enable ASE and wait for ENABLING state.
+
+    Args:
+        addr_type: Address type of the remote device.
+        addr: Bluetooth device address.
+        ase_id: ASE (Audio Stream Endpoint) identifier.
+
+     Returns:
+         True on success, False on timeout/failure.
+    """
+    stack = get_stack()
+
+    btp.ascs_enable(ase_id, addr_type, addr)
+
+    ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if ev is None:
+        return False
+
+    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.ENABLING, 30)
+    if ev is None:
+        return False
+
+    return True
+
+
+def ascs_disable(addr_type: int, addr: str, ase_id: int) -> bool:
+    """
+    Disable ASE and wait for DISABLING state.
+
+    Args:
+        addr_type: Address type of the remote device.
+        addr: Bluetooth device address.
+        ase_id: ASE (Audio Stream Endpoint) identifier.
+
+     Returns:
+         True on success, False on timeout/failure.
+    """
+    stack = get_stack()
+
+    btp.ascs_disable(ase_id, addr_type, addr)
+
+    ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if ev is None:
+        return False
+
+    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.DISABLING, 30)
+    if ev is None:
+        return False
+
+    return True
+
+
+def ascs_release(addr_type: int, addr: str, ase_id: int) -> bool:
+    """
+    Release ASE and wait for either Idle or Codec Configured state.
+
+    Args:
+        addr_type: Address type of the remote device.
+        addr: Bluetooth device address.
+        ase_id: ASE (Audio Stream Endpoint) identifier.
+
+     Returns:
+         True on success, False on timeout/failure.
+    """
+
+    stack = get_stack()
+
+    btp.ascs_release(ase_id, addr_type, addr)
+
+    ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if ev is None:
+        return False
+
+    # TODO multi state could be handled in wait_ascs_ase_state_changed_ev
+    for _i in range(15):
+        ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.IDLE, 1)
+        if ev:
+            return True
+
+        ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 1)
+        if ev:
+            return True
+
+    return False
+
+
 def bap_wid_hdl(wid, description, test_case_name):
     from autopts.wid import generic_wid_hdl
     log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
@@ -649,7 +808,6 @@ def hdl_wid_201(params: WIDParams):
 
     addr = pts_addr_get()
     addr_type = pts_addr_type_get()
-    stack = get_stack()
     parsed = re.findall(r'\d+(?:_\d+)*', params.description)
     ase_id = int(parsed[0])
 
@@ -673,10 +831,8 @@ def hdl_wid_201(params: WIDParams):
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
-    btp.ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs_bytes)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
-    return True
+    return ascs_config_codec(addr_type, addr, ase_id, coding_format, vid, cid, codec_ltvs_bytes)
 
 
 def hdl_wid_202(params: WIDParams):
@@ -696,15 +852,10 @@ def hdl_wid_204(params: WIDParams):
     """
     addr = pts_addr_get()
     addr_type = pts_addr_type_get()
-    stack = get_stack()
     numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
     ase_id = int(numbers[0])
 
-    # Start streaming
-    btp.ascs_disable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-
-    return True
+    return ascs_disable(addr_type, addr, ase_id)
 
 
 def hdl_wid_206(params: WIDParams):
@@ -713,15 +864,10 @@ def hdl_wid_206(params: WIDParams):
     """
     addr = pts_addr_get()
     addr_type = pts_addr_type_get()
-    stack = get_stack()
     numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
     ase_id = int(numbers[0])
 
-    # Start streaming
-    btp.ascs_release(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-
-    return True
+    return ascs_release(addr_type, addr, ase_id)
 
 
 def hdl_wid_207(params: WIDParams):
@@ -987,8 +1133,9 @@ def hdl_wid_302(params: WIDParams):
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
-    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    if not ascs_config_codec(addr_type, addr, ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes):
+        return False
 
     config = create_default_config()
     config.addr = addr
@@ -1049,9 +1196,9 @@ def hdl_wid_303(params: WIDParams):
         codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                                  audio_locations, octets_per_frame,
                                                  frames_per_sdu)
-        btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
-        stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-        stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
+
+        if not ascs_config_codec(addr_type, addr, ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes):
+            return False
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1062,8 +1209,8 @@ def hdl_wid_303(params: WIDParams):
     btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if not ascs_config_qos(addr_type, addr, ase_id, cig_id, cis_id, *qos_config, presentation_delay):
+        return False
 
     config = create_default_config()
     config.addr = addr
@@ -1117,9 +1264,9 @@ def hdl_wid_304(params: WIDParams):
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
-    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
+
+    if not ascs_config_codec(addr_type, addr, ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes):
+        return False
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1130,13 +1277,12 @@ def hdl_wid_304(params: WIDParams):
     btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
+    if not ascs_config_qos(addr_type, addr, ase_id, cig_id, cis_id, *qos_config, presentation_delay):
+        return False
 
     # Enable streams
-    btp.ascs_enable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if not ascs_enable(addr_type, addr, ase_id):
+        return False
 
     config = create_default_config()
     config.addr = addr
@@ -1190,9 +1336,9 @@ def hdl_wid_305(params: WIDParams):
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
-    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
+
+    if not ascs_config_codec(addr_type, addr, ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes):
+        return False
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1203,18 +1349,19 @@ def hdl_wid_305(params: WIDParams):
     btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
+    if not ascs_config_qos(addr_type, addr, ase_id, cig_id, cis_id, *qos_config, presentation_delay):
+        return False
 
     # Enable streams
-    btp.ascs_enable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 30)
+    if not ascs_enable(addr_type, addr, ase_id):
+        return False
 
-    # Disable streams
-    btp.ascs_disable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 30)
+    if ev is None:
+        return False
+
+    if not ascs_disable(addr_type, addr, ase_id):
+        return False
 
     config = create_default_config()
     config.addr = addr
@@ -1268,9 +1415,9 @@ def hdl_wid_306(params: WIDParams):
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
-    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
+
+    if not ascs_config_codec(addr_type, addr, ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes):
+        return False
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1281,18 +1428,22 @@ def hdl_wid_306(params: WIDParams):
     btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.QOS_CONFIGURED, 30)
+    if not ascs_config_qos(addr_type, addr, ase_id, cig_id, cis_id, *qos_config, presentation_delay):
+        return False
 
     # Enable streams
-    btp.ascs_enable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.ENABLING, 30)
+    if not ascs_enable(addr_type, addr, ase_id):
+        return False
 
     # Start streaming
     btp.ascs_receiver_start_ready(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    if ev is None:
+        return False
+
+    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 30)
+    if ev is None:
+        return False
 
     config = create_default_config()
     config.addr = addr
@@ -1318,9 +1469,8 @@ def hdl_wid_307(_: WIDParams):
     config = stack.bap.ase_configs[0]
 
     # Disable ASE
-    btp.ascs_disable(config.ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type, config.addr, config.ase_id, ASCSState.DISABLING, 30)
+    if not ascs_disable(config.addr_type, config.addr, config.ase_id):
+        return False
 
     if config.audio_dir == AudioDir.SOURCE:
         # Initiate receiver Stop Ready
@@ -1343,10 +1493,7 @@ def hdl_wid_308(_: WIDParams):
     config = stack.bap.ase_configs[0]
 
     # Disable ASE
-    btp.ascs_disable(config.ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
-
-    return True
+    return ascs_disable(config.addr_type, config.addr, config.ase_id)
 
 
 def hdl_wid_309(_: WIDParams):
@@ -1361,11 +1508,7 @@ def hdl_wid_309(_: WIDParams):
 
     config = stack.bap.ase_configs[0]
 
-    # Release streams
-    btp.ascs_release(config.ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
-
-    return True
+    return ascs_release(config.addr_type, config.addr, config.ase_id)
 
 
 def hdl_wid_310(_: WIDParams):
@@ -1413,8 +1556,6 @@ def config_codec(config):
         (config.sampling_freq, config.frame_duration, config.octets_per_frame) = \
             CODEC_CONFIG_SETTINGS[config.codec_set_name]
 
-    stack = get_stack()
-
     if config.mono:
         # In test cases with Mono the PTS does not like the Audio Channel
         # Allocations in Codec Specific Configuration
@@ -1428,21 +1569,8 @@ def config_codec(config):
                                              config.octets_per_frame,
                                              config.frames_per_sdu)
 
-    btp.ascs_config_codec(config.ase_id,
-                          config.coding_format,
-                          config.vid,
-                          config.cid,
-                          codec_ltvs_bytes,
-                          config.addr_type,
-                          config.addr)
-
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-    stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type,
-                                              config.addr,
-                                              config.ase_id,
-                                              ASCSState.CODEC_CONFIGURED, 30)
+    return ascs_config_codec(config.addr_type, config.addr, config.ase_id, config.coding_format,
+                             config.vid, config.cid, codec_ltvs_bytes)
 
 
 def preconfig_qos(config):
@@ -1468,27 +1596,6 @@ def preconfig_qos(config):
                            config.presentation_delay)
 
 
-def config_qos(config):
-    btp.ascs_config_qos(config.ase_id,
-                        config.cig_id,
-                        config.cis_id,
-                        config.sdu_interval,
-                        config.framing,
-                        config.max_sdu_size,
-                        config.retransmission_number,
-                        config.max_transport_latency,
-                        config.presentation_delay,
-                        config.addr_type, config.addr)
-
-
-def enable(config):
-    stack = get_stack()
-    btp.ascs_enable(config.ase_id, config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-
-
 def connect(config):
     stack = get_stack()
 
@@ -1500,49 +1607,6 @@ def connect(config):
         config.ase_id,
         config.cis_id,
     )
-
-
-def start_streaming(config):
-    stack = get_stack()
-    btp.ascs_receiver_start_ready(config.ase_id, config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-
-
-def stop_streaming(config):
-    stack = get_stack()
-    btp.ascs_receiver_stop_ready(config.ase_id, config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-
-
-def source_disable(config):
-    """Disable ASE streams"""
-    stack = get_stack()
-    btp.ascs_disable(config.ase_id, config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-
-
-def sink_disable(config):
-    """Disable ASE streams"""
-    stack = get_stack()
-    btp.ascs_disable(config.ase_id, config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-
-
-def release(config):
-    """Release ASE streams"""
-    stack = get_stack()
-    btp.ascs_release(config.ase_id, config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
 
 
 def get_audio_locations_from_pac(addr_type, addr, audio_dir):
@@ -1568,7 +1632,7 @@ def create_ase_config(
     audio_dir: AudioDir,
     chan_cnt: int,
     audio_config_test: AudioConfigTest,
-) -> Namespace:
+) -> Namespace | None:
     """
     Args:
         default_config (Namespace): A Namespace representing the default_configuration this new
@@ -1587,6 +1651,8 @@ def create_ase_config(
     config.audio_locations = get_audio_locations_from_pac(
         default_config.addr_type, default_config.addr, audio_dir
     )
+    if config.audio_locations is None:
+        return None
 
     stack = get_stack()
 
@@ -1622,7 +1688,8 @@ def create_ase_config(
             not audio_config_test.connect_source_in_qos and not config.connect_cis_in_qos
         )
 
-    config_codec(config)
+    if not config_codec(config):
+        return None
 
     preconfig_qos(config)
 
@@ -1753,7 +1820,8 @@ def hdl_wid_311(params: WIDParams):
     # enable the ASEs that should be in the enabling state before CIS connection now
     for config in stack.bap.ase_configs:
         if config.enable_before_cis_connection:
-            enable(config)
+            if not ascs_enable(config.addr_type, config.addr, config.ase_id):
+                return False
 
     # Connect CISes if not already done in the QoS configured state
     if not audio_config_test.connect_cis_in_qos:
@@ -1765,7 +1833,8 @@ def hdl_wid_311(params: WIDParams):
     # move the ASEs that should be in the enabling state after CIS connection now
     for config in stack.bap.ase_configs:
         if not config.enable_before_cis_connection:
-            enable(config)
+            if not ascs_enable(config.addr_type, config.addr, config.ase_id):
+                return False
 
     # PTS will change ASE states to streaming when all CISes are established
     for config in stack.bap.ase_configs:
@@ -1840,10 +1909,8 @@ def hdl_wid_314(params: WIDParams):
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
-    btp.ascs_config_codec(ase_id, coding_format, 0xffff, 0xffff, codec_ltvs_bytes)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
-    return True
+    return ascs_config_codec(addr_type, addr, ase_id, coding_format, 0xffff, 0xffff, codec_ltvs_bytes)
 
 
 def hdl_wid_315(params: WIDParams):
@@ -1888,9 +1955,9 @@ def hdl_wid_315(params: WIDParams):
         codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
                                                  audio_locations, octets_per_frame,
                                                  frames_per_sdu)
-        btp.ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs_bytes)
-        stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-        stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.CODEC_CONFIGURED, 30)
+
+        if not ascs_config_codec(addr_type, addr, ase_id, coding_format, vid, cid, codec_ltvs_bytes):
+            return False
 
     # Perform Config QOS operation
     cig_id = 0x00
@@ -1901,10 +1968,7 @@ def hdl_wid_315(params: WIDParams):
     btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-
-    return True
+    return ascs_config_qos(addr_type, addr, ase_id, cig_id, cis_id, *qos_config, presentation_delay)
 
 
 def hdl_wid_340(_: WIDParams):
