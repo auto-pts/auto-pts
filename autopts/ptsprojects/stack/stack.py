@@ -57,7 +57,7 @@ log = logging.debug
 class Stack:
     def __init__(self):
         self.supported_svcs = 0
-        self.supported_cmds = 0
+        self.supported_cmds = {}
         self.synch = None
 
         self.gap = None
@@ -96,6 +96,26 @@ class Stack:
     def is_svc_supported(self, svc):
         svc_value = self.supported_svcs_cmds.get(svc, {}).get("service", 0)
         return (self.supported_svcs & svc_value) > 0
+
+    def is_command_supported(self, service: str, opcode: int) -> bool:
+        """
+        Verify IUT supports a given BTP command
+        Usage: stack.is_command_supported('GAP', defs.BTP_GAP_CMD_CONNECT)
+
+        Args:
+            service (str): BTP Service
+            opcode (int): BTP command opcode
+
+        Returns:
+            bool: True if command is supported by IUT, False if not
+        """
+        service_key = service.upper()
+        supported_mask = self.supported_cmds.get(service_key, 0)
+
+        if service_key not in self.supported_cmds:
+            log(f'{service} BTP Service not found')
+            return False
+        return bool((supported_mask >> opcode) & 1)
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
