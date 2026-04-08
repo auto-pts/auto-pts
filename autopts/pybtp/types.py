@@ -15,7 +15,7 @@
 
 import binascii
 import struct
-from enum import IntEnum, IntFlag
+from enum import Enum, IntEnum, IntFlag
 from typing import Final, NamedTuple
 from uuid import UUID as StdUUID
 
@@ -751,3 +751,30 @@ class BearerTech(IntEnum):
     CDMA = 0x07
     CELL_2G = 0x08
     WCDMA = 0x09
+
+
+class SecurityModeLevel(Enum):
+    MODE_1_LEVEL_1 = (1, 1)
+    MODE_1_LEVEL_2 = (1, 2)
+    MODE_1_LEVEL_3 = (1, 3)
+    MODE_1_LEVEL_4 = (1, 4)
+
+    MODE_2_LEVEL_1 = (2, 1)
+    MODE_2_LEVEL_2 = (2, 2)
+
+    MODE_3_LEVEL_1 = (3, 1)
+    MODE_3_LEVEL_2 = (3, 2)
+    MODE_3_LEVEL_3 = (3, 3)
+
+    @property
+    def mode(self):
+        return self.value[0]
+
+    @property
+    def level(self):
+        return self.value[1]
+
+
+class SecurityFlags(IntFlag):
+    NONE = 0
+    LE_SECURE_CONNECTIONS_ONLY = defs.BIT(0)
