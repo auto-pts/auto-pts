@@ -25,7 +25,6 @@ from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import (
-    ascs_add_ase_to_cis,
     lt2_addr_get,
     lt2_addr_type_get,
     pts_addr_get,
@@ -1060,7 +1059,7 @@ def hdl_wid_303(params: WIDParams):
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
 
-    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -1128,7 +1127,7 @@ def hdl_wid_304(params: WIDParams):
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
 
-    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -1201,7 +1200,7 @@ def hdl_wid_305(params: WIDParams):
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
 
-    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -1279,7 +1278,7 @@ def hdl_wid_306(params: WIDParams):
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
 
-    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -1456,7 +1455,7 @@ def preconfig_qos(config):
         if not config.mono:
             config.max_sdu_size = config.max_sdu_size * config.chan_cnt
 
-    ascs_add_ase_to_cis(config.ase_id, config.cis_id, config.cig_id,
+    btp.ascs_add_ase_to_cis(config.ase_id, config.cis_id, config.cig_id,
                         config.addr_type, config.addr)
 
     btp.ascs_preconfig_qos(config.cig_id,
@@ -1899,7 +1898,7 @@ def hdl_wid_315(params: WIDParams):
     presentation_delay = 40000
     qos_config = (7500, 0x00, 40, 2, 10)
 
-    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
     btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
 
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
