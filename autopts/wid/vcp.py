@@ -208,7 +208,7 @@ def hdl_wid_20107(params: WIDParams):
                                     stack.aics.wait_aics_gain_setting_prop_ev),
         "Audio Input Type": (btp.aics_type_get, stack.aics.wait_aics_input_type_ev),
         "Audio Input Status": (btp.aics_status_get,
-                               stack.aics.wait_aics_input_type_ev),
+                               stack.aics.wait_aics_status_ev),
     }
 
     operation_name = re.findall(r'read\s(.*?)\scharacteristic', params.description)
