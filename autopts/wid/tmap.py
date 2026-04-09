@@ -877,7 +877,7 @@ def hdl_wid_20107(params: WIDParams):
 
     if "Volume State" in params.description:
         btp.vcp_state_read(addr_type, addr)
-        ev = stack.vcp.wait_vcp_procedure_ev(addr_type, addr, 10)
+        ev = stack.vcp.wait_vcp_state_ev(addr_type, addr, 10)
         if ev is not None:
             return True
 
