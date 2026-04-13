@@ -360,7 +360,9 @@ Events:
         Opcode 0x80 - Discover Completed event
 
                 Controller Index:       <controller id>
-                Event parameters:       Status (4 octets)
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Status (4 octets)
                                         TBS Count (1 octet)
                                         GTBS Found (1 octet)
 
@@ -419,7 +421,9 @@ Events:
         Opcode 0x82 - Characteristics Handles Event
 
                 Controller Index:       <controller id>
-                Event parameters:       Bearer Provider Name Handle (2 octets)
+                Event parameters:       Address Type (1 octet)
+                                        Address (6 octets)
+                                        Bearer Provider Name Handle (2 octets)
                                         Bearer UCI Handle (2 octets)
                                         Bearer Technology Handle (2 octets)
                                         URI List Handle (2 octets)
