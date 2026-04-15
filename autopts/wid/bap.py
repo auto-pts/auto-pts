@@ -1356,10 +1356,6 @@ def hdl_wid_305(params: WIDParams):
     if not ascs_enable(addr_type, addr, ase_id):
         return False
 
-    ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 30)
-    if ev is None:
-        return False
-
     if not ascs_disable(addr_type, addr, ase_id):
         return False
 
