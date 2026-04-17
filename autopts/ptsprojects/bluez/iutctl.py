@@ -18,6 +18,7 @@ import logging
 import shlex
 import subprocess
 
+from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.pybtp.types import BTPError, BTPInitError
@@ -46,11 +47,14 @@ class IUTCtl:
         log("%s.%s btpclient_path=%s", self.__class__, self.__init__.__name__,
             args.btpclient_path)
 
-        self.btpclient_path = args.btpclient_path
+        self.btpclient_path = args.btpclient_path[0]
         self.btp_socket = None
         self.btp_address = BTP_ADDRESS
         self.socket_srv = None
         self.iut_process = None
+
+        self.stack = Stack()
+        self.stack.synch_init()
 
     def start(self, test_case):
         """Starts the IUT"""
@@ -106,6 +110,9 @@ class IUTCtl:
             self.iut_process.terminate()
             self.iut_process.wait()  # do not let zombies take over
             self.iut_process = None
+
+    def get_stack(self):
+        return self.stack
 
 
 def get_iut():

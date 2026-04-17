@@ -216,7 +216,7 @@ class BTPSocket:
 
 class BTPSocketSrv(BTPSocket):
 
-    def __init__(self, log_dir=None, log_file=None):
+    def __init__(self, log_dir=None, log_file="autopts-iutctl.log"):
         super().__init__(log_dir, log_file)
         self.sock = None
 
