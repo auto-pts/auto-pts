@@ -18,6 +18,12 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     # package_dir={"": "src"},
-    packages=setuptools.find_packages(include=["autopts"]),
+    packages=setuptools.find_packages(include=["autopts", "autopts.*"]),
+    include_package_data=True,
+    package_data={
+        "autopts.ptsprojects.bluez": [
+            "wireplumber/*/wireplumber.conf.d/*.conf",
+        ],
+    },
     python_requires=">=3.10",
 )
