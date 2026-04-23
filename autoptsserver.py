@@ -90,7 +90,7 @@ def init_logging(_args):
     format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
     formatter = root_logging.Formatter(format_template)
-    file_handler = root_logging.FileHandler(_args.log_filename, mode='w')
+    file_handler = root_logging.FileHandler(_args.log_filename, mode='w', encoding='utf-8')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     logger.setLevel(root_logging.DEBUG)

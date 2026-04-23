@@ -446,7 +446,8 @@ def init_logging(tag="", log_filename=None):
                         filename=log_filename,
                         filemode='w',
                         level=logging.DEBUG,
-                        force=True)
+                        force=True,
+                        encoding="utf-8")
 
 
 def init_pts_thread_entry_wrapper(func):
@@ -1193,7 +1194,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
         return 'IUT2_NOT_AVAILABLE'
 
     test_case_lts[0].initialize_logging(session_log_dir)
-    file_handler = logging.FileHandler(test_case_lts[0].log_filename)
+    file_handler = logging.FileHandler(test_case_lts[0].log_filename, encoding='utf-8')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
