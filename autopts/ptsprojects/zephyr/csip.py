@@ -136,7 +136,7 @@ def test_cases(ptses):
         pre_conditions_iut2 = [
             TestFunc(get_iut().select_iut, 1),
             TestFunc(btp.core_reg_svc_gap),
-            TestFunc(get_stack().gap_init, iut_device_name + b"_IUT2"),
+            TestFunc(lambda: get_stack().gap_init(iut_device_name + b"_IUT2")),
             TestFunc(btp.gap_read_ctrl_info),
             TestFunc(lambda: pts.update_pixit_param("CSIP", "TSPX_bd_addr_iut",
                      get_stack().gap.iut_addr_get_str())),
@@ -146,7 +146,7 @@ def test_cases(ptses):
             TestFunc(btp.gap_set_gendiscov),
             TestFunc(btp.core_reg_svc_csip),
             TestFunc(btp.core_reg_svc_csis),
-            TestFunc(get_stack().csip_init),
+            TestFunc(lambda: get_stack().csip_init()),
             TestFunc(lambda: set_addr(
                 get_stack().gap.iut_addr_get_str())),
             TestFunc(get_iut().select_iut, 0),
