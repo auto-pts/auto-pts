@@ -1582,6 +1582,7 @@ class Client:
         iutctl = self.get_iut()
         if hasattr(iutctl, 'select_iut'):
             iutctl.select_iut(0)
+            iutctl.set_iut_map(self.args.iut_target_selection['default_iut_map'])
 
         if self.args.pts_addr_map:
             stack.get_stack().pts_addr_map = self.args.pts_addr_map
@@ -1613,6 +1614,35 @@ class Client:
     def setup_test_cases(self, ptses):
         self.test_cases = setup_test_cases(ptses)
 
+    def pre_test_case_fn(self, test_case, pts_addr_rules=None, runtime_test_case_cache=None, **_kwargs):
+        iutctl = get_iut()
+        if hasattr(iutctl, 'select_iut'):
+            iut_map = self.args.iut_target_selection['default_iut_map']
+            for iut_rule in self.args.iut_target_selection.get('rules', []):
+                if test_case in iut_rule.get('test_cases', []) and 'iut_map' in iut_rule:
+                    iut_map = iut_rule['iut_map']
+
+            iutctl.set_iut_map(iut_map)
+            iutctl.select_iut(0)
+
+        if pts_addr_rules:
+            selected_ptses = reorder_ptses_by_addr(self.ptses, test_case, pts_addr_rules)
+            cache_key = tuple(normalize_bd_addr(pts.bd_addr()) for pts in selected_ptses)
+
+            self.setup_project_pixits(selected_ptses)
+
+            selected_test_cases = runtime_test_case_cache.get(cache_key)
+            if selected_test_cases is None:
+                selected_test_cases = setup_test_cases(selected_ptses)
+                runtime_test_case_cache[cache_key] = selected_test_cases
+
+            return {
+                'ptses': selected_ptses,
+                'test_cases': selected_test_cases,
+            }
+
+        return None
+
     def run_test_cases(self):
         """Runs a list of test cases in simple client mode.
 
@@ -1633,31 +1663,21 @@ class Client:
                                  self.args.retry, self.test_case_database,
                                  xml_results_file=self.file_paths['TC_STATS_RESULTS_XML_FILE'])
 
-        rules = parse_test_case_pts_addr_map(
+        pts_addr_rules = parse_test_case_pts_addr_map(
                 getattr(self.args, "pts_addr_map", None))
 
         runtime_test_case_cache = {}
 
-        def pre_test_case_fn(test_case, rules=rules, runtime_test_case_cache=runtime_test_case_cache, **_kwargs):
-            selected_ptses = reorder_ptses_by_addr(self.ptses, test_case, rules)
-            cache_key = tuple(normalize_bd_addr(pts.bd_addr()) for pts in selected_ptses)
-
-            self.setup_project_pixits(selected_ptses)
-
-            selected_test_cases = runtime_test_case_cache.get(cache_key)
-            if selected_test_cases is None:
-                selected_test_cases = setup_test_cases(selected_ptses)
-                runtime_test_case_cache[cache_key] = selected_test_cases
-
-            return {
-                'ptses': selected_ptses,
-                'test_cases': selected_test_cases,
-            }
+        pre_test_case_fn = None
+        if pts_addr_rules or 'rules' in self.args.iut_target_selection:
+            pre_test_case_fn = self.pre_test_case_fn
 
         return run_test_cases(self.ptses, self.test_cases, self.args, stats,
-                      file_paths=copy.deepcopy(self.file_paths),
-                      pre_test_case_fn=pre_test_case_fn if rules else None,
-                      )
+                              file_paths=copy.deepcopy(self.file_paths),
+                              pre_test_case_fn=pre_test_case_fn,
+                              pts_addr_rules=pts_addr_rules,
+                              runtime_test_case_cache=runtime_test_case_cache,
+                              )
 
     def cleanup(self):
         log(f'{self.__class__.__name__}.{self.cleanup.__name__}')

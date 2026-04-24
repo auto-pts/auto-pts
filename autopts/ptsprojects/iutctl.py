@@ -493,14 +493,10 @@ class IutCtl:
 
 class IutCtlWrapper:
     def __init__(self, args):
-        object.__setattr__(self, '_iut_target_selection', None)
         object.__setattr__(self, '_iut_targets', None)
         object.__setattr__(self, '_active_iut_target', None)
         object.__setattr__(self, '_active_iut_target_name', None)
         object.__setattr__(self, '_iut_map', {'0': 'iut0', '1': 'iut1'})
-
-        self._iut_target_selection = args.iut_target_selection \
-            if args.iut_target_selection else None
 
         self._iut_targets = {}
 

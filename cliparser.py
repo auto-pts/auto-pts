@@ -17,6 +17,7 @@
 #
 import argparse
 import copy
+import json
 import logging
 import os
 import shutil
@@ -207,7 +208,9 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
 
         self.add_argument("--iut_targets", default=None, help=argparse.SUPPRESS)
         self.add_argument("--iut_targets_args", default={}, help=argparse.SUPPRESS)
-        self.add_argument("--iut_target_selection", default={}, help=argparse.SUPPRESS)
+        self.add_argument("--iut_target_selection", default=None,
+                          help="IUT target selection configuration dictionary or "
+                               "a path to .json file that contains the dictionary.")
 
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
@@ -419,7 +422,10 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
             if not hasattr(base, dest) and hasattr(cli_args, dest):
                 setattr(base, dest, getattr(cli_args, dest))
 
-        if base.iut_target_selection is None:
+        if isinstance(base.iut_target_selection, str) and os.path.exists(base.iut_target_selection):
+            with open(base.iut_target_selection) as f:
+                base.iut_target_selection = json.load(f)
+        elif not isinstance(base.iut_target_selection, dict):
             base.iut_target_selection = {'default_iut_map': {}}
             for i, iut_name in enumerate(base.iut_targets_args):
                 base.iut_target_selection['default_iut_map'][str(i)] = iut_name
