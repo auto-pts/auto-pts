@@ -160,7 +160,7 @@ class ZephyrBotClient(BotClient):
 
             iutctl.select_iut(0)
         else:
-            self._apply_config(args, config, value)
+            self._apply_config(next(iter(args.iut_targets_args.values())), config, value)
 
     def _apply_config(self, args, config, value):
         pre_overlay = value.get('pre_overlay', [])
