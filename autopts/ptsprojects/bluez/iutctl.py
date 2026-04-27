@@ -58,6 +58,7 @@ class IUTCtl:
         self.iut_process = None
         self.audio_profile = None
         self.audio_process = None
+        self.desynchronized = False
 
         self.stack = Stack()
         self.stack.synch_init()
@@ -136,7 +137,7 @@ class IUTCtl:
                 latency = 1
             elif self.audio_profile == "high-reliability":
                 latency = 3
-            vendor.vendor_ascs_setup(latency)
+            vendor.vendor_ascs_setup(latency, self.desynchronized)
             return
         elif self.external_audio != "wireplumber":
             return
@@ -173,6 +174,9 @@ class IUTCtl:
 
     def set_audio_profile(self, profile):
         self.audio_profile = profile
+
+    def set_desynchronized(self, desynchronized):
+        self.desynchronized = desynchronized
 
 
 def get_iut():

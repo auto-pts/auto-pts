@@ -45,13 +45,17 @@ def vendor_command_rsp_succ(op=None, timeout=20.0):
     return tuple_data
 
 
-def vendor_ascs_setup(target_latency):
+def vendor_ascs_setup(target_latency, desynchronized):
     logging.debug("")
 
     if not (0 <= target_latency <= 3):
         raise BTPError('Invalid target latency, must be between 0 and 3')
 
+    if desynchronized not in (0, 1):
+        raise BTPError('Invalid desynchronized value, must be 0 or 1')
+
     data = struct.pack('B', target_latency)
+    data += struct.pack('B', int(desynchronized))
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*VENDOR['ascs_setup'], data=data)

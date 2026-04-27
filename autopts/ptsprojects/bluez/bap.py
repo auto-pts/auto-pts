@@ -99,6 +99,7 @@ def test_cases(ptses):
         iut_addr.set(addr)
 
     def _stop_audio():
+        iut.set_desynchronized(False)
         iut.set_audio_profile(None)
         iut.stop_audio()
 
@@ -173,6 +174,14 @@ def test_cases(ptses):
                   generic_wid_hdl=bap_wid_hdl),
         BTestCase("BAP", "BAP/UCL/SCC/BV-094-C",
                   cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/STR/BV-543-C",
+                  cmds=[TestFunc(lambda: iut.set_desynchronized(True))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/STR/BV-546-C",
+                  cmds=[TestFunc(lambda: iut.set_desynchronized(True))] +
                         pre_conditions,
                   generic_wid_hdl=bap_wid_hdl),
         ]
