@@ -13,6 +13,7 @@ Commands and responses:
 
                 Controller Index:       <controller id>
                 Command parameters:     Target Latency (1 octet)
+                                        Desynchronized (1 octet)
                 Response parameters:    <None>
 
                 The values of the Target Latency parameter as defined in
@@ -23,6 +24,10 @@ Commands and responses:
                         0x01 = Target low latency
                         0x02 = Target balanced latency and reliability
                         0x03 = Target high reliability
+
+                Valid Desynchronized values:
+                        0x00 = Synchronized
+                        0x01 = Desynchronized
 
                 This command is used to configure the ASCS service.
 
