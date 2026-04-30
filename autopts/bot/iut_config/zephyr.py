@@ -151,9 +151,32 @@ iut_config = {
             # The overlay file exists in zephyr repo. Leave this empty.
         },
         "test_cases": [
-            'AICS', 'ASCS', 'BAP', 'BASS', 'CAP', 'CAS', 'CCP', 'CSIP', 'CSIS', 'GMAP',
-            'GMCS', 'GTBS', 'HAP', 'HAS', 'IAS', 'MCP', 'MCS', 'MICP', 'MICS', 'PACS',
-            'PBP', 'TBS', 'TMAP', 'VCP', 'VCS', 'VOCS',
+            'AICS', 'IOPT/AICS',
+            'ASCS', 'IOPT/ASCS',
+            'BAP', 'IOPT/BAP',
+            'BASS', 'IOPT/BASS',
+            'CAP', 'IOPT/CAP',
+            'CAS', 'IOPT/CAS',
+            'CCP', 'IOPT/CCP',
+            'CSIP', 'IOPT/CSIP',
+            'CSIS', 'IOPT/CSIS',
+            'GMAP', 'IOPT/GMAP',
+            'GMCS', 'IOPT/GMCS',
+            'GTBS', 'IOPT/GTBS',
+            'HAP', 'IOPT/HAP',
+            'HAS', 'IOPT/HAS',
+            'IAS', 'IOPT/IAS',
+            'MCP', 'IOPT/MCP',
+            'MCS', 'IOPT/MCS',
+            'MICP', 'IOPT/MICP',
+            'MICS', 'IOPT/MICS',
+            'PACS', 'IOPT/PACS',
+            'PBP', 'IOPT/PBP',
+            'TBS', 'IOPT/TBS',
+            'TMAP', 'IOPT/TMAP',
+            'VCP', 'IOPT/VCP',
+            'VCS', 'IOPT/VCS',
+            'VOCS', 'IOPT/VOCS',
         ]
     },
 
@@ -180,6 +203,7 @@ iut_config = {
             'MESH/NODE/CFG/COMP/BV-01-C',
             'MESH/SR/RPR/LNK/BI-05-C',
             'MESH/NODE/TNPT/BV-13-C',
+            'IOPT/MESH',
         ]
     },
 
