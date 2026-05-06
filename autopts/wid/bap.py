@@ -1849,7 +1849,7 @@ def hdl_wid_311(params: WIDParams):
         for config in stack.bap.ase_configs:
             if config.audio_dir == AudioDir.SINK:
                 try:
-                    btp.bap_send(config.ase_id, stream_data[config.ase_id])
+                    btp.bap_send(config.ase_id, stream_data[config.ase_id], config.addr_type, config.addr)
                 except BTPError:
                     # Buffer full
                     pass
