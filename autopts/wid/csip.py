@@ -167,9 +167,7 @@ def hdl_wid_20001(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can accept
     GATT connect request from PTS.
     """
-    stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    # Connectable advertising is started in hdl_wid_5 which is expected to be triggered after this
     return True
 
 
