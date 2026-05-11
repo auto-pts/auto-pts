@@ -16,17 +16,19 @@
 
 import logging
 import re
-from time import sleep
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
-from autopts.pybtp.types import GATTErrorCodes, IOCap, WIDParams
+from autopts.pybtp.types import GATTErrorCodes, IOCap, VerifyValueStatus, WIDParams
 from autopts.wid import generic_wid_hdl
+from autopts.wid.common import peer_addr_and_type
 
 log = logging.debug
 
 indication_subbed_already = False
+READ_MULT_VAR_EXPECTED_EVENTS = 2
+READ_MULT_VAR_TIMEOUT = 35
 
 
 def gatt_client_wid_hdl(wid, description, test_case_name):
@@ -50,26 +52,28 @@ def hdl_wid_1(_: WIDParams):
     return True
 
 
-def hdl_wid_2(_: WIDParams):
+def hdl_wid_2(params: WIDParams):
     """
     Please initiate a GATT connection to the PTS.
 
     Description: Verify that the Implementation Under Test (IUT) can
     initiate GATT connect request to PTS.
     """
-    btp.gap_conn()
+    addr, addr_type = peer_addr_and_type(params.test_case_name)
+    btp.gap_conn(addr, addr_type)
     return True
 
 
-def hdl_wid_3(_: WIDParams):
+def hdl_wid_3(params: WIDParams):
     """
     Please initiate a GATT disconnection to the PTS.
 
     Description: Verify that the Implementation Under Test (IUT) can
     initiate GATT disconnect request to PTS.
     """
-    btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
-    return get_stack().gap.wait_for_disconnection(30)
+    addr, addr_type = peer_addr_and_type(params.test_case_name)
+    btp.gap_disconn(addr, addr_type)
+    return get_stack().gap.wait_for_disconnection(30, addr)
 
 
 def hdl_wid_4(_: WIDParams):
@@ -389,7 +393,6 @@ def hdl_wid_30(params: WIDParams):
     MMI.parse_description(params.description)
 
     stack = get_stack()
-    sleep(1)
     stack.gatt_cl.wait_for_chrcs()
 
     if int(MMI.args[0], 16) == stack.gatt_cl.chrcs[0][0] and \
@@ -1329,9 +1332,138 @@ def hdl_wid_147(params: WIDParams):
     hdl1 = MMI.args[0]
     hdl2 = MMI.args[1]
 
-    btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
-    btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    if not hdl1 or not hdl2:
+        logging.error("parsing error")
+        return False
+
+    stack = get_stack()
+    # GAR/BV-10 requires operations over ATT+EATT bearers.
+    try:
+        btp.gatt_cl_eatt_connect(btp.pts_addr_get(), btp.pts_addr_type_get(), 1)
+    except Exception as err:
+        logging.error("%s could not establish EATT bearer: %r", hdl_wid_147.__name__, err)
+        return False
+
+    btp.clear_verify_values()
+
+    try:
+        btp.gatt_cl_read_multiple_var(
+            btp.pts_addr_type_get(),
+            btp.pts_addr_get(),
+            hdl1,
+            hdl2,
+        )
+        btp.gatt_cl_read_multiple_var(
+            btp.pts_addr_type_get(),
+            btp.pts_addr_get(),
+            hdl1,
+            hdl2,
+        )
+    except Exception as err:
+        logging.error("%s read_multiple_var command failed: %r", hdl_wid_147.__name__, err)
+        return False
+
+    if not stack.gatt_cl.wait_for_verify_values(timeout=READ_MULT_VAR_TIMEOUT, expected_count=READ_MULT_VAR_EXPECTED_EVENTS):
+        logging.error("%s timeout waiting for two read_multiple_var async events", hdl_wid_147.__name__)
+        return False
+
+    verify_values = btp.get_verify_values()
+    if len(verify_values) < READ_MULT_VAR_EXPECTED_EVENTS:
+        logging.error("%s missing read_multiple_var verify values: %r", hdl_wid_147.__name__, verify_values)
+        return False
+
+    for item in verify_values[:READ_MULT_VAR_EXPECTED_EVENTS]:
+        status = item[0] if isinstance(item, tuple) else item
+        if status != VerifyValueStatus.OK.value:
+            logging.error("%s read_multiple_var failed, ATT status: %r", hdl_wid_147.__name__, status)
+            return False
+
     return True
+
+
+def hdl_wid_148(params: WIDParams):
+    """
+    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
+    Required Bearers are "EATT" bearers.
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+
+    if not hdl1 or not hdl2:
+        logging.error("parsing error")
+        return False
+
+    stack = get_stack()
+    try:
+        btp.gatt_cl_eatt_connect(btp.pts_addr_get(), btp.pts_addr_type_get(), 1)
+    except Exception as err:
+        logging.error("%s could not establish EATT bearer: %r", hdl_wid_148.__name__, err)
+        return False
+
+    # First attempt is normal path; second is recovery for known transient ATT 0x0E.
+    for attempt in range(2):
+        btp.clear_verify_values()
+
+        try:
+            btp.gatt_cl_read_multiple_var(
+                btp.pts_addr_type_get(),
+                btp.pts_addr_get(),
+                hdl1,
+                hdl2,
+            )
+            btp.gatt_cl_read_multiple_var(
+                btp.pts_addr_type_get(),
+                btp.pts_addr_get(),
+                hdl1,
+                hdl2,
+            )
+        except Exception as err:
+            logging.error("%s read_multiple_var command failed: %r", hdl_wid_148.__name__, err)
+            return False
+
+        if not stack.gatt_cl.wait_for_verify_values(
+            timeout=READ_MULT_VAR_TIMEOUT,
+            expected_count=READ_MULT_VAR_EXPECTED_EVENTS,
+        ):
+            logging.error("%s timeout waiting for two read_multiple_var async events", hdl_wid_148.__name__)
+            return False
+
+        verify_values = btp.get_verify_values()
+        if len(verify_values) < READ_MULT_VAR_EXPECTED_EVENTS:
+            logging.error("%s missing read_multiple_var verify values: %r", hdl_wid_148.__name__, verify_values)
+            return False
+
+        statuses = [
+            item[0] if isinstance(item, tuple) else item
+            for item in verify_values[:READ_MULT_VAR_EXPECTED_EVENTS]
+        ]
+
+        if all(status == VerifyValueStatus.OK.value for status in statuses):
+            return True
+
+        if attempt == 0 and all(status == VerifyValueStatus.UNLIKELY_ERROR.value for status in statuses):
+            logging.debug("%s got ATT 0x0e on first read_multiple_var attempt, retrying once", hdl_wid_148.__name__)
+            logging.debug(
+                "%s waiting for link ready before second read_multiple_var attempt",
+                hdl_wid_148.__name__,
+            )
+            if not stack.gap.wait_for_connection(timeout=10, addr=btp.pts_addr_get()):
+                logging.error(
+                    "%s retry aborted: no connection to PTS before second attempt after ATT 0x0e",
+                    hdl_wid_148.__name__,
+                )
+                return False
+            continue
+
+        logging.error("%s read_multiple_var failed, ATT statuses: %r", hdl_wid_148.__name__, statuses)
+        return False
+
+    return False
 
 
 def hdl_wid_150(params: WIDParams):
@@ -1344,6 +1476,60 @@ def hdl_wid_150(params: WIDParams):
     if params.test_case_name == 'GATT/CL/GAS/BV-05-C':
         # We must initiate security for this test case
         btp.gap_pair()
+
+    return True
+
+
+def hdl_wid_400(params: WIDParams):
+    """
+    Please prepare IUT into an L2CAP Credit Based Connection connectable
+    mode using LE signaling channel.
+
+    Description: Verify that the Implementation Under Test (IUT)
+    can accept L2CAP_CREDIT_BASED_CONNECTION_REQ from PTS.
+    """
+
+    addr, _ = peer_addr_and_type(params.test_case_name)
+
+    try:
+        sec_level = get_stack().gap.gap_wait_for_sec_lvl_change(
+            level=2,
+            timeout=10,
+            addr=addr,
+        )
+    except Exception as err:
+        logging.error(
+            "%s security level wait failed for %s: %r",
+            hdl_wid_400.__name__,
+            params.test_case_name,
+            err,
+        )
+        return False
+
+    if sec_level != 2:
+        logging.error(
+            "%s required security level 2 for %s, got %r",
+            hdl_wid_400.__name__,
+            params.test_case_name,
+            sec_level,
+        )
+        return False
+
+    return True
+
+
+def hdl_wid_402(params: WIDParams):
+    """
+    Please initiate an L2CAP Credit Based Connection using LE signaling
+    channel to the PTS.
+    """
+    addr, addr_type = peer_addr_and_type(params.test_case_name)
+
+    try:
+        btp.gatt_cl_eatt_connect(addr, addr_type, 1)
+    except Exception as err:
+        logging.error("%s failed to initiate EATT setup: %r", hdl_wid_402.__name__, err)
+        return False
 
     return True
 

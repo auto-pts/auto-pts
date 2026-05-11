@@ -5,6 +5,20 @@ from autopts.pybtp.types import (
     BTPError,
 )
 
+LT2_CASE_TOKEN = "LT2"
+
+
+def is_lt2_case(test_case_name: str) -> bool:
+    return LT2_CASE_TOKEN in test_case_name
+
+
+def peer_addr_and_type(test_case_name: str) -> tuple[str, int]:
+    """Return peer address and address type for the active PTS link."""
+    if is_lt2_case(test_case_name):
+        return btp.lt2_addr_get(), btp.lt2_addr_type_get()
+
+    return btp.pts_addr_get(), btp.pts_addr_type_get()
+
 
 def _safe_bap_send(ase_id: int, data: bytearray):
     """Safely send BAP/ISO data, ignoring buffer full errors."""

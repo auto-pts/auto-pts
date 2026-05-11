@@ -15,7 +15,7 @@
 
 import binascii
 import struct
-from enum import IntEnum, IntFlag
+from enum import Enum, IntEnum, IntFlag
 from typing import Final, NamedTuple
 from uuid import UUID as StdUUID
 
@@ -529,6 +529,17 @@ class GATTErrorCodes:
     insufficient_resources = 0x11
     database_out_of_sync = 0x12
     value_not_allowed = 0x13
+
+
+class VerifyValueStatus(str, Enum):
+    OK = att_rsp_str[0]
+    UNLIKELY_ERROR = att_rsp_str[GATTErrorCodes.unlikely_error]
+    MALFORMED_READ_MULTIPLE_VAR_RESPONSE = "Malformed READ_MULTIPLE_VAR response"
+    BTP_FAILED = "BTP failed"
+    BTP_UNKNOWN_CMD = "BTP unknown command"
+    BTP_NOT_READY = "BTP not ready"
+    UNKNOWN_BTP_STATUS = "BTP status 0x{status:02x}"
+    UNKNOWN_ATT_ERROR = "ATT error 0x{status:02x}"
 
 
 class ASCSState(IntEnum):

@@ -391,6 +391,8 @@ gatt_cl = {
                    CONTROLLER_INDEX),
     "cfg_indicate": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_CFG_INDICATE,
                      CONTROLLER_INDEX),
+    "eatt_connect": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_EATT_CONNECT,
+                     CONTROLLER_INDEX),
     "read_multiple_var": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_READ_MULTIPLE_VAR,
                           CONTROLLER_INDEX),
 }
