@@ -29,8 +29,8 @@ log = logging.debug
 indication_subbed_already = False
 
 
-def gatt_cl_wid_hdl(wid, description, test_case_name):
-    log(f'{gatt_cl_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+def gatt_client_wid_hdl(wid, description, test_case_name):
+    log(f'{gatt_client_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
