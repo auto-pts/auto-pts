@@ -82,10 +82,6 @@ def set_pixits(ptses):
 
     # Set GAP common PIXIT values
     pts.set_pixit("GAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("GAP", "TSPX_bd_addr_PTS", "C000DEADBEEF")
-    pts.set_pixit("GAP", "TSPX_broadcaster_class_of_device", "100104")
-    pts.set_pixit("GAP", "TSPX_observer_class_of_device", "100104")
-    pts.set_pixit("GAP", "TSPX_central_class_of_device", "100104")
     pts.set_pixit("GAP", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("GAP", "TSPX_delete_link_key", "FALSE")
     pts.set_pixit("GAP", "TSPX_iut_setup_att_over_br_edr", "FALSE")
@@ -97,22 +93,12 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("GAP", "TSPX_secure_simple_pairing_pass_key_confirmation",
                   "FALSE")
-    pts.set_pixit("GAP", "TSPX_using_public_device_address", "TRUE")
     pts.set_pixit("GAP", "TSPX_using_random_device_address", "FALSE")
     pts.set_pixit("GAP", "TSPX_lim_adv_timeout", "30720")
-    pts.set_pixit("GAP", "TSPX_gen_disc_adv_min", "30720")
-    pts.set_pixit("GAP", "TSPX_lim_disc_scan_min", "10240")
-    pts.set_pixit("GAP", "TSPX_gen_disc_scan_min", "10240")
     pts.set_pixit("GAP", "TSPX_database_file", "Database-GAP.sig")
-    pts.set_pixit("GAP", "TSPX_iut_rx_mtu", "23")
     pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "30000")
-    pts.set_pixit("GAP", "TSPX_iut_privacy_enabled", "FALSE")
     pts.set_pixit("GAP", "TSPX_psm", "1001")
     pts.set_pixit("GAP", "TSPX_psm_2", "2001")
-    pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_min", "00C8")
-    pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_max", "03C0")
-    pts.set_pixit("GAP", "TSPX_iut_valid_connection_latency", "0006")
-    pts.set_pixit("GAP", "TSPX_iut_valid_timeout_multiplier", "0962")
     pts.set_pixit("GAP", "TSPX_Tgap_conn_param_timeout", "30000")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0008")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "00AA")
@@ -124,8 +110,6 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_con_interval_max", "0046")
     pts.set_pixit("GAP", "TSPX_con_latency", "0001")
     pts.set_pixit("GAP", "TSPX_supervision_timeout", "07D0")
-    pts.set_pixit("GAP", "TSPX_minimum_ce_length", "0000")
-    pts.set_pixit("GAP", "TSPX_maximum_ce_length", "0000")
     pts.set_pixit("GAP", "TSPX_conn_update_int_min", "0032")
     pts.set_pixit("GAP", "TSPX_conn_update_int_max", "0046")
     pts.set_pixit("GAP", "TSPX_conn_update_peripheral_latency", "0001")
@@ -136,8 +120,6 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
     pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "00000000000000000000000000000000")
-    pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
-                  "0123456789ABCDEF0123456789ABCDEF")
     pts.set_pixit("GAP",
                   "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
@@ -183,12 +165,6 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_link_key", "TRUE")),
-        TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_iut_privacy_enabled",
-            "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
-        TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_using_public_device_address",
-            "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_using_random_device_address",
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
