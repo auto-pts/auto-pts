@@ -14,6 +14,7 @@
 #
 
 import logging
+import os
 import re
 
 from autopts.ptsprojects.stack import get_stack
@@ -199,10 +200,22 @@ def hdl_wid_146(_: WIDParams):
     return True
 
 
-def hdl_wid_147(_: WIDParams):
+def hdl_wid_147(params: WIDParams):
     """
     Please enter 16 bytes IUT's OOB Data (confirmation).
     """
+    if params.test_case_name in ['SM/CEN/OOB/BV-10-C', 'SM/PER/OOB/BV-11-C']:
+        # This behaviour is required by core v6.3 and later.
+        # Ref: Core_v6.3 Vol 3, Part H section 2.3.5.4
+        # The TK value shall be a 128-bit random number.
+        # However this can not be forced on the Host SM layer, since OOB is not limited to be supplied
+        # any application level method.
+        # if test case is ble legacy pairing with OOB data, we need to generate a 16bytes random number
+        # each time this WID is called to set the OOB data.
+        random_number = ''.join(f'{byte:02x}' for byte in os.urandom(16))
+        btp.gap_oob_legacy_set_data(random_number)
+        return random_number
+
     r, c = btp.gap_oob_sc_get_local_data()
     return c
 
