@@ -36,9 +36,9 @@ def reset_cmd(iutctl):
     with_srn = ''
 
     if iutctl.debugger_snr:
-        with_srn = f' -s {iutctl.debugger_snr}'
+        with_srn = f'{iutctl.debugger_snr}'
 
-    return f'nrfjprog -r {with_srn}'
+    return f'nrfutil device reset --reset-kind RESET_PIN --serial-number {with_srn}'
 
 
 def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
@@ -85,13 +85,13 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call('newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
                .split(), cwd=project_path)
 
-    config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=nrfjprog'
+    config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=nrfutil'
     if overlay:
         config += ':' + ':'.join([f'{k}={v}' for k, v in list(overlay.items())])
     check_call(f'newt target set bttester syscfg={config}'
                .split(), cwd=project_path)
-    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfjprog'.split(), cwd=project_path)
-    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=nrfjprog'
+    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfutil'.split(), cwd=project_path)
+    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=nrfutil'
                .split(), cwd=project_path)
 
     check_call(f'newt build {board}_boot'.split(), cwd=project_path)
