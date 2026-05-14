@@ -33,9 +33,9 @@ def reset_cmd(iutctl):
     with_srn = ''
 
     if iutctl.debugger_snr:
-        with_srn = f' -s {iutctl.debugger_snr}'
+        with_srn = f'{iutctl.debugger_snr}'
 
-    return f'nrfjprog -f nrf52 -r {with_srn}'
+    return f'nrfutil device reset --reset-kind RESET_PIN --serial-number {with_srn}'
 
 
 def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
@@ -70,7 +70,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
         f'newt target set {board}_boot bsp=@apache-mynewt-core/hw/bsp/{board}'.split(), cwd=project_path)
     check_call(
         f'newt target set {board}_boot app=@mcuboot/boot/mynewt'.split(), cwd=project_path)
-    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfjprog'.split(),
+    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfutil'.split(),
                cwd=project_path)
 
     check_call(
@@ -79,7 +79,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
-    config = 'MYNEWT_DOWNLOADER=nrfjprog'
+    config = 'MYNEWT_DOWNLOADER=nrfutil'
     if overlay:
         config += ':' + ':'.join([f'{k}={v}' for k, v in list(overlay.items())])
 
