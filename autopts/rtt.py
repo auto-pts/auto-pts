@@ -216,8 +216,8 @@ class BTMON:
                 cmd = f"btmon -C 130 -J {device_core},{debugger_snr} -w {self.log_filename}"
             self.btmon_process = subprocess.Popen(cmd, cwd=self.log_filecwd,
                                                   shell=True,
-                                                  stdout=subprocess.PIPE,
-                                                  stderr=subprocess.PIPE,
+                                                  stdout=subprocess.DEVNULL,
+                                                  stderr=subprocess.DEVNULL,
                                                   preexec_fn=os.setsid)
 
     def stop(self):
@@ -244,8 +244,8 @@ class BTMON:
         else:
             proc = subprocess.Popen(cmd, cwd=self.log_filecwd,
                                     shell=True,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
+                                    stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL,
                                     preexec_fn=os.setsid)
         proc.wait()
 
