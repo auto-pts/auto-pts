@@ -44,54 +44,12 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("MESH", "TSPX_bd_addr_additional_filter_accept_list", "")
-    pts.set_pixit("MESH", "TSPX_time_guard", "300000")
-    pts.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("MESH", "TSPX_mtu_size", "23")
+    """" Set only IXITs that require non-default value """
     pts.set_pixit("MESH", "TSPX_delete_link_key", "TRUE")
     pts.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("MESH", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("MESH", "TSPX_scan_interval", "30")
-    pts.set_pixit("MESH", "TSPX_scan_window", "30")
-    pts.set_pixit("MESH", "TSPX_scan_filter", "00")
-    pts.set_pixit("MESH", "TSPX_advertising_interval_min", "160")
-    pts.set_pixit("MESH", "TSPX_advertising_interval_max", "160")
-    pts.set_pixit("MESH", "TSPX_tester_OOB_information", "F87F")
-    pts.set_pixit("MESH", "TSPX_device_uuid", "001BDC0810210B0E0A0C000B0E0A0C00")
-    pts.set_pixit("MESH", "TSPX_device_uuid2", "00000000000000000000000000000000")
-    pts.set_pixit(
-        "MESH",
-        "TSPX_device_public_key",
-        ("5B2AD8B034D80743536E7F1B2354FE0869F50E8F085BEA047119590F4E74AC67"
-         "F0151EFBC531FBAB2673B1D1ADF78931F400D950E466D026FC2E7D090E2A1A0C"))
-    pts.set_pixit("MESH", "TSPX_device_private_key",
-                  "A60179DE5010F30CD8B8B173E2A7F945724D3AEF43A411909920FFF8108EED00")
-    pts.set_pixit("MESH", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
-    pts.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
-    pts.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
     pts.set_pixit("MESH", "TSPX_vendor_model_id", "05f11234")
-    pts.set_pixit("MESH", "TSPX_list_of_optional_ad_types", "")
-    pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
-    pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
     pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "130")
-    pts.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
-    pts.set_pixit("MESH", "TSPX_device_key",
-                  "00000000000000000000000000000000")
-    pts.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
-    pts.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
     pts.set_pixit("MESH", "TSPX_Beacon_Observation_Period", "30")
-    pts.set_pixit("MESH", "TSPX_pt_addr", "0300")
-    pts.set_pixit("MESH", "TSPX_pt2_addr", "0310")
-    pts.set_pixit("MESH", "TSPX_po_addr", "0200")
-    pts.set_pixit("MESH", "TSPX_po2_addr", "0210")
-    pts.set_pixit("MESH", "TSPX_oob_certificates", "")
-    pts.set_pixit("MESH", "TSPX_Max_Number_Of_Paths", "1")
-    pts.set_pixit("MESH", "Max_Number_Of_Dependent_Nodes_Per_Path", "1")
-    pts.set_pixit("MESH", "TSPX_iut_model_id_publish_not_supported", "0000")
-    pts.set_pixit("MESH", "TSPX_mdf_label_uuid_for_virtual_address", "112233445566778899AABBCCDDEEFFEE")
 
     if len(ptses) < 2:
         return
@@ -99,53 +57,12 @@ def set_pixits(ptses):
     pts2 = ptses[1]
 
     # PTS2
-    pts2.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts2.set_pixit("MESH", "TSPX_bd_addr_additional_filter_accept_list", "")
-    pts2.set_pixit("MESH", "TSPX_time_guard", "300000")
-    pts2.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
-    pts2.set_pixit("MESH", "TSPX_mtu_size", "23")
+    """" Set only IXITs that require non-default value """
     pts2.set_pixit("MESH", "TSPX_delete_link_key", "TRUE")
-    pts2.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
-    pts2.set_pixit("MESH", "TSPX_security_enabled", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_scan_interval", "30")
-    pts2.set_pixit("MESH", "TSPX_scan_window", "30")
-    pts2.set_pixit("MESH", "TSPX_scan_filter", "00")
-    pts2.set_pixit("MESH", "TSPX_advertising_interval_min", "160")
-    pts2.set_pixit("MESH", "TSPX_advertising_interval_max", "160")
-    pts2.set_pixit("MESH", "TSPX_tester_OOB_information", "F87F")
     pts2.set_pixit("MESH", "TSPX_device_uuid", "00000000000000000000000000000000")
     pts2.set_pixit("MESH", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
-    pts2.set_pixit(
-        "MESH",
-        "TSPX_device_public_key",
-        ("5B2AD8B034D80743536E7F1B2354FE0869F50E8F085BEA047119590F4E74AC67"
-         "F0151EFBC531FBAB2673B1D1ADF78931F400D950E466D026FC2E7D090E2A1A0C"))
-    pts2.set_pixit("MESH", "TSPX_device_private_key",
-                   "A60179DE5010F30CD8B8B173E2A7F945724D3AEF43A411909920FFF8108EED00")
-    pts2.set_pixit("MESH", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
-    pts2.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
-    pts2.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
-    pts2.set_pixit("MESH", "TSPX_vendor_model_id", "00000000")
-    pts2.set_pixit("MESH", "TSPX_list_of_optional_ad_types", "")
-    pts2.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
-    pts2.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
-    pts2.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_device_key",
-                   "00000000000000000000000000000000")
-    pts2.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
+    pts2.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
     pts2.set_pixit("MESH", "TSPX_Beacon_Observation_Period", "30")
-    pts.set_pixit("MESH", "TSPX_pt_addr", "0300")
-    pts.set_pixit("MESH", "TSPX_pt2_addr", "0310")
-    pts.set_pixit("MESH", "TSPX_po_addr", "0200")
-    pts.set_pixit("MESH", "TSPX_po2_addr", "0210")
-    pts.set_pixit("MESH", "TSPX_oob_certificates", "")
-    pts.set_pixit("MESH", "TSPX_Max_Number_Of_Paths", "1")
-    pts.set_pixit("MESH", "Max_Number_Of_Dependent_Nodes_Per_Path", "1")
-    pts.set_pixit("MESH", "TSPX_iut_model_id_publish_not_supported", "0000")
-    pts.set_pixit("MESH", "TSPX_mdf_label_uuid_for_virtual_address", "112233445566778899AABBCCDDEEFFEE")
 
 
 def test_cases(ptses):
@@ -200,8 +117,6 @@ def test_cases(ptses):
             MeshVals.subscription_addr_list1)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_OOB_code", oob)),
-        TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_enable_IUT_provisioner", "FALSE")),
     ]
 
     pre_conditions = common_pre_conditions + [
