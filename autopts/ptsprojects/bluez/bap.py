@@ -123,6 +123,7 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(iut.start_audio),
         TestFuncCleanUp(_stop_audio),
+        TestFuncCleanUp(btp.gap_unpair, pts_bd_addr, Addr.le_public),
         ]
 
     custom_test_cases = [
