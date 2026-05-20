@@ -531,15 +531,21 @@ class GATTErrorCodes:
     value_not_allowed = 0x13
 
 
-class VerifyValueStatus(str, Enum):
+class ATTVerifyStatus(str, Enum):
     OK = att_rsp_str[0]
     UNLIKELY_ERROR = att_rsp_str[GATTErrorCodes.unlikely_error]
-    MALFORMED_READ_MULTIPLE_VAR_RESPONSE = "Malformed READ_MULTIPLE_VAR response"
+    UNKNOWN_ERROR = "Unknown ATT error"
+
+
+class BTPVerifyStatus(str, Enum):
     BTP_FAILED = "BTP failed"
     BTP_UNKNOWN_CMD = "BTP unknown command"
     BTP_NOT_READY = "BTP not ready"
-    UNKNOWN_BTP_STATUS = "BTP status 0x{status:02x}"
-    UNKNOWN_ATT_ERROR = "ATT error 0x{status:02x}"
+    BTP_UNKNOWN_STATUS = "Unknown BTP status"
+
+
+class GATTClientVerifyStatus(str, Enum):
+    MALFORMED_READ_MULTIPLE_VAR_RESPONSE = "Malformed READ_MULTIPLE_VAR response"
 
 
 class ASCSState(IntEnum):

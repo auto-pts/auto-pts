@@ -31,9 +31,11 @@ from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.common import gatt_cl
 from autopts.pybtp.types import (
+    ATTVerifyStatus,
     BTPError,
+    BTPVerifyStatus,
+    GATTClientVerifyStatus,
     Perm,
-    VerifyValueStatus,
     addr_str_to_le_bytes,
     le_bytes_to_hex_str,
     le_bytes_to_uuid,
@@ -62,7 +64,7 @@ def gatt_cl_mtu_exchanged_ev_(gatt_cl, data, data_len):
             defs.BTP_STATUS_UNKNOWN_CMD,
             defs.BTP_STATUS_NOT_READY,
         }
-        if btp_status in known_btp_statuses and data_len - struct.calcsize(read_mult_var_fmt) >= payload_len:
+        if btp_status in known_btp_statuses and data_len == struct.calcsize(read_mult_var_fmt) + payload_len:
             gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len)
             return
 
@@ -197,27 +199,36 @@ att_rsp_str = {0: "",
                }
 
 
-btp_rsp_str = {
-    defs.BTP_STATUS_FAILED: VerifyValueStatus.BTP_FAILED.value,
-    defs.BTP_STATUS_UNKNOWN_CMD: VerifyValueStatus.BTP_UNKNOWN_CMD.value,
-    defs.BTP_STATUS_NOT_READY: VerifyValueStatus.BTP_NOT_READY.value,
-}
-
-
 def _att_status_str(status: int) -> str:
-    """Return a stable verification string for an ATT status."""
-    return att_rsp_str.get(
-        status,
-        VerifyValueStatus.UNKNOWN_ATT_ERROR.value.format(status=status),
-    )
+    """Return a stable verification string for an ATT status.
+
+    Args:
+        status: ATT status code from a GATT Client BTP event.
+
+    Returns:
+        Known ATT status text, or a stable fallback for unknown ATT status
+        codes.
+    """
+    return att_rsp_str.get(status, ATTVerifyStatus.UNKNOWN_ERROR.value)
 
 
 def _btp_status_str(status: int) -> str:
-    """Return a stable verification string for a BTP status."""
-    return btp_rsp_str.get(
-        status,
-        VerifyValueStatus.UNKNOWN_BTP_STATUS.value.format(status=status),
-    )
+    """Return a stable verification string for a BTP status.
+
+    Args:
+        status: BTP status code returned by the IUT.
+
+    Returns:
+        Known BTP status text, or a stable fallback for unknown BTP status
+        codes.
+    """
+    if status == defs.BTP_STATUS_FAILED:
+        return BTPVerifyStatus.BTP_FAILED.value
+    if status == defs.BTP_STATUS_UNKNOWN_CMD:
+        return BTPVerifyStatus.BTP_UNKNOWN_CMD.value
+    if status == defs.BTP_STATUS_NOT_READY:
+        return BTPVerifyStatus.BTP_NOT_READY.value
+    return BTPVerifyStatus.BTP_UNKNOWN_STATUS.value
 
 
 def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
@@ -475,7 +486,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
         return
 
     if data_length == 0:
-        add_to_verify_values(VerifyValueStatus.OK.value)
+        add_to_verify_values(ATTVerifyStatus.OK.value)
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
@@ -596,7 +607,7 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
             migrated_fmt, data[:migrated_size]
         )
         cand_payload_len = data_len - migrated_size
-        if cand_status in known_btp_statuses and cand_payload_len >= cand_data_length:
+        if cand_status in known_btp_statuses and cand_payload_len == cand_data_length:
             use_migrated = True
 
     if use_migrated:
@@ -611,7 +622,7 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
         status = 0
         rp_data = data[legacy_size:]
     else:
-        add_to_verify_values(VerifyValueStatus.MALFORMED_READ_MULTIPLE_VAR_RESPONSE.value)
+        add_to_verify_values(GATTClientVerifyStatus.MALFORMED_READ_MULTIPLE_VAR_RESPONSE.value)
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
@@ -636,7 +647,7 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
         return
 
     if len(rp_data) < data_length:
-        add_to_verify_values(VerifyValueStatus.MALFORMED_READ_MULTIPLE_VAR_RESPONSE.value)
+        add_to_verify_values(GATTClientVerifyStatus.MALFORMED_READ_MULTIPLE_VAR_RESPONSE.value)
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
@@ -1066,7 +1077,13 @@ def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
 
 
 def gatt_cl_read_multiple_var(bd_addr_type: int, bd_addr: str, *hdls: str) -> None:
-    """Read multiple variable-length attributes through the GATT Client BTP service."""
+    """Read multiple variable-length attributes through the GATT Client BTP service.
+
+    Args:
+        bd_addr_type: Peer LE address type.
+        bd_addr: Peer Bluetooth device address in big-endian hex form.
+        hdls: Attribute handles to read, encoded as big-endian hex strings.
+    """
     logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, hdls)
     iutctl = get_iut()
@@ -1106,7 +1123,7 @@ def gatt_cl_eatt_connect(bd_addr: str, bd_addr_type: int, num: int = 1) -> None:
         BTPError: If the IUT does not support the GATT Client EATT command
             or if the command fails.
     """
-    logging.debug("%s %r %r %r", gatt_cl_eatt_connect.__name__, bd_addr, bd_addr_type, num)
+    logging.debug("%r %r %r", bd_addr, bd_addr_type, num)
     iutctl = get_iut()
     stack = get_stack()
 
