@@ -20,7 +20,7 @@ from autopts.client import get_unique_name
 from autopts.ptsprojects.bluez.btestcase import BTestCase
 from autopts.ptsprojects.bluez.gap_wid import gap_wid_hdl
 from autopts.ptsprojects.stack import get_stack
-from autopts.ptsprojects.testcase import TestFunc, TestFuncCleanUp
+from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, Perm, Prop
 from autopts.wid.gap import hdl_wid_161
@@ -155,6 +155,7 @@ def test_cases(ptses):
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.gap_unpair, pts_bd_addr, Addr.le_public),
         TestFunc(btp.gap_reset),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
@@ -186,7 +187,6 @@ def test_cases(ptses):
         # update this if RPA was used by PTS
         # TODO: Get PTS address type
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-        TestFuncCleanUp(btp.gap_unpair, pts_bd_addr, Addr.le_public),
         ]
 
     custom_test_cases = [
