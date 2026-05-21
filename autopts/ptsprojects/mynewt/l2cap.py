@@ -17,7 +17,7 @@
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
-from autopts.ptsprojects.stack import L2cap, get_stack
+from autopts.ptsprojects.stack import L2CapChannelStatusCodes, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
@@ -136,7 +136,7 @@ def test_cases(ptses):
 
     pre_conditions_unacceptable_parameters = common + [
         TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
-        TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu, L2cap.unacceptable_parameters)
+        TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu, L2CapChannelStatusCodes.UNACCEPTABLE_PARAMETERS)
     ]
 
     pre_conditions_gatt = common + [
