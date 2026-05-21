@@ -1003,11 +1003,18 @@ class TestGroup:
         self.total = 0
         self.passed = 0
         self.failed = 0
-        self.pass_rate = 0.0
 
-    def get_pass_rate(self):
+    def get_pass_rate(self) -> float:
+        """
+        Get the pass rate in percentage (0.00 -> 100.00)
+
+        Returns:
+            float: Pass rate
+        """
         if self.total > 0:
-            self.pass_rate = (self.passed / float(self.total)) * 100
+            return (self.passed / float(self.total)) * 100.00
+        else:
+            return float(0.00)
 
 
 def get_tc_res_data(tc_results, test_groups):

@@ -502,15 +502,20 @@ def ascii_profile_summary(tc_results):
     test_groups = {}
     common.get_tc_res_data(tc_results, test_groups)
 
-    for tg in test_groups.values():
-        tg.get_pass_rate()
+    total = common.TestGroup()
 
     header = "|  Suite  | Total | Pass | Fail | Pass Rate|"
     separator = "|---------|-------|------|------|----------|"
     rows = []
     for suite, stats in test_groups.items():
-        rows.append(
-            f"\n|{suite:<9}|{stats.total:<7}|{stats.passed:<6}|{stats.failed:<6}|{stats.pass_rate:>7.2f} % |")
+        total.total += stats.total
+        total.passed += stats.passed
+        total.failed += stats.failed
+
+        rows.append(f"\n|{suite:<9}|{stats.total:<7}|{stats.passed:<6}|{stats.failed:<6}|{stats.get_pass_rate():>7.2f} % |")
+
+    # Add final "Total" row that contains the overall result for the set of suites
+    rows.append(f"\n|{'Total':<9}|{total.total:<7}|{total.passed:<6}|{total.failed:<6}|{total.get_pass_rate():>7.2f} % |")
     table = f"\n{header}\n{separator}" + "".join(rows)
 
     return table

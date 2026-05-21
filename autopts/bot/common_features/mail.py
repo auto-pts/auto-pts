@@ -76,9 +76,6 @@ def html_profile_summary(tc_results):
     test_groups = {}
     common.get_tc_res_data(tc_results, test_groups)
 
-    for tg in test_groups.values():
-        tg.get_pass_rate()
-
     table_rows = ""
     for suite, stats in test_groups.items():
         table_rows += f"""
@@ -87,7 +84,7 @@ def html_profile_summary(tc_results):
                 <td>{stats.total}</td>
                 <td>{stats.passed}</td>
                 <td>{stats.failed}</td>
-                <td>{stats.pass_rate:.2f} %</td>
+                <td>{stats.get_pass_rate():.2f} %</td>
             </tr>
             """
 
