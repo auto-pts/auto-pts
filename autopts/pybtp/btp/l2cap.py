@@ -154,18 +154,6 @@ def l2cap_conn_v2(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=
     return chan_ids
 
 
-l2cap_result_str = {0: "Success",
-                    2: "LE_PSM not supported",
-                    4: "Insufficient Resources",
-                    5: "insufficient authentication",
-                    6: "insufficient authorization",
-                    7: "insufficient encryption key size",
-                    8: "insufficient encryption",
-                    9: "Invalid Source CID",
-                    10: "Source CID already allocated",
-                    }
-
-
 def l2cap_conn_rsp():
     logging.debug("")
 
