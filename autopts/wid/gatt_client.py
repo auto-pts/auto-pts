@@ -1328,18 +1328,18 @@ def hdl_wid_147(params: WIDParams):
     MMI.reset()
     MMI.parse_description(params.description)
 
-    hdl1 = MMI.args[0]
-    hdl2 = MMI.args[1]
-
-    if not hdl1 or not hdl2:
+    if len(MMI.args) < 2 or not MMI.args[0] or not MMI.args[1]:
         logging.error("missing read_multiple_var handles for %s: %r", params.test_case_name, MMI.args)
         return False
 
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    addr, addr_type = peer_addr_and_type(params.test_case_name)
     expected_events = 2
     stack = get_stack()
     # GAR/BV-10 requires operations over ATT+EATT bearers.
     try:
-        btp.gatt_cl_eatt_connect(btp.pts_addr_get(), btp.pts_addr_type_get(), 1)
+        btp.gatt_cl_eatt_connect(addr, addr_type, 1)
     except Exception as err:
         logging.error("could not establish EATT bearer: %r", err)
         return False
@@ -1348,14 +1348,14 @@ def hdl_wid_147(params: WIDParams):
 
     try:
         btp.gatt_cl_read_multiple_var(
-            btp.pts_addr_type_get(),
-            btp.pts_addr_get(),
+            addr_type,
+            addr,
             hdl1,
             hdl2,
         )
         btp.gatt_cl_read_multiple_var(
-            btp.pts_addr_type_get(),
-            btp.pts_addr_get(),
+            addr_type,
+            addr,
             hdl1,
             hdl2,
         )
@@ -1391,17 +1391,17 @@ def hdl_wid_148(params: WIDParams):
     MMI.reset()
     MMI.parse_description(params.description)
 
-    hdl1 = MMI.args[0]
-    hdl2 = MMI.args[1]
-
-    if not hdl1 or not hdl2:
+    if len(MMI.args) < 2 or not MMI.args[0] or not MMI.args[1]:
         logging.error("missing read_multiple_var handles for %s: %r", params.test_case_name, MMI.args)
         return False
 
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    addr, addr_type = peer_addr_and_type(params.test_case_name)
     expected_events = 2
     stack = get_stack()
     try:
-        btp.gatt_cl_eatt_connect(btp.pts_addr_get(), btp.pts_addr_type_get(), 2)
+        btp.gatt_cl_eatt_connect(addr, addr_type, 2)
     except Exception as err:
         logging.error("could not establish EATT bearer: %r", err)
         return False
@@ -1412,14 +1412,14 @@ def hdl_wid_148(params: WIDParams):
 
         try:
             btp.gatt_cl_read_multiple_var(
-                btp.pts_addr_type_get(),
-                btp.pts_addr_get(),
+                addr_type,
+                addr,
                 hdl1,
                 hdl2,
             )
             btp.gatt_cl_read_multiple_var(
-                btp.pts_addr_type_get(),
-                btp.pts_addr_get(),
+                addr_type,
+                addr,
                 hdl1,
                 hdl2,
             )
@@ -1452,7 +1452,7 @@ def hdl_wid_148(params: WIDParams):
             logging.debug(
                 "waiting for link ready before second read_multiple_var attempt",
             )
-            if not stack.gap.wait_for_connection(timeout=10, addr=btp.pts_addr_get()):
+            if not stack.gap.wait_for_connection(timeout=10, addr=addr):
                 logging.error(
                     "retry aborted: no connection to PTS before second attempt after ATT 0x0e",
                 )
