@@ -856,12 +856,17 @@ def hdl_wid_1(params: WIDParams):
     return True
 
 
-def hdl_wid_134(_: WIDParams):
+def hdl_wid_134(params: WIDParams):
     '''
     Using the Implementation Under Test(IUT), send an I - Frame(data) to the PTS until TxWindow is full.
     '''
     l2cap = get_stack().l2cap
-    for _ in range(0, 5):
+
+    max_frame_count = 5
+    if params.test_case_name in ['L2CAP/COS/FLC/BV-03-C']:
+        max_frame_count += 1
+
+    for _ in range(max_frame_count):
         for channel in l2cap.channels:
             _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
