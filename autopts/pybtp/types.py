@@ -751,3 +751,188 @@ class BearerTech(IntEnum):
     CDMA = 0x07
     CELL_2G = 0x08
     WCDMA = 0x09
+
+
+class PBAPTransportType:
+    RFCOMM_CONN = 0
+    L2CAP_CONN = 1
+
+
+class PBAPRole:
+    PCE = 0  # Phone Book Client Equipment
+    PSE = 1  # Phone Book Server Equipment
+
+
+class PBAPPullType:
+    PHONEBOOK = "x-bt/phonebook"
+    VCARDLISTING = "x-bt/vcard-listing"
+    VCARDENTRY = "x-bt/vcard"
+
+
+class PBAPSupportedFeature:
+    """PBAP supported features enumeration"""
+
+    DOWNLOAD = (1 << 0)
+    BROWSING = (1 << 1)
+    DATABASE_IDENTIFIER = (1 << 2)
+    FOLDER_VERSION_COUNTERS = (1 << 3)
+    VCARD_SELECTOR = (1 << 4)
+    ENHANCED_MISSED_CALLS = (1 << 5)
+    UCI_VCARD_PROPERTY = (1 << 6)
+    UID_VCARD_PROPERTY = (1 << 7)
+    CONTACT_REFERENCING = (1 << 8)
+    DEFAULT_CONTACT_IMAGE = (1 << 9)
+
+
+class BtPbapApplParamTagId:
+    ORDER = 0x01
+    SEARCH_VALUE = 0x02
+    SEARCH_PROPERTY = 0x03
+    MAX_LIST_COUNT = 0x04
+    LIST_START_OFFSET = 0x05
+    PROPERTY_SELECTOR = 0x06
+    FORMAT = 0x07
+    PHONEBOOK_SIZE = 0x08
+    NEW_MISSED_CALLS = 0x09
+    PRIMARY_FOLDER_VERSION = 0x0a
+    SECONDARY_FOLDER_VERSION = 0x0b
+    VCARD_SELECTOR = 0x0c
+    DATABASE_IDENTIFIER = 0x0d
+    VCARD_SELECTOR_OPERATOR = 0x0e
+    RESET_NEW_MISSED_CALLS = 0x0f
+    SUPPORTED_FEATURES = 0x10
+
+
+class PBAPAppParamTag:
+    ORDER = 0x01
+    SEARCH_VALUE = 0x02
+    SEARCH_PROPERTY = 0x03
+    MAX_LIST_COUNT = 0x04
+    LIST_START_OFFSET = 0x05
+    PROPERTY_SELECTOR = 0x06
+    FORMAT = 0x07
+    PHONEBOOK_SIZE = 0x08
+    NEW_MISSED_CALLS = 0x09
+    PRIMARY_FOLDER_VERSION = 0x0A
+    SECONDARY_FOLDER_VERSION = 0x0B
+    VCARD_SELECTOR = 0x0C
+    DATABASE_IDENTIFIER = 0x0D
+    VCARD_SELECTOR_OPERATOR = 0x0E
+    RESET_NEW_MISSED_CALLS = 0x0F
+    SUPPORTED_FEATURES = 0x10
+
+
+class PBAPPropertySelector:
+    VERSION = (1 << 0)
+    FN = (1 << 1)
+    N = (1 << 2)
+    PHOTO = (1 << 3)
+    BDAY = (1 << 4)
+    ADR = (1 << 5)
+    LABEL = (1 << 6)
+    TEL = (1 << 7)
+    EMAIL = (1 << 8)
+    MAILER = (1 << 9)
+    TZ = (1 << 10)
+    GEO = (1 << 11)
+    TITLE = (1 << 12)
+    ROLE = (1 << 13)
+    LOGO = (1 << 14)
+    AGENT = (1 << 15)
+    ORG = (1 << 16)
+    NOTE = (1 << 17)
+    REV = (1 << 18)
+    SOUND = (1 << 19)
+    URL = (1 << 20)
+    UID = (1 << 21)
+    KEY = (1 << 22)
+    NICKNAME = (1 << 23)
+    CATEGORIES = (1 << 24)
+    PRODID = (1 << 25)
+    CLASS = (1 << 26)
+    SORT_STRING = (1 << 27)
+    X_IRMC_CALL_DATETIME = (1 << 28)
+    X_BT_SPEEDDIALKEY = (1 << 29)
+    X_BT_UCI = (1 << 30)
+    X_BT_UID = (1 << 31)
+    PROPRIETARY_FILTER = 0x8000000000
+
+
+class OBEXHdr:
+    COUNT = 0xC0
+    NAME = 0x01
+    TYPE = 0x42
+    LEN = 0xC3
+    TIME_ISO_8601 = 0x44
+    TIME = 0xC4
+    DES = 0x05
+    TARGET = 0x46
+    HTTP = 0x47
+    BODY = 0x48
+    END_BODY = 0x49
+    WHO = 0x4A
+    CONN_ID = 0xCB
+    APP_PARAM = 0x4C
+    AUTH_CHALLENGE = 0x4D
+    AUTH_RSP = 0x4E
+    CREATE_ID = 0xCF
+    WAN_UUID = 0x50
+    OBJECT_CLASS = 0x51
+    SESSION_PARAM = 0x52
+    SESSION_SEQ_NUM = 0x93
+    ACTION_ID = 0x94
+    DEST_NAME = 0x15
+    PERM = 0xD6
+    SRM = 0x97
+    SRMP = 0x98
+
+
+class OBEXRspCode:
+    CONTINUE = 0x90
+    OK = 0xa0
+    SUCCESS = 0xa0
+    CREATED = 0xa1
+    ACCEPTED = 0xa2
+    NON_AUTH_INFO = 0xa3
+    NO_CONTENT = 0xa4
+    RESET_CONTENT = 0xa5
+    PARTIAL_CONTENT = 0xa6
+    MULTI_CHOICES = 0xb0
+    MOVED_PERM = 0xb1
+    MOVED_TEMP = 0xb2
+    SEE_OTHER = 0xb3
+    NOT_MODIFIED = 0xb4
+    USE_PROXY = 0xb5
+    BAD_REQ = 0xc0
+    UNAUTH = 0xc1
+    PAY_REQ = 0xc2
+    FORBIDDEN = 0xc3
+    NOT_FOUND = 0xc4
+    NOT_ALLOW = 0xc5
+    NOT_ACCEPT = 0xc6
+    PROXY_AUTH_REQ = 0xc7
+    REQ_TIMEOUT = 0xc8
+    CONFLICT = 0xc9
+    GONE = 0xca
+    LEN_REQ = 0xcb
+    PRECON_FAIL = 0xcc
+    ENTITY_TOO_LARGE = 0xcd
+    URL_TOO_LARGE = 0xce
+    UNSUPP_MEDIA_TYPE = 0xcf
+    INTER_ERROR = 0xd0
+    NOT_IMPL = 0xd1
+    BAD_GATEWAY = 0xd2
+    UNAVAIL = 0xd3
+    GATEWAY_TIMEOUT = 0xd4
+    VER_UNSUPP = 0xd5
+    DB_FULL = 0xe0
+    DB_LOCK = 0xe1
+
+
+class OBEXAuthTag:
+    AUTH_REQ_NONCE = 0x00
+    AHTH_REQ_OPTIONS = 0x01
+    AUTH_REQ_REALM = 0x02
+    AUTH_RSP_DIGEST = 0x00
+    AUTH_RSP_USER_ID = 0x01
+    AUTH_RSP_NONCE = 0x02
