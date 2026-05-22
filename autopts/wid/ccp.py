@@ -182,16 +182,16 @@ def hdl_wid_104(params: WIDParams):
     result = re.search(r'Op Code:\((0x[0-9A-F]{2})\) and Call ID\((\d)\)', params.description)
 
     if result:
-        opCode, callID = int(result.group(1), 16), int(result.group(2))
-        if opCode == 0:
-            btp.ccp_accept_call(inst_index, callID)
-        elif opCode == 1:
-            btp.ccp_terminate_call(inst_index, callID)
-        elif opCode == 2:
-            btp.ccp_hold_call(inst_index, callID)
-        elif opCode == 3:
-            btp.ccp_retrieve_call(inst_index, callID)
-        elif opCode == 4:
+        opcode, call_id = int(result.group(1), 16), int(result.group(2))
+        if opcode == 0:
+            btp.ccp_accept_call(inst_index, call_id)
+        elif opcode == 1:
+            btp.ccp_terminate_call(inst_index, call_id)
+        elif opcode == 2:
+            btp.ccp_hold_call(inst_index, call_id)
+        elif opcode == 3:
+            btp.ccp_retrieve_call(inst_index, call_id)
+        elif opcode == 4:
             btp.ccp_originate_call(inst_index, 'skype:test')
 
     ev = stack.ccp.wait_cp_ev(addr_type, addr, 30, remove=False)
