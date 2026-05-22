@@ -487,12 +487,6 @@ def ascs_release(addr_type: int, addr: str, ase_id: int) -> bool:
     return False
 
 
-def bap_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
 def hdl_wid_20100(params: WIDParams):
     if params.test_case_name.endswith('LT2'):

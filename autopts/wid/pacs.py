@@ -24,12 +24,6 @@ log = logging.debug
 pacs_update_fun = None
 
 
-def pacs_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{pacs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
 def hdl_wid_1(_: WIDParams):
     btp.pacs_update_sink_pac()

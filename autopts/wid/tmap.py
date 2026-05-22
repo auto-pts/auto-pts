@@ -62,12 +62,6 @@ def trigger_discovery_if_needed(params):
         stack.vcp.wait_discovery_completed_ev(addr_type, addr, 10)
 
 
-def tmap_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{tmap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
 def hdl_wid_100(params: WIDParams):
     """
