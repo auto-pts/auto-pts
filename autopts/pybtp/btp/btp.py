@@ -16,7 +16,6 @@
 """Wrapper around btp messages. The functions are added as needed."""
 
 import logging
-import math
 import re
 import struct
 from collections import namedtuple
@@ -65,7 +64,39 @@ def read_supp_svcs():
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
 
 
-def read_supported_commands(service):
+def _service_id_from_entry(svc_key, entry):
+    """
+    Convert a supported_svcs_cmds entry to a numeric BTP service id.
+
+    The common table stores the service as a single-bit bitmask. BTP commands use
+    the bit index as service id, so validate that the bitmask contains exactly
+    one bit before converting it.
+
+    Raises:
+        KeyError: If the service bitmask is missing from entry.
+        ValueError: If the service bitmask is not a positive single-bit value.
+    """
+    service_bitmask = entry.get("service")
+    if service_bitmask is None:
+        raise KeyError(f"No service bitmask for {svc_key}")
+
+    if service_bitmask <= 0 or service_bitmask & (service_bitmask - 1):
+        raise ValueError(
+            f"Invalid service mask for {svc_key}: {service_bitmask:#x}"
+        )
+
+    return service_bitmask.bit_length() - 1
+
+
+def _read_supported_bitmap(service, opcode_key, stack_setter_name):
+    """
+    Read a supported command/event bitmap and store it on the stack.
+
+    Args:
+        service: BTP service name, for example "GAP" or "GATT".
+        opcode_key: Key used by supported_svcs_cmds for the read opcode.
+        stack_setter_name: Stack method used to store the resulting bitmap.
+    """
     iutctl = get_iut()
     stack = get_stack()
     svc_key = service.upper()
@@ -75,35 +106,37 @@ def read_supported_commands(service):
         logging.warning("Service %s is not registered", svc_key)
         return
 
-    if "supported_commands" not in entry:
-        logging.warning("No READ_SUPPORTED_COMMANDS for %s", svc_key)
+    opcode = entry.get(opcode_key)
+    if opcode is None:
+        logging.warning("No %s for %s", opcode_key.upper(), svc_key)
         return
 
-    service_bitmask = entry.get("service")
-    if service_bitmask is None:
-        logging.warning("No service bitmask for %s", svc_key)
-        return
+    service_id = _service_id_from_entry(svc_key, entry)
 
-    try:
-        service_id = int(math.log2(service_bitmask))
-    except Exception as err:
-        logging.error("Invalid mask for %s: %s", svc_key, err)
-        return
-
-    opcode_supp_cmd = entry["supported_commands"]
-
-    cmd_tuple = (service_id, opcode_supp_cmd, defs.BTP_INDEX_NONE, "")
-    iutctl.btp_socket.send(*cmd_tuple)
+    iutctl.btp_socket.send(service_id, opcode, defs.BTP_INDEX_NONE, "")
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
 
-    btp_hdr_check(tuple_hdr, exp_svc_id=service_id, exp_op=opcode_supp_cmd)
+    btp_hdr_check(tuple_hdr, exp_svc_id=service_id, exp_op=opcode)
 
     data_bytes = tuple_data[0] if isinstance(tuple_data, tuple) and tuple_data else tuple_data
-    supported_cmds_value = int.from_bytes(data_bytes, 'little')
+    bitmap_value = int.from_bytes(data_bytes, 'little')
 
-    if not isinstance(stack.supported_cmds, dict):
-        stack.supported_cmds = {}
-    stack.supported_cmds[svc_key] = supported_cmds_value
+    stack_setter = getattr(stack, stack_setter_name)
+    stack_setter(service_id, bitmap_value)
+
+
+def read_supported_commands(service):
+    """
+    Read and cache the supported commands bitmap for a BTP service.
+    """
+    _read_supported_bitmap(service, "supported_commands", "set_supported_commands")
+
+
+def read_supported_events(service):
+    """
+    Read and cache the supported events bitmap for a BTP service.
+    """
+    _read_supported_bitmap(service, "supported_events", "set_supported_events")
 
 
 def core_reg_svc_univ(service_key: str, service_name: str):
@@ -635,6 +668,12 @@ def core_reg_svc_rsp_succ(service_name):
             read_supported_commands(service_name)
         except Exception as e:
             logging.warning("No read supported commands for %s: %s", service_name, e)
+
+        logging.debug("Reading supported events for service: %s", service_name)
+        try:
+            read_supported_events(service_name)
+        except Exception as e:
+            logging.warning("No read supported events for %s: %s", service_name, e)
 
 
 def core_unreg_svc_rsp_succ():
