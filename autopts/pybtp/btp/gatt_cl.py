@@ -30,7 +30,17 @@ from autopts.pybtp.btp.btp import (
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.common import gatt_cl
-from autopts.pybtp.types import Perm, addr_str_to_le_bytes, le_bytes_to_hex_str, le_bytes_to_uuid, uuid_to_le_bytes
+from autopts.pybtp.types import (
+    ATTVerifyStatus,
+    BTPError,
+    BTPVerifyStatus,
+    GATTClientVerifyStatus,
+    Perm,
+    addr_str_to_le_bytes,
+    le_bytes_to_hex_str,
+    le_bytes_to_uuid,
+    uuid_to_le_bytes,
+)
 
 GATTC = gatt_cl
 
@@ -39,6 +49,24 @@ def gatt_cl_mtu_exchanged_ev_(gatt_cl, data, data_len):
     logging.debug("%r", data)
 
     fmt = '<B6sB'
+    read_mult_var_fmt = '<B6sBBH'
+
+    if data_len >= struct.calcsize(read_mult_var_fmt):
+        # Some Zephyr builds emit READ_MULTIPLE_VAR_RP payload with MTU_EXCHANGED event opcode.
+        # Reroute only when the payload shape is valid for READ_MULTIPLE_VAR to avoid false positives.
+        _, _, btp_status, _att_status, payload_len = struct.unpack_from(
+            read_mult_var_fmt,
+            data[:struct.calcsize(read_mult_var_fmt)],
+        )
+        known_btp_statuses = {
+            defs.BTP_STATUS_SUCCESS,
+            defs.BTP_STATUS_FAILED,
+            defs.BTP_STATUS_UNKNOWN_CMD,
+            defs.BTP_STATUS_NOT_READY,
+        }
+        if btp_status in known_btp_statuses and data_len == struct.calcsize(read_mult_var_fmt) + payload_len:
+            gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len)
+            return
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
     addr = le_bytes_to_hex_str(addr)
@@ -169,6 +197,38 @@ att_rsp_str = {0: "",
                14: "unlikely error",
                128: "Application error",
                }
+
+
+def _att_status_str(status: int) -> str:
+    """Return a stable verification string for an ATT status.
+
+    Args:
+        status: ATT status code from a GATT Client BTP event.
+
+    Returns:
+        Known ATT status text, or a stable fallback for unknown ATT status
+        codes.
+    """
+    return att_rsp_str.get(status, ATTVerifyStatus.UNKNOWN_ERROR.value)
+
+
+def _btp_status_str(status: int) -> str:
+    """Return a stable verification string for a BTP status.
+
+    Args:
+        status: BTP status code returned by the IUT.
+
+    Returns:
+        Known BTP status text, or a stable fallback for unknown BTP status
+        codes.
+    """
+    if status == defs.BTP_STATUS_FAILED:
+        return BTPVerifyStatus.BTP_FAILED.value
+    if status == defs.BTP_STATUS_UNKNOWN_CMD:
+        return BTPVerifyStatus.BTP_UNKNOWN_CMD.value
+    if status == defs.BTP_STATUS_NOT_READY:
+        return BTPVerifyStatus.BTP_NOT_READY.value
+    return BTPVerifyStatus.BTP_UNKNOWN_STATUS.value
 
 
 def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
@@ -422,7 +482,12 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
                   addr_type, addr, status, data_length, value_length)
 
     if status != 0:
-        add_to_verify_values(att_rsp_str[status])
+        add_to_verify_values(_att_status_str(status))
+        return
+
+    if data_length == 0:
+        add_to_verify_values(ATTVerifyStatus.OK.value)
+        logging.debug("Set verify values to: %r", get_verify_values())
         return
 
     data_fmt = f">H{value_length}s"
@@ -522,32 +587,81 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
 def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("%r", data)
 
-    fmt = '<B6sBH'
+    # Legacy format: <addr_type, addr, att_status, data_length>
+    legacy_fmt = '<B6sBH'
+    # Extended format with explicit BTP status: <addr_type, addr, btp_status, att_status, data_length>
+    migrated_fmt = '<B6sBBH'
 
-    addr_type, addr, status, data_length = \
-        struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
-    logging.debug("received addr_type=%r addr=%r status=%r data_len=%r",
-                  addr_type, addr, status, data_length)
+    legacy_size = struct.calcsize(legacy_fmt)
+    migrated_size = struct.calcsize(migrated_fmt)
+    known_btp_statuses = {
+        defs.BTP_STATUS_SUCCESS,
+        defs.BTP_STATUS_FAILED,
+        defs.BTP_STATUS_UNKNOWN_CMD,
+        defs.BTP_STATUS_NOT_READY,
+    }
 
-    rp_data = data[struct.calcsize(fmt):]
+    use_migrated = False
+    if data_len >= migrated_size:
+        _, _, cand_status, _, cand_data_length = struct.unpack_from(
+            migrated_fmt, data[:migrated_size]
+        )
+        cand_payload_len = data_len - migrated_size
+        if cand_status in known_btp_statuses and cand_payload_len == cand_data_length:
+            use_migrated = True
+
+    if use_migrated:
+        addr_type, addr, status, att_status, data_length = struct.unpack_from(
+            migrated_fmt, data[:migrated_size]
+        )
+        rp_data = data[migrated_size:]
+    elif data_len >= legacy_size:
+        addr_type, addr, att_status, data_length = struct.unpack_from(
+            legacy_fmt, data[:legacy_size]
+        )
+        status = 0
+        rp_data = data[legacy_size:]
+    else:
+        add_to_verify_values(GATTClientVerifyStatus.MALFORMED_READ_MULTIPLE_VAR_RESPONSE.value)
+        logging.debug("Set verify values to: %r", get_verify_values())
+        return
+
+    logging.debug(
+        "received addr_type=%r addr=%r status=%r att_status=%r data_len=%r",
+        addr_type,
+        addr,
+        status,
+        att_status,
+        data_length,
+    )
+
+    if status != 0:
+        add_to_verify_values(_btp_status_str(status))
+        logging.debug("Set verify values to: %r", get_verify_values())
+        return
 
     if data_length == 0:
         logging.debug("No data in response")
-        add_to_verify_values(att_rsp_str[status])
+        add_to_verify_values(_att_status_str(att_status))
+        logging.debug("Set verify values to: %r", get_verify_values())
+        return
+
+    if len(rp_data) < data_length:
+        add_to_verify_values(GATTClientVerifyStatus.MALFORMED_READ_MULTIPLE_VAR_RESPONSE.value)
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
     (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
-    logging.debug("%r %r", status, value)
+    logging.debug("%r %r", att_status, value)
 
-    if (len(get_verify_values()) > 0 and not
-    (isinstance(get_verify_values()[0][0], str) and
-     isinstance(get_verify_values()[0][1], bytes))):
+    if len(get_verify_values()) > 0 and not (
+        isinstance(get_verify_values()[0][0], str) and isinstance(get_verify_values()[0][1], bytes)
+    ):
         clear_verify_values()
 
-    add_to_verify_values((att_rsp_str[status],
-                          (binascii.hexlify(value)).upper()))
+    status_str = _att_status_str(att_status)
+    add_to_verify_values((status_str, (binascii.hexlify(value)).upper()))
 
     logging.debug("Set verify values to: %r", get_verify_values())
 
@@ -962,7 +1076,14 @@ def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
     gatt_cl_command_rsp_succ()
 
 
-def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
+def gatt_cl_read_multiple_var(bd_addr_type: int, bd_addr: str, *hdls: str) -> None:
+    """Read multiple variable-length attributes through the GATT Client BTP service.
+
+    Args:
+        bd_addr_type: Peer LE address type.
+        bd_addr: Peer Bluetooth device address in big-endian hex form.
+        hdls: Attribute handles to read, encoded as big-endian hex strings.
+    """
     logging.debug("%r %r %r", bd_addr_type,
                   bd_addr, hdls)
     iutctl = get_iut()
@@ -988,6 +1109,57 @@ def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
     stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
 
     gatt_cl_command_rsp_succ()
+
+
+def gatt_cl_eatt_connect(bd_addr: str, bd_addr_type: int, num: int = 1) -> None:
+    """Initiate EATT setup through the GATT Client BTP service.
+
+    Args:
+        bd_addr: Peer Bluetooth device address in big-endian hex form.
+        bd_addr_type: Peer LE address type.
+        num: Number of EATT bearers to request.
+
+    Raises:
+        BTPError: If the IUT does not support the GATT Client EATT command
+            or if the command fails.
+    """
+    logging.debug("%r %r %r", bd_addr, bd_addr_type, num)
+    iutctl = get_iut()
+    stack = get_stack()
+
+    gap_wait_for_connection()
+
+    if not stack.is_svc_supported("GATT_CL"):
+        raise BTPError("GATT_CL service is not supported by IUT")
+
+    if not stack.is_cmd_supported("GATT_CL", defs.BTP_GATTC_CMD_EATT_CONNECT):
+        raise BTPError("GATT_CL EATT_CONNECT is not supported by IUT")
+
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type).encode("utf-8"))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack("B", num))
+
+    iutctl.btp_socket.send(*GATTC["eatt_connect"], data=data_ba)
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    if tuple_hdr.svc_id == defs.BTP_SERVICE_ID_GATTC:
+        if tuple_hdr.op == defs.BTP_STATUS:
+            raw_status = tuple_data[0] if len(tuple_data) > 0 else b""
+            if isinstance(raw_status, (bytes, bytearray)):
+                status = raw_status[0] if raw_status else defs.BTP_STATUS_FAILED
+            else:
+                status = raw_status
+            raise BTPError(f"GATTC EATT_CONNECT failed with status 0x{status:02x}")
+
+        btp_hdr_check(
+            tuple_hdr,
+            defs.BTP_SERVICE_ID_GATTC,
+            defs.BTP_GATTC_CMD_EATT_CONNECT,
+        )
+        return
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATTC)
 
 
 def gatt_cl_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):

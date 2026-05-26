@@ -16,7 +16,7 @@
 """GATT test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
+from autopts.ptsprojects.mynewt.gatt_client_wid import gatt_client_wid_hdl
 from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
@@ -266,7 +266,7 @@ def test_cases_client(pts):
             continue
         instance = ZTestCase("GATT", tc_name,
                              cmds=pre_conditions_cl,
-                             generic_wid_hdl=gattc_wid_hdl)
+                             generic_wid_hdl=gatt_client_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
