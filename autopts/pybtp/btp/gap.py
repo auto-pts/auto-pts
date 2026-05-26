@@ -44,6 +44,8 @@ from autopts.pybtp.types import (
     AdType,
     BTPError,
     OwnAddrType,
+    SecurityFlags,
+    SecurityModeLevel,
     addr_str_to_le_bytes,
     gap_settings_btp2txt,
     hex_str_to_le_bytes,
@@ -171,6 +173,7 @@ GAP = {
     "encrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_ENCRYPT_EAD_DATA, CONTROLLER_INDEX),
     "decrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_DECRYPT_EAD_DATA, CONTROLLER_INDEX),
     "pawr_configure": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAWR_CONFIGURE, CONTROLLER_INDEX),
+    "configure_security_mode": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CONFIGURE_SECURITY_MODE, CONTROLLER_INDEX),
 }
 
 
@@ -1185,6 +1188,37 @@ def gap_read_ctrl_info():
                   "random" if stack.gap.iut_addr_is_random() else "public")
 
     __gap_current_settings_update(_curr_set)
+
+
+def gap_configure_security_mode(mode_level: SecurityModeLevel, flags: SecurityFlags = SecurityFlags.NONE) -> None:
+    """
+    Configures IUT into specified security mode and level
+
+    Args:
+        mode_level (SecurityModeLevel): Security mode and level combination
+        flags (SecurityFlags, optional): Bitmask representing optional security flags. Defaults to
+        SecurityFlags.NONE (i.e. 0).
+
+    Returns:
+        None
+    """
+    logging.debug("")
+
+    iutctl = get_iut()
+
+    mode, level = mode_level.value
+
+    data = bytearray()
+    mode_ba = struct.pack('B', mode)
+    level_ba = struct.pack('B', level)
+    flags_ba = struct.pack('B', flags)
+    data.extend(mode_ba)
+    data.extend(level_ba)
+    data.extend(flags_ba)
+
+    iutctl.btp_socket.send(*GAP['configure_security_mode'], data=data)
+
+    gap_command_rsp_succ()
 
 
 def gap_command_rsp_succ(op=None):
