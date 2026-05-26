@@ -385,6 +385,7 @@ iut_config = {
             'CONFIG_BT_L2CAP_FCS': 'n',
             'CONFIG_BT_L2CAP_EXT_WIN_SIZE': 'n',
             'CONFIG_BT_L2CAP_MAX_WINDOW_SIZE': '5',
+            'CONFIG_BTTESTER_L2CAP_DATA_POOL_COUNT': '6',
         },
         "test_cases": [
             'L2CAP/COS/CFD/BV-10-C',
