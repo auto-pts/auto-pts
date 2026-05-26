@@ -104,6 +104,7 @@ def test_cases(ptses):
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.gap_unpair, pts_bd_addr, Addr.le_public),
         TestFunc(btp.gap_reset),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
         TestFunc(stack.gap_init, iut_device_name),
@@ -123,7 +124,6 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(iut.start_audio),
         TestFuncCleanUp(_stop_audio),
-        TestFuncCleanUp(btp.gap_unpair, pts_bd_addr, Addr.le_public),
         ]
 
     custom_test_cases = [
