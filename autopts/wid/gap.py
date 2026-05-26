@@ -537,6 +537,9 @@ def hdl_wid_78(params: WIDParams):
         btp.gap_conn(b"00:00:00:00:00:00", 0)
     else:
         btp.gap_conn()
+        if params.test_case_name in ['GAP/DM/BON/BV-01-C']:
+            btp.gap_wait_for_connection()
+            btp.gap_pair()
 
     return True
 
