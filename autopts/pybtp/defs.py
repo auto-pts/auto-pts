@@ -58,6 +58,7 @@ BTP_SERVICE_ID_PBP = 0x1e
 BTP_SERVICE_ID_SDP = 0x1f
 BTP_SERVICE_ID_RFCOMM = 0x20
 # GENERATOR append 1
+BTP_SERVICE_ID_VENDOR = 0xff
 
 BTP_ERROR = 0x00
 BTP_STATUS_SUCCESS = 0x00
@@ -1008,6 +1009,9 @@ BTP_RFCOMM_EV_DATA_RECEIVED = 0x82
 BTP_RFCOMM_EV_DATA_SENT = 0x83
 
 # GENERATOR append 2
+
+BTP_VENDOR_CMD_READ_SUPPORTED_COMMANDS = 0x01
+# Other commands and events are vendor specific and not defined here.
 
 # The reason codes for pairing failures.
 # Vol 3, Part H, Section 3.5.5

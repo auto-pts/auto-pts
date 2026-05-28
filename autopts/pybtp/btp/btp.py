@@ -609,6 +609,11 @@ def core_reg_svc_rfcomm():
 
 # GENERATOR append 1
 
+
+def core_reg_svc_vendor():
+    core_reg_svc_univ("vendor_reg", "VENDOR")
+
+
 def core_reg_svc_rsp_succ(service_name):
     logging.debug("")
     iutctl = get_iut()
