@@ -105,9 +105,9 @@ def test_cases(ptses):
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.gap_reset),
-        TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+        TestFunc(btp.gap_set_io_capability, IOCap.display_only),
         TestFunc(stack.gap_init, iut_device_name),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(btp.gap_set_bondable_on),
         TestFunc(lambda: pts.update_pixit_param(
             "BAP", "TSPX_bd_addr_iut",
@@ -115,7 +115,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
-        TestFunc(btp.gap_set_conn),
+        TestFunc(btp.gap_set_connectable),
         TestFunc(btp.core_reg_svc_bap),
         TestFunc(stack.bap_init),
         TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),

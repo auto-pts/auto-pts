@@ -92,14 +92,14 @@ def test_cases(ptses):
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(lambda: set_addr(stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param("TMAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
-        TestFunc(btp.gap_set_conn),
-        TestFunc(btp.gap_set_gendiscov),
+        TestFunc(btp.gap_set_connectable),
+        TestFunc(btp.gap_set_general_discoverable),
         TestFunc(btp.core_reg_svc_pacs),
         TestFunc(btp.core_reg_svc_ascs),
         TestFunc(btp.core_reg_svc_bap),
@@ -152,7 +152,7 @@ def test_cases(ptses):
 
     adv_end = [
         TestFunc(btp.gap_set_extended_advertising_on),
-        TestFunc(btp.gap_adv_ind_on, ad=advData),
+        TestFunc(btp.gap_start_advertising, ad=advData),
     ]
 
     custom_test_cases = [

@@ -104,31 +104,31 @@ def hdl_wid_1(params: WIDParams):
         addr = btp.pts_addr_get()
 
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_set_general_discoverable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
     return True
 
 
 def hdl_wid_2(params: WIDParams):
     if 'LT2' in params.test_case_name:
-        btp.gap_conn(btp.lt2_addr_get(), btp.lt2_addr_type_get())
+        btp.gap_connect(btp.lt2_addr_get(), btp.lt2_addr_type_get())
     else:
-        btp.gap_conn(btp.pts_addr_get(), btp.pts_addr_type_get())
+        btp.gap_connect(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
 
 def hdl_wid_3(params: WIDParams):
     if 'LT2' in params.test_case_name:
-        btp.gap_disconn(btp.lt2_addr_get(), btp.lt2_addr_type_get())
+        btp.gap_disconnect(btp.lt2_addr_get(), btp.lt2_addr_type_get())
     else:
-        btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
+        btp.gap_disconnect(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
 
 def hdl_wid_4(_: WIDParams):
-    btp.gap_set_io_cap(IOCap.no_input_output)
+    btp.gap_set_io_capability(IOCap.no_input_output)
     return True
 
 

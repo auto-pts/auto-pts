@@ -61,7 +61,7 @@ def test_cases(ptses):
     stack.gap_init(name=iut_device_name)
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.gap_read_ctrl_info),
+                      TestFunc(btp.gap_read_controller_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
@@ -86,7 +86,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         BTestCase("SM", "SM/MAS/SIGN/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only),
                    TestFunc(btp.core_reg_svc_gatt)],
                   generic_wid_hdl=sm_wid_hdl),
     ]
@@ -97,7 +97,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         instance = BTestCase('SM', tc_name,
                              pre_conditions +
-                             [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                             [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
                              generic_wid_hdl=sm_wid_hdl)
 
         for custom_tc in custom_test_cases:

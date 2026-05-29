@@ -3253,7 +3253,7 @@ def hdl_wid_661(params: WIDParams):
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
     btp.mesh_init()
-    btp.gap_read_ctrl_info()
+    btp.gap_read_controller_info()
 
     btp.mesh_start()
 
@@ -3277,7 +3277,7 @@ def hdl_wid_672(_: WIDParams):
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
     btp.mesh_init()
-    btp.gap_read_ctrl_info()
+    btp.gap_read_controller_info()
 
     btp.mesh_start()
 
@@ -3480,7 +3480,7 @@ def hdl_wid_715(desc):
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
     btp.mesh_init()
-    btp.gap_read_ctrl_info()
+    btp.gap_read_controller_info()
     return True
 
 

@@ -91,7 +91,7 @@ def test_cases(ptses):
 
     common = [TestFunc(btp.core_reg_svc_gap),
               TestFunc(btp.core_reg_svc_l2cap),
-              TestFunc(btp.gap_read_ctrl_info),
+              TestFunc(btp.gap_read_controller_info),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_bd_addr_iut",
                   stack.gap.iut_addr_get_str())),

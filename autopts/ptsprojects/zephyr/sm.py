@@ -62,7 +62,7 @@ def test_cases(ptses):
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(stack.gap_init, iut_device_name),
-                      TestFunc(btp.gap_read_ctrl_info),
+                      TestFunc(btp.gap_read_controller_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
@@ -79,32 +79,32 @@ def test_cases(ptses):
     custom_test_cases = [
         ZTestCase("SM", "SM/CEN/PKE/BI-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/PKE/BI-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/PKE/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display),
                    TestFunc(btp.gap_set_bondable_off)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/PKE/BV-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/PKE/BI-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/PKE/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/PKE/BV-05-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCJW/BV-01-C",
                   pre_conditions +
@@ -116,23 +116,23 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_only),
                    TestFunc(btp.gap_set_bondable_off),
                    ],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BV-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display),
                    TestFunc(btp.gap_set_bondable_off)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BI-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_yesno),
                    TestFunc(btp.gap_set_bondable_off), ],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BI-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only),
                    TestFunc(btp.gap_set_bondable_on),
                    ],
                   generic_wid_hdl=sm_wid_hdl),
@@ -150,7 +150,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-09-C",
@@ -159,7 +159,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BI-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-02-C",
@@ -168,7 +168,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-10-C",
@@ -177,7 +177,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BI-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SIGN/BV-01-C",
@@ -186,31 +186,31 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BV-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BI-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_yesno)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_yesno)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BI-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SIP/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SIP/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SIE/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output), ],
+                  [TestFunc(btp.gap_set_io_capability, IOCap.no_input_output), ],
                   generic_wid_hdl=sm_wid_hdl),
     ]
 
@@ -220,7 +220,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         instance = ZTestCase('SM', tc_name,
                              pre_conditions +
-                             [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                             [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
                              generic_wid_hdl=sm_wid_hdl)
 
         for custom_tc in custom_test_cases:

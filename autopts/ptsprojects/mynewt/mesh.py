@@ -163,7 +163,7 @@ def test_cases(ptses):
     common_pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_mesh),
-        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_read_controller_info),
         TestFunc(btp.mesh_init),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_bd_addr_iut",

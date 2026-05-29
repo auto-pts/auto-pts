@@ -31,8 +31,8 @@ def vcs_wid_hdl(wid, description, test_case_name):
 # wid handlers section begin
 def hdl_wid_20001(params: WIDParams):
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     delayed_vcs_reg_tc = [
         'VCS/SR/CP/BV-01-C',

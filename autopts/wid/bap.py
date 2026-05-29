@@ -504,7 +504,7 @@ def hdl_wid_20100(params: WIDParams):
 
     stack = get_stack()
 
-    btp.gap_conn(addr, addr_type)
+    btp.gap_connect(addr, addr_type)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
     stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
@@ -901,15 +901,15 @@ def hdl_wid_300(_: WIDParams):
     the ASCS UUID and Available Audio Contexts.
     """
 
-    btp.gap_start_discov(discov_type='passive', mode='observe')
+    btp.gap_start_discovery(discov_type='passive', mode='observe')
     sleep(5)
-    btp.gap_stop_discov()
+    btp.gap_stop_discovery()
 
-    found = btp.check_discov_results(uuids=[UUID.ASCS])
+    found = btp.check_discovery_results(uuids=[UUID.ASCS])
     if not found:
         return False
 
-    return btp.check_discov_results(uuids=[UUID.AVAILABLE_AUDIO_CTXS])
+    return btp.check_discovery_results(uuids=[UUID.AVAILABLE_AUDIO_CTXS])
 
 
 def bytes_to_ltvs(data):
@@ -2552,7 +2552,7 @@ def hdl_wid_20001(params: WIDParams):
     }
 
     btp.gap_set_extended_advertising_on()
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_start_advertising(ad=ad)
 
     return True
 
@@ -2669,7 +2669,7 @@ def hdl_wid_20115(_: WIDParams):
     GATT disconnect request to PTS.
     """
 
-    btp.gap_disconn()
+    btp.gap_disconnect()
 
     return True
 

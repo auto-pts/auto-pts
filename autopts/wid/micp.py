@@ -153,7 +153,7 @@ def hdl_wid_20100(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
     stack = get_stack()
-    btp.gap_conn()
+    btp.gap_connect()
     stack.gap.wait_for_connection(timeout=5, addr=addr)
     stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30)
     btp.micp_discover(addr_type, addr)

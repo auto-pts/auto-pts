@@ -910,7 +910,7 @@ def hdl_wid_415(_: WIDParams):
     """
         Please stop broadcast, and wait for 10 seconds.
     """
-    btp.gap_adv_off()
+    btp.gap_stop_advertising()
 
     # PTS waits 10 seconds on its own before sending next wid 416.
 
@@ -922,7 +922,7 @@ def hdl_wid_416(_: WIDParams):
         Please start broadcast.
     """
     stack = get_stack()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_start_advertising(ad=stack.gap.ad)
 
     return True
 
@@ -961,7 +961,7 @@ def hdl_wid_421(params: WIDParams):
     gap_set_uuid16_svc_data(adv_data, UUID.ASCS, struct.pack('<BHHB', BAPAnnouncement.TARGETED, 0, 0, 0))
 
     announcements(adv_data)
-    btp.gap_adv_ind_on(ad=adv_data, sd=rsp_data)
+    btp.gap_start_advertising(ad=adv_data, sd=rsp_data)
 
     # Set available contexts to 0
     pacs_set_available_contexts(0, 0)
@@ -989,7 +989,7 @@ def hdl_wid_20100(params: WIDParams):
         addr_type = pts_addr_type_get()
 
     stack = get_stack()
-    btp.gap_conn(addr, addr_type)
+    btp.gap_connect(addr, addr_type)
     stack.gap.wait_for_connection(timeout=5, addr=addr)
     stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
@@ -1110,7 +1110,7 @@ def hdl_wid_20115(params: WIDParams):
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
 
-    btp.gap_disconn(addr, addr_type)
+    btp.gap_disconnect(addr, addr_type)
 
     return True
 

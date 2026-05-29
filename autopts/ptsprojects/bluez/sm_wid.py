@@ -30,14 +30,14 @@ def sm_wid_hdl(wid, description, test_case_name):
 
 # wid handlers section begin
 def hdl_wid_100(_: WIDParams):
-    btp.gap_conn()
+    btp.gap_connect()
     btp.gap_wait_for_connection()
     btp.gap_pair()
     return True
 
 
 def hdl_wid_102(_: WIDParams):
-    btp.gap_disconn()
+    btp.gap_disconnect()
     return True
 
 
@@ -52,6 +52,6 @@ def hdl_wid_109(_: WIDParams):
 
 def hdl_wid_115(_: WIDParams):
     stack = get_stack()
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_set_connectable()
+    btp.gap_start_advertising(ad=stack.gap.ad)
     return True
