@@ -204,7 +204,10 @@ def hdl_wid_147(params: WIDParams):
     """
     Please enter 16 bytes IUT's OOB Data (confirmation).
     """
-    if params.test_case_name in ['SM/CEN/OOB/BV-10-C', 'SM/PER/OOB/BV-11-C']:
+    if params.test_case_name in ['SM/CEN/OOB/BV-10-C',
+                                 'SM/CEN/OOB/BV-01-C',
+                                 'SM/PER/OOB/BV-02-C',
+                                 'SM/PER/OOB/BV-11-C']:
         # This behaviour is required by core v6.3 and later.
         # Ref: Core_v6.3 Vol 3, Part H section 2.3.5.4
         # The TK value shall be a 128-bit random number.
