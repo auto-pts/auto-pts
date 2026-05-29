@@ -18,9 +18,9 @@
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.bluez.bap_wid import bap_wid_hdl
-from autopts.ptsprojects.bluez.btestcase import BTestCase
+from autopts.ptsprojects.bluez.btestcase import BTestCase, BTestCaseSlave
 from autopts.ptsprojects.bluez.iutctl import get_iut
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc, TestFuncCleanUp
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
@@ -99,11 +99,18 @@ def test_cases(ptses):
         iut_addr.set(addr)
 
     def _stop_audio():
+        iut.set_desynchronized(False)
         iut.set_audio_profile(None)
         iut.stop_audio()
 
+    def _unpair():
+        for p in ptses:
+            btp.gap_unpair(p.q_bd_addr, Addr.le_public)
+
     pre_conditions = [
+        TestFunc(btp.core_reg_svc_vendor),
         TestFunc(btp.core_reg_svc_gap),
+        TestFunc(_unpair),
         TestFunc(btp.gap_reset),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
         TestFunc(stack.gap_init, iut_device_name),
@@ -116,14 +123,16 @@ def test_cases(ptses):
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
         TestFunc(btp.gap_set_conn),
+        TestFunc(btp.core_reg_svc_pacs),
+        TestFunc(btp.core_reg_svc_ascs),
         TestFunc(btp.core_reg_svc_bap),
+        TestFunc(stack.ascs_init),
         TestFunc(stack.bap_init),
         TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),
         TestFunc(lambda: set_addr(
             stack.gap.iut_addr_get_str())),
         TestFunc(iut.start_audio),
         TestFuncCleanUp(_stop_audio),
-        TestFuncCleanUp(btp.gap_unpair, pts_bd_addr, Addr.le_public),
         ]
 
     custom_test_cases = [
@@ -171,6 +180,47 @@ def test_cases(ptses):
                   cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
                         pre_conditions,
                   generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/STR/BV-526-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-526-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-526-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-526-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-526-C_LT2", 311)]),
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-526-C_LT2"),
+        BTestCase("BAP", "BAP/UCL/STR/BV-528-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-528-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-528-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-528-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-528-C_LT2", 311)]),
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-528-C_LT2"),
+        BTestCase("BAP", "BAP/UCL/STR/BV-530-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-530-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-530-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-530-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-530-C_LT2", 311)]),
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-530-C_LT2"),
+        BTestCase("BAP", "BAP/UCL/STR/BV-543-C",
+                  cmds=[TestFunc(lambda: iut.set_desynchronized(True))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/STR/BV-546-C",
+                  cmds=[TestFunc(lambda: iut.set_desynchronized(True))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
         ]
 
     test_case_name_list = pts.get_test_case_list('BAP')
@@ -188,4 +238,27 @@ def test_cases(ptses):
 
         tc_list.append(instance)
 
-    return tc_list
+    if len(ptses) < 2:
+        return tc_list
+
+    pts2 = ptses[1]
+
+    pre_conditions_lt2 = [
+        TestFunc(lambda: pts2.update_pixit_param(
+            "BAP", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
+        TestFunc(btp.set_lt2_addr, pts2.q_bd_addr, Addr.le_public),
+    ]
+
+    test_cases_lt2 = [
+        BTestCaseSlave("BAP", "BAP/UCL/STR/BV-526-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        BTestCaseSlave("BAP", "BAP/UCL/STR/BV-528-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        BTestCaseSlave("BAP", "BAP/UCL/STR/BV-530-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+    ]
+
+    return tc_list + test_cases_lt2
