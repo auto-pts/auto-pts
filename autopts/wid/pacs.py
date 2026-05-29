@@ -118,6 +118,17 @@ def hdl_wid_14(_: WIDParams):
     return True
 
 
+def hdl_wid_35(_: WIDParams):
+    """
+    Please update Sink PAC V2 characteristic value (Handle 0x0026),
+    and expect to receive a notification after reconnection.
+    """
+
+    global pacs_update_fun
+    pacs_update_fun = btp.pacs_update_sink_pac
+    return True
+
+
 def hdl_wid_20001(_: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
