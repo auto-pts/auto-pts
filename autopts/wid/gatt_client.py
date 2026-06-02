@@ -1318,96 +1318,39 @@ def hdl_wid_141(params: WIDParams):
     return True
 
 
-def hdl_wid_147(params: WIDParams):
-    """
-    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
-    Required Bearers are "ATT" and "EATT" bearer.
-
-    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
-    """
+def _read_multiple_var_handles(params: WIDParams) -> tuple[str, str] | None:
     MMI.reset()
     MMI.parse_description(params.description)
 
     if len(MMI.args) < 2 or not MMI.args[0] or not MMI.args[1]:
         logging.error("missing read_multiple_var handles for %s: %r", params.test_case_name, MMI.args)
+        return None
+
+    return MMI.args[0], MMI.args[1]
+
+
+def _send_gar_read_multiple_var_requests(
+    params: WIDParams,
+    eatt_bearers: int,
+    retry_on_unlikely_error: bool,
+) -> bool:
+    handles = _read_multiple_var_handles(params)
+    if handles is None:
         return False
 
-    hdl1 = MMI.args[0]
-    hdl2 = MMI.args[1]
+    hdl1, hdl2 = handles
     addr, addr_type = peer_addr_and_type(params.test_case_name)
     expected_events = 2
     stack = get_stack()
-    # GAR/BV-10 requires operations over ATT+EATT bearers.
+
     try:
-        btp.gatt_cl_eatt_connect(addr, addr_type, 1)
+        btp.gatt_cl_eatt_connect(addr, addr_type, eatt_bearers)
     except Exception as err:
         logging.error("could not establish EATT bearer: %r", err)
         return False
 
-    btp.clear_verify_values()
-
-    try:
-        btp.gatt_cl_read_multiple_var(
-            addr_type,
-            addr,
-            hdl1,
-            hdl2,
-        )
-        btp.gatt_cl_read_multiple_var(
-            addr_type,
-            addr,
-            hdl1,
-            hdl2,
-        )
-    except Exception as err:
-        logging.error("read_multiple_var command failed: %r", err)
-        return False
-
-    if not stack.gatt_cl.wait_for_verify_values(timeout=READ_MULT_VAR_TIMEOUT, expected_count=expected_events):
-        logging.error("timeout waiting for two read_multiple_var async events")
-        return False
-
-    verify_values = btp.get_verify_values()
-    if len(verify_values) < expected_events:
-        logging.error("missing read_multiple_var verify values: %r", verify_values)
-        return False
-
-    for item in verify_values[:expected_events]:
-        status = item[0] if isinstance(item, tuple) else item
-        if status != ATTVerifyStatus.OK.value:
-            logging.error("read_multiple_var failed, ATT status: %r", status)
-            return False
-
-    return True
-
-
-def hdl_wid_148(params: WIDParams):
-    """
-    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
-    Required Bearers are "EATT" bearers.
-
-    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
-    """
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    if len(MMI.args) < 2 or not MMI.args[0] or not MMI.args[1]:
-        logging.error("missing read_multiple_var handles for %s: %r", params.test_case_name, MMI.args)
-        return False
-
-    hdl1 = MMI.args[0]
-    hdl2 = MMI.args[1]
-    addr, addr_type = peer_addr_and_type(params.test_case_name)
-    expected_events = 2
-    stack = get_stack()
-    try:
-        btp.gatt_cl_eatt_connect(addr, addr_type, 2)
-    except Exception as err:
-        logging.error("could not establish EATT bearer: %r", err)
-        return False
-
-    # First attempt is normal path; second is recovery for known transient ATT 0x0E.
-    for attempt in range(2):
+    attempts = 2 if retry_on_unlikely_error else 1
+    for attempt in range(attempts):
         btp.clear_verify_values()
 
         try:
@@ -1427,10 +1370,7 @@ def hdl_wid_148(params: WIDParams):
             logging.error("read_multiple_var command failed: %r", err)
             return False
 
-        if not stack.gatt_cl.wait_for_verify_values(
-            timeout=READ_MULT_VAR_TIMEOUT,
-            expected_count=expected_events,
-        ):
+        if not stack.gatt_cl.wait_for_verify_values(timeout=READ_MULT_VAR_TIMEOUT, expected_count=expected_events):
             logging.error("timeout waiting for two read_multiple_var async events")
             return False
 
@@ -1447,7 +1387,9 @@ def hdl_wid_148(params: WIDParams):
         if all(status == ATTVerifyStatus.OK.value for status in statuses):
             return True
 
-        if attempt == 0 and all(status == ATTVerifyStatus.UNLIKELY_ERROR.value for status in statuses):
+        if retry_on_unlikely_error and attempt == 0 and all(
+            status == ATTVerifyStatus.UNLIKELY_ERROR.value for status in statuses
+        ):
             logging.debug("got ATT 0x0e on first read_multiple_var attempt, retrying once")
             logging.debug(
                 "waiting for link ready before second read_multiple_var attempt",
@@ -1463,6 +1405,34 @@ def hdl_wid_148(params: WIDParams):
         return False
 
     return False
+
+
+def hdl_wid_147(params: WIDParams):
+    """
+    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
+    Required Bearers are "ATT" and "EATT" bearer.
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    return _send_gar_read_multiple_var_requests(
+        params,
+        eatt_bearers=1,
+        retry_on_unlikely_error=False,
+    )
+
+
+def hdl_wid_148(params: WIDParams):
+    """
+    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
+    Required Bearers are "EATT" bearers.
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    return _send_gar_read_multiple_var_requests(
+        params,
+        eatt_bearers=2,
+        retry_on_unlikely_error=True,
+    )
 
 
 def hdl_wid_150(params: WIDParams):

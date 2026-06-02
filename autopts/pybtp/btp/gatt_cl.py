@@ -37,6 +37,7 @@ from autopts.pybtp.types import (
     GATTClientVerifyStatus,
     Perm,
     addr_str_to_le_bytes,
+    att_rsp_str,
     le_bytes_to_hex_str,
     le_bytes_to_uuid,
     uuid_to_le_bytes,
@@ -182,21 +183,6 @@ def gatt_cl_dec_disc_rsp(data, attr_type):
         offset += attr_len
 
     return attrs_list
-
-
-att_rsp_str = {0: "",
-               1: "Invalid handle error",
-               2: "read is not permitted error",
-               3: "write is not permitted error",
-               5: "authentication error",
-               7: "Invalid offset error",
-               8: "authorization error",
-               10: "attribute not found error",
-               12: "encryption key size error",
-               13: "Invalid attribute value length error",
-               14: "unlikely error",
-               128: "Application error",
-               }
 
 
 def _att_status_str(status: int) -> str:
