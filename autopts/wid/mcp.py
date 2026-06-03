@@ -23,6 +23,73 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
+def _build_cggit_cha_payload(stack, addr_type, addr, test_case_name: str):
+    if test_case_name == 'MCP/CL/CGGIT/CHA/BV-07-C':
+        btp.mcp_track_position_get(addr_type, addr)
+        ev = stack.mcp.wait_track_position_ev(addr_type, addr, 10)
+        if ev is None:
+            return None
+        track_position = ev[3]
+        return int(track_position).to_bytes(4, byteorder='little',
+                                            signed=False).hex()
+
+    if test_case_name == 'MCP/CL/CGGIT/CHA/BV-08-C':
+        btp.mcp_playback_speed_get(addr_type, addr)
+        ev = stack.mcp.wait_playback_speed_ev(addr_type, addr, 10)
+        if ev is None:
+            return None
+        playback_speed = ev[3]
+        return int(playback_speed).to_bytes(1, byteorder='little',
+                                            signed=True).hex()
+
+    if test_case_name == 'MCP/CL/CGGIT/CHA/BV-11-C':
+        btp.mcp_current_track_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_current_track_obj_id_ev(addr_type, addr, 10)
+        if ev is None:
+            return None
+        return ev[3].to_bytes(6, byteorder='little').hex()
+
+    if test_case_name == 'MCP/CL/CGGIT/CHA/BV-12-C':
+        btp.mcp_next_track_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
+        if ev is None:
+            return None
+        return ev[3].to_bytes(6, byteorder='little').hex()
+
+    if test_case_name == 'MCP/CL/CGGIT/CHA/BV-14-C':
+        btp.mcp_current_group_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
+        if ev is None:
+            return None
+        return ev[3].to_bytes(6, byteorder='little').hex()
+
+    if test_case_name == 'MCP/CL/CGGIT/CHA/BV-15-C':
+        btp.mcp_playing_order_read(addr_type, addr)
+        ev = stack.mcp.wait_playing_order_ev(addr_type, addr, 10)
+        if ev is None:
+            return None
+        playing_order = ev[3]
+        return int(playing_order).to_bytes(1, byteorder='little',
+                                           signed=False).hex()
+
+    return None
+
+
+def _write_cggit_cha_without_rsp(params: WIDParams, stack, addr_type, addr):
+    handle_match = re.search(r'0x([0-9a-fA-F]+)', params.description)
+    if handle_match is None:
+        return False
+    handle = int(handle_match.group(1), 16)
+
+    value = _build_cggit_cha_payload(stack, addr_type, addr,
+                                     params.test_case_name)
+    if value is None:
+        return False
+
+    btp.gattc_write_without_rsp(addr_type, addr, handle, value)
+    return True
+
+
 def mcp_wid_hdl(wid, description, test_case_name):
     from autopts.wid import generic_wid_hdl
     log(f'{mcp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
@@ -359,34 +426,7 @@ def hdl_wid_20110(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
 
-    """ PTS is providing handle value instead of expected action so we map it here based on
-    test case name
-    """
-    if 'MCP/CL/CGGIT/CHA/BV-07-C' == params.test_case_name:
-        btp.mcp_track_position_set(100, addr_type, addr)
-        ev = stack.mcp.wait_track_position_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-08-C' == params.test_case_name:
-        btp.mcp_playback_speed_set(64, addr_type, addr)
-        ev = stack.mcp.wait_playback_speed_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-11-C' == params.test_case_name:
-        btp.mcp_current_track_obj_id_set(stack.mcp.object_id, addr_type, addr)
-        ev = stack.mcp.wait_current_track_obj_id_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-12-C' == params.test_case_name:
-        btp.mcp_next_track_obj_id_set(stack.mcp.object_id, addr_type, addr)
-        ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-14-C' == params.test_case_name:
-        btp.mcp_current_group_obj_id_set(stack.mcp.object_id, addr_type, addr)
-        ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-15-C' == params.test_case_name:
-        btp.mcp_playing_order_set(2, addr_type, addr)
-        ev = stack.mcp.wait_playing_order_ev(addr_type, addr, 10)
-    else:
-        ev = None
-
-    if ev is None:
-        return False
-
-    return True
+    return _write_cggit_cha_without_rsp(params, stack, addr_type, addr)
 
 
 def hdl_wid_20116(params: WIDParams):
@@ -413,34 +453,7 @@ def hdl_wid_20121(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
 
-    """ PTS is providing handle value instead of expected action so we map it here based on
-    test case name
-    """
-    if 'MCP/CL/CGGIT/CHA/BV-07-C' == params.test_case_name:
-        btp.mcp_track_position_set(100, addr_type, addr)
-        ev = stack.mcp.wait_track_position_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-08-C' == params.test_case_name:
-        btp.mcp_playback_speed_set(64, addr_type, addr)
-        ev = stack.mcp.wait_playback_speed_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-11-C' == params.test_case_name:
-        btp.mcp_current_track_obj_id_set(stack.mcp.object_id, addr_type, addr)
-        ev = stack.mcp.wait_current_track_obj_id_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-12-C' == params.test_case_name:
-        btp.mcp_next_track_obj_id_set(stack.mcp.object_id, addr_type, addr)
-        ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-14-C' == params.test_case_name:
-        btp.mcp_current_group_obj_id_set(stack.mcp.object_id, addr_type, addr)
-        ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
-    elif 'MCP/CL/CGGIT/CHA/BV-15-C' == params.test_case_name:
-        btp.mcp_playing_order_set(2, addr_type, addr)
-        ev = stack.mcp.wait_playing_order_ev(addr_type, addr, 10)
-    else:
-        ev = None
-
-    if ev is None:
-        return False
-
-    return True
+    return _write_cggit_cha_without_rsp(params, stack, addr_type, addr)
 
 
 def hdl_wid_20136(params: WIDParams):
@@ -538,6 +551,15 @@ def hdl_wid_20206(params: WIDParams):
 
 def hdl_wid_20144(params: WIDParams):
     """Please click Yes if IUT support Write Command(without response), otherwise click No."""
+    if params.test_case_name in {
+        'MCP/CL/CGGIT/CHA/BV-07-C',
+        'MCP/CL/CGGIT/CHA/BV-08-C',
+        'MCP/CL/CGGIT/CHA/BV-11-C',
+        'MCP/CL/CGGIT/CHA/BV-12-C',
+        'MCP/CL/CGGIT/CHA/BV-14-C',
+        'MCP/CL/CGGIT/CHA/BV-15-C',
+    }:
+        return True
 
     return False
 
