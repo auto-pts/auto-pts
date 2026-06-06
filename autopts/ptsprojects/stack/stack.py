@@ -97,6 +97,14 @@ class Stack:
         svc_value = self.supported_svcs_cmds.get(svc, {}).get("service", 0)
         return (self.supported_svcs & svc_value) > 0
 
+    def is_cmd_supported(self, svc: str, cmd: int) -> bool:
+        """Return whether a BTP command is supported for a service."""
+        if not isinstance(self.supported_cmds, dict):
+            return False
+
+        supported_cmds = self.supported_cmds.get(svc.upper(), 0)
+        return (supported_cmds & (1 << cmd)) > 0
+
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
                  le_supp_feat=None):

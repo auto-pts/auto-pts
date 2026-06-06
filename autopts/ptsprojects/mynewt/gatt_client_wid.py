@@ -24,8 +24,8 @@ from autopts.wid import generic_wid_hdl
 log = logging.debug
 
 
-def gattc_wid_hdl(wid, description, test_case_name):
-    log(f'{gattc_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+def gatt_client_wid_hdl(wid, description, test_case_name):
+    log(f'{wid}, {description}, {test_case_name}')
     stack = get_stack()
     if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
         return generic_wid_hdl(wid, description, test_case_name,
