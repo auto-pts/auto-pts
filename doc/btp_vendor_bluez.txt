@@ -1,0 +1,38 @@
+VENDOR Service (ID 255)
+=======================
+
+        BlueZ specific commands, responses and events.
+
+Commands and responses:
+
+        Opcode 0x00 - cf. btp_vendor.txt
+
+        Opcode 0x01 - cf. btp_vendor.txt
+
+        Opcode 0x02 - ASCS Setup
+
+                Controller Index:       <controller id>
+                Command parameters:     Target Latency (1 octet)
+                                        Desynchronized (1 octet)
+                Response parameters:    <None>
+
+                The values of the Target Latency parameter as defined in
+                ASCS_v1.0.1.pdf Table 5.2: Config Codec operation format, i.e.:
+
+                Valid Target Latency values:
+                        0x00 = No specific target latency requested
+                        0x01 = Target low latency
+                        0x02 = Target balanced latency and reliability
+                        0x03 = Target high reliability
+
+                Valid Desynchronized values:
+                        0x00 = Synchronized
+                        0x01 = Desynchronized
+
+                This command is used to configure the ASCS service.
+
+                In case of an error, the error status response will be returned.
+
+Events:
+
+        None

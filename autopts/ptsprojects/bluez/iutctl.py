@@ -19,6 +19,7 @@ import os
 import shlex
 import subprocess
 
+import autopts.ptsprojects.bluez.vendor as vendor
 from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
@@ -57,6 +58,7 @@ class IUTCtl:
         self.iut_process = None
         self.audio_profile = None
         self.audio_process = None
+        self.desynchronized = False
 
         self.stack = Stack()
         self.stack.synch_init()
@@ -126,7 +128,18 @@ class IUTCtl:
         return self.external_audio
 
     def start_audio(self):
-        if self.external_audio != "wireplumber":
+        if self.external_audio is None:
+            if not (self.stack.supported_cmds['VENDOR'] & defs.BIT(vendor.BTP_VENDOR_CMD_ASCS_SETUP)):
+                raise BTPInitError("Vendor ASCS setup command not supported")
+
+            latency = 0
+            if self.audio_profile == "low-latency":
+                latency = 1
+            elif self.audio_profile == "high-reliability":
+                latency = 3
+            vendor.vendor_ascs_setup(latency, self.desynchronized)
+            return
+        elif self.external_audio != "wireplumber":
             return
 
         logging.debug("Starting external audio with profile: %s", self.audio_profile)
@@ -161,6 +174,9 @@ class IUTCtl:
 
     def set_audio_profile(self, profile):
         self.audio_profile = profile
+
+    def set_desynchronized(self, desynchronized):
+        self.desynchronized = desynchronized
 
 
 def get_iut():
