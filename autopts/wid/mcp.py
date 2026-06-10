@@ -218,6 +218,10 @@ def hdl_wid_20100(params: WIDParams):
     btp.gap_connect()
     stack.gap.wait_for_connection(timeout=5, addr=addr)
     stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30)
+    btp.mcp_discover(addr_type, addr)
+    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr)
+    if ev is None:
+        return False
 
     return True
 
@@ -229,13 +233,7 @@ def hdl_wid_20103(params: WIDParams):
     Test (IUT) can send Discover All Characteristics command.
     """
 
-    addr_type = btp.pts_addr_type_get()
-    addr = btp.pts_addr_get()
-    stack = get_stack()
-    btp.mcp_discover(addr_type, addr)
-    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=False)
-    if ev is None:
-        return False
+    # Discover and subscribe at hdl_wid_20100
 
     return True
 
@@ -246,13 +244,7 @@ def hdl_wid_20106(params: WIDParams):
     characteristic to enable notification.Descriptor handle value: 0x00B3
     """
 
-    addr_type = btp.pts_addr_type_get()
-    addr = btp.pts_addr_get()
-    stack = get_stack()
-    btp.mcp_discover(addr_type, addr)
-    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=True)
-    if ev is None:
-        return False
+    # Discover and subscribe at hdl_wid_20100
 
     return True
 
@@ -394,13 +386,7 @@ def hdl_wid_20116(params: WIDParams):
      of the Microphone Control supported by the IUT. Discover primary service if needed.
      """
 
-    addr_type = btp.pts_addr_type_get()
-    addr = btp.pts_addr_get()
-    stack = get_stack()
-    btp.mcp_discover(addr_type, addr)
-    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=False)
-    if ev is None:
-        return False
+    # Discover and subscribe at hdl_wid_20100
 
     return True
 
