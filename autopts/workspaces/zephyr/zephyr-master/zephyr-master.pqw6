@@ -14398,7 +14398,7 @@
           <Row>
             <Name>TSPC_CORE_2a_63</Name>
             <Description>Host Core v6.3 or later (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -14410,7 +14410,7 @@
           <Row>
             <Name>TSPC_CORE_2b_62</Name>
             <Description>Host Core v6.2 or earlier (C.8)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -27526,7 +27526,7 @@
           <Row>
             <Name>TSPC_CORE_2a_63</Name>
             <Description>Host Core v6.3 or later (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
