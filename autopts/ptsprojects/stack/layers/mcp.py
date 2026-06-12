@@ -47,7 +47,7 @@ class MCP:
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
 
-    def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
+    def wait_discovery_completed_ev(self, addr_type, addr, timeout=30, remove=True):
         return wait_event_with_condition(
             self.event_queues[defs.BTP_MCP_EV_DISCOVERED],
             lambda _addr_type, _addr, *_:
