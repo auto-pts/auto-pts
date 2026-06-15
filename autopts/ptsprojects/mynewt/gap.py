@@ -147,9 +147,6 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
-        TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_bd_addr_PTS",
-            pts_bd_addr.replace(':', ''))),
         TestFunc(pts.update_pixit_param, "GAP",
                  "TSPX_iut_private_address_interval",
                  '30000'),
