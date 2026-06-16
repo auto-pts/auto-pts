@@ -18,6 +18,27 @@ from autopts.pybtp import defs
 
 
 class MCP:
+    """Media Control Profile (MCP) stack layer.
+
+    Manages event queues and state for MCP client operations.
+
+    Attributes:
+        event_queues (dict[int, list[tuple]]): Queues for each BTP MCP event type,
+            mapping event type constants to lists of event tuples.
+        error_opcodes (list[int]): List of error opcodes received from the server.
+        object_id (int | None): Object ID used in OTS-related MCP operations, or None
+            if not set.
+        discovered_handles (list[str]): Characteristic handles (as uppercase 4-digit hex
+            strings) parsed from the last successful BTP_MCP_EV_DISCOVERED event.
+            Updated only on discovery completion with status=0. Used by WID handlers
+            to validate that expected handles were reported by the IUT.
+    """
+
+    event_queues: dict[int, list[tuple]]
+    error_opcodes: list[int]
+    object_id: int | None
+    discovered_handles: list[str]
+
     def __init__(self):
         self.event_queues = {
             defs.BTP_MCP_EV_DISCOVERED: [],
@@ -43,8 +64,22 @@ class MCP:
         }
         self.error_opcodes = []
         self.object_id = None
+        self.discovered_handles = []
+
+    @staticmethod
+    def _extract_discovered_handles(event_data_tuple):
+        # Event tuple layout: (addr_type, addr, status, <characteristic handles...>)
+        chars = event_data_tuple[3:]
+        handles = [f'{chrc:04X}' for chrc in chars]
+        return [handle for handle in handles if handle != '0000']
 
     def event_received(self, event_type, event_data_tuple):
+        if event_type == defs.BTP_MCP_EV_DISCOVERED:
+            status = event_data_tuple[2]
+            if status == 0:
+                self.discovered_handles = self._extract_discovered_handles(event_data_tuple)
+            else:
+                self.discovered_handles = []
         self.event_queues[event_type].append(event_data_tuple)
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout=30, remove=True):
