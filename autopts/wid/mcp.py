@@ -17,7 +17,7 @@ import logging
 import re
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp, defs
+from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 
 log = logging.debug
@@ -489,17 +489,10 @@ def hdl_wid_20206(params: WIDParams):
      """
 
     stack = get_stack()
+    chrc_list = stack.mcp.discovered_handles
 
-    if params.test_case_name == "MCP/CL/CGGIT/SER/BV-02-C":
-        chars = stack.mcp.event_queues[defs.BTP_MCP_EV_DISCOVERED][0][3:25]
-        chrc_list = [f'{chrc:04X}' for chrc in chars]
-    elif params.test_case_name == "MCP/CL/CGGIT/SER/BV-03-C":
-        chars = stack.mcp.event_queues[defs.BTP_MCP_EV_DISCOVERED][0][25:]
-        chrc_list = [f'{chrc:04X}' for chrc in chars]
-        # Object First-Created and Object Last-Modified Characteristic are omitted
-        # because Server doest not have access to real time clock (data is set to 0)
-        while '0000' in chrc_list:
-            chrc_list.remove('0000')
+    if not chrc_list:
+        return False
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
     desc_params = pattern.findall(params.description)
@@ -508,15 +501,13 @@ def hdl_wid_20206(params: WIDParams):
         return False
 
     desc_params_list = desc_params[2::4]
+    if not desc_params_list:
+        logging.error("parsing error")
+        return False
 
-    if params.test_case_name == "MCP/CL/CGGIT/SER/BV-03-C":
-        # Also Object List Filter characteristic isn't supported.
-        unsupported_chrc = ['012A', '012C', '0138', '013D', '013F', '013A']
-        for handle in unsupported_chrc:
-            while handle in desc_params_list:
-                desc_params_list.remove(handle)
+    discovered_set = set(chrc_list)
 
-    if desc_params_list == chrc_list:
+    if all(handle in discovered_set for handle in desc_params_list):
         return True
 
     return False
