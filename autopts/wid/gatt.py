@@ -1672,10 +1672,6 @@ def hdl_wid_130(params: WIDParams):
     # Please delete security key before connecting to PTS if IUT was bonded previously.
     btp.gap_unpair()
 
-    # This is needed until ES-27410 is incorporated
-    if params.test_case_name in ['GATT/SR/GAI/BV-01-C', 'GATT/SR/GAN/BV-01-C']:
-        btp.gap_set_bondable_off()
-
     return True
 
 
