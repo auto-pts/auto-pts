@@ -104,17 +104,26 @@ class L2capChan:
 
 
 class L2cap:
-    """L2CAP layer - manages L2CAP channels """
+    """
+    L2CAP layer - manages L2CAP channels.
 
-    def __init__(self, psm, initial_mtu):
-        # PSM used for testing for Client role
+    Attributes:
+        psm (int): Protocol/Service Multiplexer used for testing client role.
+        initial_mtu (int): Initial Maximum Transmission Unit.
+        channels (list[L2capChan]): List of currently active L2CAP channels.
+        hold_credits (int): Number of flow control credits currently held.
+        num_channels (int): Default or maximum number of channels.
+        conn_req_reject_reason (L2CapChannelStatusCode | None): The reason a
+            connection request was rejected, or None if no rejection occurred.
+    """
+
+    def __init__(self, psm: int, initial_mtu: int):
         self.psm = psm
         self.initial_mtu = initial_mtu
-        self.channels = []
+        self.channels: list[L2capChan] = []
         self.hold_credits = 0
         self.num_channels = 2
         self.conn_req_reject_reason: L2CapChannelStatusCode | None = None
-        """L2CapChannelStatusCode | None: The reason the L2CAP connection request was rejected."""
 
     def chan_lookup_id(self, chan_id):
         """ lookup L2CAP channel with specified channel ID"""
