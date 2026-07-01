@@ -395,6 +395,69 @@ class MyTestCase(unittest.TestCase):
         except Exception as e:
             self.fail(f"Function raised unexpected exception: {e}")
 
+    def test_broadcast_str_ac12_config_mapping(self):
+        from autopts.wid.bap import BROADCAST_STR_CONFIGS, AudioConfigId, BroadcastSetName
+
+        configs = [cfg for cfg in BROADCAST_STR_CONFIGS if cfg.audio_config_id is AudioConfigId.AC_12]
+
+        assert len(configs) == 16
+        assert [cfg.set_name for cfg in configs] == list(BroadcastSetName)
+        assert [cfg.test_case_str for cfg in configs] == [
+            f"BAP/BSRC/STR/BV-{idx:02d}-C" for idx in range(1, 17)
+        ]
+
+        for cfg in configs:
+            assert cfg.channel_allocation == defs.PACS_AUDIO_LOCATION_FRONT_LEFT
+            assert cfg.streams_per_subgroup == 1
+            bits = defs.PACS_AUDIO_LOCATION_FRONT_LEFT.bit_count()
+            assert bits % cfg.streams_per_subgroup == 0
+
+    def test_broadcast_str_ac13_config_mapping(self):
+        from autopts.wid.bap import (
+            BROADCAST_AUDIO_LOCATION_STEREO,
+            BROADCAST_STR_CONFIGS,
+            AudioConfigId,
+            BroadcastSetName,
+        )
+
+        configs = [cfg for cfg in BROADCAST_STR_CONFIGS if cfg.audio_config_id is AudioConfigId.AC_13]
+        expected_qos_set_names = list(BroadcastSetName)
+
+        assert len(configs) == len(expected_qos_set_names)
+        assert [cfg.set_name for cfg in configs] == expected_qos_set_names
+        assert [cfg.test_case_str for cfg in configs] == [
+            f"BAP/BSRC/STR/BV-{idx:02d}-C" for idx in range(18, 34)
+        ]
+
+        for cfg in configs:
+            assert cfg.channel_allocation == BROADCAST_AUDIO_LOCATION_STEREO
+            assert cfg.streams_per_subgroup == 2
+            bits = cfg.channel_allocation.bit_count()
+            assert bits % cfg.streams_per_subgroup == 0
+
+    def test_broadcast_str_ac14_config_mapping(self):
+        from autopts.wid.bap import (
+            BROADCAST_AUDIO_LOCATION_STEREO,
+            BROADCAST_STR_CONFIGS,
+            AudioConfigId,
+            BroadcastSetName,
+        )
+
+        configs = [cfg for cfg in BROADCAST_STR_CONFIGS if cfg.audio_config_id is AudioConfigId.AC_14]
+        expected_qos_set_names = list(BroadcastSetName)
+
+        assert len(configs) == len(expected_qos_set_names)
+        assert [cfg.set_name for cfg in configs] == expected_qos_set_names
+        assert [cfg.test_case_str for cfg in configs] == [
+            f"BAP/BSRC/STR/BV-{idx:02d}-C" for idx in range(35, 51)
+        ]
+
+        for cfg in configs:
+            assert cfg.channel_allocation == BROADCAST_AUDIO_LOCATION_STEREO
+            assert cfg.streams_per_subgroup == 1
+            bits = cfg.channel_allocation.bit_count()
+            assert bits % cfg.streams_per_subgroup == 0
+
 
 if __name__ == '__main__':
     unittest.main()
