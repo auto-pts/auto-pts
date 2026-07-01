@@ -73,6 +73,30 @@ class AudioConfigId(Enum):
     AC_10 = auto()
     AC_11_i = auto()
     AC_11_ii = auto()
+    AC_12 = auto()
+    AC_13 = auto()
+    AC_14 = auto()
+
+
+class BroadcastSetName(str, Enum):
+    """Broadcast set names defined by BAP."""
+
+    SET_8_1_1 = "8_1_1"
+    SET_8_2_1 = "8_2_1"
+    SET_16_1_1 = "16_1_1"
+    SET_16_2_1 = "16_2_1"
+    SET_24_1_1 = "24_1_1"
+    SET_24_2_1 = "24_2_1"
+    SET_32_1_1 = "32_1_1"
+    SET_32_2_1 = "32_2_1"
+    SET_441_1_1 = "441_1_1"
+    SET_441_2_1 = "441_2_1"
+    SET_48_1_1 = "48_1_1"
+    SET_48_2_1 = "48_2_1"
+    SET_48_3_1 = "48_3_1"
+    SET_48_4_1 = "48_4_1"
+    SET_48_5_1 = "48_5_1"
+    SET_48_6_1 = "48_6_1"
 
 
 @dataclass(frozen=True)
@@ -326,6 +350,152 @@ AC_CONFIGS: Final[list[AudioConfigTest]] = [
 
 # Dictionary representing the above list for easier and O(1) lookup
 AC_CONFIGS_DICT: Final[dict[str, AudioConfigTest]] = {cfg.test_case_str: cfg for cfg in AC_CONFIGS}
+
+
+BROADCAST_AUDIO_LOCATION_STEREO: Final[int] = (defs.PACS_AUDIO_LOCATION_FRONT_LEFT | defs.PACS_AUDIO_LOCATION_FRONT_RIGHT)
+BROADCAST_AUDIO_LOCATION_MONO: Final[int] = defs.PACS_AUDIO_LOCATION_FRONT_LEFT
+
+
+@dataclass(frozen=True)
+class BroadcastAudioConfigTest:
+    """Declarative broadcast STR test configuration.
+
+    Attributes:
+        test_case_str (str): PTS test case identifier, for example "BAP/BSRC/STR/BV-31-C".
+        set_name (BroadcastSetName): set name.
+        audio_config_id (AudioConfigId): BAP audio configuration identifier used by the testcase.
+        channel_allocation (int): PACS audio location bitfield used in codec configuration.
+        streams_per_subgroup (int): Number of BIS streams configured per subgroup.
+    """
+
+    test_case_str: str
+    set_name: BroadcastSetName
+    audio_config_id: AudioConfigId
+    channel_allocation: int = BROADCAST_AUDIO_LOCATION_MONO
+    streams_per_subgroup: int = 1
+
+
+BROADCAST_STR_CONFIGS: Final[tuple[BroadcastAudioConfigTest, ...]] = (
+    # AC12: 1 BIS, mono (BV-01..BV-16)
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-01-C", BroadcastSetName.SET_8_1_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-02-C", BroadcastSetName.SET_8_2_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-03-C", BroadcastSetName.SET_16_1_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-04-C", BroadcastSetName.SET_16_2_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-05-C", BroadcastSetName.SET_24_1_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-06-C", BroadcastSetName.SET_24_2_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-07-C", BroadcastSetName.SET_32_1_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-08-C", BroadcastSetName.SET_32_2_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-09-C", BroadcastSetName.SET_441_1_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-10-C", BroadcastSetName.SET_441_2_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-11-C", BroadcastSetName.SET_48_1_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-12-C", BroadcastSetName.SET_48_2_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-13-C", BroadcastSetName.SET_48_3_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-14-C", BroadcastSetName.SET_48_4_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-15-C", BroadcastSetName.SET_48_5_1, AudioConfigId.AC_12),
+    BroadcastAudioConfigTest("BAP/BSRC/STR/BV-16-C", BroadcastSetName.SET_48_6_1, AudioConfigId.AC_12),
+    # AC13: 2 BIS, stereo (BV-18..BV-33)
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-18-C", BroadcastSetName.SET_8_1_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-19-C", BroadcastSetName.SET_8_2_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-20-C", BroadcastSetName.SET_16_1_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-21-C", BroadcastSetName.SET_16_2_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-22-C", BroadcastSetName.SET_24_1_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-23-C", BroadcastSetName.SET_24_2_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-24-C", BroadcastSetName.SET_32_1_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-25-C", BroadcastSetName.SET_32_2_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-26-C", BroadcastSetName.SET_441_1_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-27-C", BroadcastSetName.SET_441_2_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-28-C", BroadcastSetName.SET_48_1_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-29-C", BroadcastSetName.SET_48_2_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-30-C", BroadcastSetName.SET_48_3_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-31-C", BroadcastSetName.SET_48_4_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-32-C", BroadcastSetName.SET_48_5_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-33-C", BroadcastSetName.SET_48_6_1, AudioConfigId.AC_13, BROADCAST_AUDIO_LOCATION_STEREO, 2
+    ),
+    # AC14: 1 BIS, stereo, max SDU scales by channel count (BV-35..BV-50)
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-35-C", BroadcastSetName.SET_8_1_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-36-C", BroadcastSetName.SET_8_2_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-37-C", BroadcastSetName.SET_16_1_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-38-C", BroadcastSetName.SET_16_2_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-39-C", BroadcastSetName.SET_24_1_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-40-C", BroadcastSetName.SET_24_2_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-41-C", BroadcastSetName.SET_32_1_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-42-C", BroadcastSetName.SET_32_2_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-43-C", BroadcastSetName.SET_441_1_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-44-C", BroadcastSetName.SET_441_2_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-45-C", BroadcastSetName.SET_48_1_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-46-C", BroadcastSetName.SET_48_2_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-47-C", BroadcastSetName.SET_48_3_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-48-C", BroadcastSetName.SET_48_4_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-49-C", BroadcastSetName.SET_48_5_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+    BroadcastAudioConfigTest(
+        "BAP/BSRC/STR/BV-50-C", BroadcastSetName.SET_48_6_1, AudioConfigId.AC_14, BROADCAST_AUDIO_LOCATION_STEREO, 1
+    ),
+)
+
+BROADCAST_STR_CONFIGS_DICT: Final[dict[str, BroadcastAudioConfigTest]] = {
+    cfg.test_case_str: cfg for cfg in BROADCAST_STR_CONFIGS
+}
 
 
 def ascs_config_codec(addr_type: int, addr: str, ase_id: int, coding_format: int,
@@ -664,11 +834,32 @@ BAS_CONFIG_SETTINGS = {
 }
 
 
+@dataclass(frozen=True)
+class BasConfig:
+    """Broadcast Audio Stream QoS/codec mapping.
+
+    Attributes:
+        set_name (str): Key into CODEC_CONFIG_SETTINGS.
+        sdu_interval_us (int): SDU interval in microseconds.
+        framing (int): Framing mode used by BAP (0 unframed, 1 framed)
+        max_sdu_octets (int): Maximum SDU size in octets for a single stream.
+        rtn (int): Retransmission number.
+        max_transport_latency_ms (int): Maximum transport latency in milliseconds.
+    """
+
+    set_name: str
+    sdu_interval_us: int
+    framing: int
+    max_sdu_octets: int
+    rtn: int
+    max_transport_latency_ms: int
+
+
 def hdl_wid_114(params: WIDParams):
     """
     Please advertise with Broadcast Audio Announcement (0x1852) service data
     """
-    configurations = {
+    scc_configurations = {
         'BAP/BSRC/SCC/BV-01-C': '8_1_1',
         'BAP/BSRC/SCC/BV-02-C': '8_2_1',
         'BAP/BSRC/SCC/BV-03-C': '16_1_1',
@@ -702,43 +893,11 @@ def hdl_wid_114(params: WIDParams):
         'BAP/BSRC/SCC/BV-31-C': '48_5_2',
         'BAP/BSRC/SCC/BV-32-C': '48_6_2',
         'BAP/BSRC/SCC/BV-38-C': '16_2_1',
-        # Cases with 1 BIS:
-        'BAP/BSRC/STR/BV-01-C': '8_1_1',
-        'BAP/BSRC/STR/BV-02-C': '8_2_1',
-        'BAP/BSRC/STR/BV-03-C': '16_1_1',
-        'BAP/BSRC/STR/BV-04-C': '16_2_1',
-        'BAP/BSRC/STR/BV-05-C': '24_1_1',
-        'BAP/BSRC/STR/BV-06-C': '24_2_1',
-        'BAP/BSRC/STR/BV-07-C': '32_1_1',
-        'BAP/BSRC/STR/BV-08-C': '32_2_1',
-        'BAP/BSRC/STR/BV-09-C': '441_1_1',
-        'BAP/BSRC/STR/BV-10-C': '441_2_1',
-        'BAP/BSRC/STR/BV-11-C': '48_1_1',
-        'BAP/BSRC/STR/BV-12-C': '48_2_1',
-        'BAP/BSRC/STR/BV-13-C': '48_3_1',
-        'BAP/BSRC/STR/BV-14-C': '48_4_1',
-        'BAP/BSRC/STR/BV-15-C': '48_5_1',
-        'BAP/BSRC/STR/BV-16-C': '48_6_1',
-        # Cases with 2 BISes:
-        'BAP/BSRC/STR/BV-18-C': '8_1_1',
-        'BAP/BSRC/STR/BV-19-C': '8_2_1',
-        'BAP/BSRC/STR/BV-20-C': '16_1_1',
-        'BAP/BSRC/STR/BV-21-C': '16_2_1',
-        'BAP/BSRC/STR/BV-22-C': '24_1_1',
-        'BAP/BSRC/STR/BV-23-C': '24_2_1',
-        'BAP/BSRC/STR/BV-24-C': '32_1_1',
-        'BAP/BSRC/STR/BV-25-C': '32_2_1',
-        'BAP/BSRC/STR/BV-26-C': '441_1_1',
-        'BAP/BSRC/STR/BV-27-C': '441_2_1',
-        'BAP/BSRC/STR/BV-28-C': '48_1_1',
-        'BAP/BSRC/STR/BV-29-C': '48_2_1',
-        'BAP/BSRC/STR/BV-30-C': '48_3_1',
-        'BAP/BSRC/STR/BV-31-C': '48_4_1',
-        'BAP/BSRC/STR/BV-32-C': '48_5_1',
-        'BAP/BSRC/STR/BV-33-C': '48_6_1',
     }
 
     stack = get_stack()
+
+    is_broadcast_str_test = params.test_case_name.startswith('BAP/BSRC/STR')
 
     if stack.bap.hdl_wid_114_cnt == 0:
         broadcast_id = stack.bap.broadcast_id
@@ -747,8 +906,34 @@ def hdl_wid_114(params: WIDParams):
     else:
         raise ValueError("hdl_wid_114 is not 0 or 1")
 
-    if params.test_case_name in configurations:
-        qos_set_name = configurations[params.test_case_name]
+    channel_allocation = BROADCAST_AUDIO_LOCATION_MONO
+    streams_per_subgroup = 1
+
+    if is_broadcast_str_test:
+        broadcast_str_cfg = BROADCAST_STR_CONFIGS_DICT.get(params.test_case_name)
+        if broadcast_str_cfg is None:
+            raise ValueError(f"Unsupported STR testcase config: {params.test_case_name}")
+
+        set_name = broadcast_str_cfg.set_name
+        channel_allocation = broadcast_str_cfg.channel_allocation
+        streams_per_subgroup = broadcast_str_cfg.streams_per_subgroup
+        coding_format = 0x06
+        vid = 0x0000
+        cid = 0x0000
+
+        channel_count = count_1_bits(channel_allocation)
+        if streams_per_subgroup <= 0:
+            raise ValueError(f"Invalid streams_per_subgroup={streams_per_subgroup}")
+        if channel_count == 0:
+            raise ValueError(f"Invalid channel_allocation=0x{channel_allocation:X}")
+        if channel_count % streams_per_subgroup != 0:
+            raise ValueError(
+                "Invalid broadcast STR config: channel_count "
+                f"{channel_count} is not divisible by streams_per_subgroup {streams_per_subgroup}"
+            )
+        channel_ratio = channel_count // streams_per_subgroup
+    elif params.test_case_name in scc_configurations:
+        qos_set_name = scc_configurations[params.test_case_name]
         coding_format = 0x06
         vid = 0x0000
         cid = 0x0000
@@ -758,21 +943,22 @@ def hdl_wid_114(params: WIDParams):
         vid = 0xffff
         cid = 0xffff
 
-    codec_set_name, *qos_config = BAS_CONFIG_SETTINGS[qos_set_name]
+    if is_broadcast_str_test:
+        qos_set_name = set_name
+
+    bas_config = BasConfig(*BAS_CONFIG_SETTINGS[qos_set_name])
+    max_sdu_octets = bas_config.max_sdu_octets
+
+    if is_broadcast_str_test:
+        max_sdu_octets *= int(channel_ratio)
 
     (sampling_freq, frame_duration, octets_per_frame) = \
-        CODEC_CONFIG_SETTINGS[codec_set_name]
-    audio_locations = 0x01
+        CODEC_CONFIG_SETTINGS[bas_config.set_name]
     frames_per_sdu = 0x01
 
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
-                                             audio_locations, octets_per_frame,
+                                             channel_allocation, octets_per_frame,
                                              frames_per_sdu)
-
-    streams_per_subgroup = 1
-    tc_num = int(re.findall(r'\d+', params.test_case_name)[0])
-    if tc_num >= 18:
-        streams_per_subgroup = 2
 
     presentation_delay = 40000
     subgroups = 1
@@ -780,11 +966,21 @@ def hdl_wid_114(params: WIDParams):
     if params.test_case_name.startswith("BAP/BSRC/SCC/BV-38-C"):
         btp.bap_broadcast_source_setup_v2(broadcast_id, streams_per_subgroup, subgroups,
                                           coding_format, vid, cid, codec_ltvs_bytes,
-                                          *qos_config, presentation_delay)
+                                          bas_config.sdu_interval_us,
+                                          bas_config.framing,
+                                          max_sdu_octets,
+                                          bas_config.rtn,
+                                          bas_config.max_transport_latency_ms,
+                                          presentation_delay)
     else:
         broadcast_id = btp.bap_broadcast_source_setup(streams_per_subgroup, subgroups,
                                                       coding_format, vid, cid, codec_ltvs_bytes,
-                                                      *qos_config, presentation_delay)
+                                                      bas_config.sdu_interval_us,
+                                                      bas_config.framing,
+                                                      max_sdu_octets,
+                                                      bas_config.rtn,
+                                                      bas_config.max_transport_latency_ms,
+                                                      presentation_delay)
         stack.bap.set_broadcast_id(broadcast_id)
 
     btp.bap_broadcast_adv_start(broadcast_id)
