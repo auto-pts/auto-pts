@@ -203,6 +203,11 @@ def test_cases(ptses):
         ZTestCase("SM", "SM/PER/SCOB/BV-03-C",
                   pre_conditions,
                   generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/PER/PKE/BV-06-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only),
+                   TestFunc(btp.gap_set_mitm_off)],
+                  generic_wid_hdl=sm_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('SM')
