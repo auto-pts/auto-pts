@@ -603,6 +603,10 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_RFCOMM,
         "supported_commands": defs.BTP_RFCOMM_CMD_READ_SUPPORTED_COMMANDS
     },
+    "RAP": {
+        "service": 1 << defs.BTP_SERVICE_ID_RAP,
+        "supported_commands": defs.BTP_RAP_CMD_READ_SUPPORTED_COMMANDS
+    },
 # GENERATOR append 1
 }
 
@@ -681,6 +685,8 @@ reg_unreg_service = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_SDP),
     "rfcomm_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_RFCOMM),
+    "rap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_RAP),
 # GENERATOR append 2
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,

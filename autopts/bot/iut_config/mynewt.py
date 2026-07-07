@@ -17,9 +17,9 @@
 
 iut_config = {
     "default.conf": {
-        "test_cases": [
-            'GAP', 'GATT', 'L2CAP', 'SM', 'MESH',
-        ],
+        # "test_cases": [
+        #     'GAP', 'GATT', 'L2CAP', 'SM', 'MESH',
+        # ],
     },
 
     "periodic_adv.conf": {
