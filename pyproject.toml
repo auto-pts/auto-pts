@@ -21,3 +21,4 @@ preview = true
 "autopts/bot/common.py" = ["ALL"]
 "autopts/ptscontrol.py" = ["ALL"]
 "autoptsserver.py" = ["ALL"]
+"autopts/ptsprojects/zephyr/__init__.py" = ["A004"] # A004 - Some profile names are identical to Python builtin names, such as map, which causes naming conflicts.

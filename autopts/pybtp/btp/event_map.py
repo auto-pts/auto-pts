@@ -12,6 +12,7 @@ from .gmcs import GMCS_EV
 from .hap import HAP_EV
 from .ias import IAS_EV
 from .l2cap import L2CAP_EV
+from .map import MAP_EV
 from .mcp import MCP_EV
 from .mesh import MESH_EV
 from .micp import MICP_EV
@@ -44,6 +45,7 @@ __all__ = [
     "HAP_EV",
     "IAS_EV",
     "L2CAP_EV",
+    "MAP_EV",
     "MCP_EV",
     "MESH_EV",
     "MICP_EV",
