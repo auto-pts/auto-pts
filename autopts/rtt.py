@@ -31,23 +31,30 @@ from autopts.utils import get_global_end
 log = logging.debug
 
 
+class JLinkWrapper(pylink.JLink):
+    def __init__(self, debugger_snr, lib):
+        super().__init__(lib=lib)
+        self.debugger_snr = debugger_snr
+        self.refcount = 0
+
+
 class RTT:
     # Due to Pylink module limitations we have to
-    # share one instance of JLink object
-    jlink = None
-    lib = None
+    # share one instance of JLink object per serial number
+    jlink_instances = {}
 
     def __init__(self):
+        self.debugger_snr = None
         self.read_thread = None
         self.stop_thread = threading.Event()
         pylink.logger.setLevel(logging.WARNING)
 
-    def _get_buffer_index(self, buffer_name):
+    def _get_buffer_index(self, jlink, buffer_name):
         timeout = time.time() + 10
         num_up = 0
         while True:
             try:
-                num_up = RTT.jlink.rtt_get_num_up_buffers()
+                num_up = jlink.rtt_get_num_up_buffers()
                 break
             except pylink.errors.JLinkRTTException:
                 if time.time() > timeout:
@@ -55,7 +62,7 @@ class RTT:
                 time.sleep(0.1)
 
         for buf_index in range(num_up):
-            buf = RTT.jlink.rtt_get_buf_descriptor(buf_index, True)
+            buf = jlink.rtt_get_buf_descriptor(buf_index, True)
             if buf.name == buffer_name:
                 return buf_index
 
@@ -70,38 +77,45 @@ class RTT:
             pass  # JLink closed
 
     def init_jlink(self, device_core, debugger_snr):
-        if RTT.jlink:
-            return
+        jlink, lib = RTT.jlink_instances.get(debugger_snr, (None, None))
+        if jlink:
+            jlink.refcount += 1
+            return jlink
 
-        if not RTT.lib and (dllpath := os.environ.get("AUTOPTS_RTT_OVERRIDE_JLINK_DLLPATH")):
+        if not lib and (dllpath := os.environ.get("AUTOPTS_RTT_OVERRIDE_JLINK_DLLPATH")):
             # Allow for the J-Link DLL to be specified
-            RTT.lib = pylink.library.Library(dllpath=dllpath)
+            lib = pylink.library.Library(dllpath=dllpath)
 
-        RTT.jlink = pylink.JLink(lib=RTT.lib)
+        jlink = JLinkWrapper(debugger_snr=debugger_snr, lib=lib)
         # Pylink loads a new cache of J-Link DLL at its __init__,
         # but the __del__ does not unload it. Luckily we can reuse
         # the cached lib to prevent memory leak (around 20MB per test case!).
-        RTT.lib = RTT.jlink._library
+        lib = jlink._library
 
-        if not RTT.jlink.opened():
-            RTT.jlink.open(serial_no=debugger_snr)
-        RTT.jlink.disable_dialog_boxes()
+        if not jlink.opened():
+            jlink.open(serial_no=debugger_snr)
+        jlink.disable_dialog_boxes()
 
-        RTT.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
-        RTT.jlink.connect(device_core)
+        jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
+        jlink.connect(device_core)
 
-        status = RTT.jlink.rtt_get_status()
+        status = jlink.rtt_get_status()
         if status.IsRunning == 0:
-            RTT.jlink.rtt_start()
+            jlink.rtt_start()
+
+        jlink.refcount += 1
+        RTT.jlink_instances[debugger_snr] = (jlink, lib)
+        return jlink
 
     def start(self, buffer_name, device_core, debugger_snr, user_callback, user_data):
-        log("%s.%s", self.__class__, self.start.__name__)
+        log(f"{self.__class__}.{self.start.__name__}, {debugger_snr}, {device_core}, {buffer_name}")
 
-        self.init_jlink(device_core, debugger_snr)
-        buffer_index = self._get_buffer_index(buffer_name)
+        self.debugger_snr = debugger_snr
+        jlink = self.init_jlink(device_core, debugger_snr)
+        buffer_index = self._get_buffer_index(jlink, buffer_name)
         self.stop_thread.clear()
         self.read_thread = threading.Thread(target=self._read_from_buffer,
-                                            args=(RTT.jlink,
+                                            args=(jlink,
                                                   buffer_index,
                                                   self.stop_thread,
                                                   user_callback,
@@ -115,17 +129,24 @@ class RTT:
         if self.read_thread:
             self.read_thread.join()
             self.read_thread = None
-            if RTT.jlink:
+            jlink, lib = RTT.jlink_instances.get(self.debugger_snr, (None, None))
+            if jlink:
+                if jlink.refcount > 1:
+                    jlink.refcount -= 1
+                    return
+
                 try:
-                    RTT.jlink.rtt_stop()
+                    jlink.rtt_stop()
+                    log(f"{self.__class__},{self.stop.__name__}, the RTT of {self.debugger_snr} stopped.")
                 except (pylink.errors.JLinkRTTException, pylink.errors.JLinkException) as err:
                     log(f'Failed to stop RTT, err: {err}')
                 try:
-                    RTT.jlink.close()
+                    jlink.close()
                 except pylink.errors.JLinkException as err:
                     log(f'Failed to close J-Link connection, err: {err}')
-                del RTT.jlink
-                RTT.jlink = None
+                del jlink
+                jlink = None
+                RTT.jlink_instances[self.debugger_snr] = (jlink, lib)
 
 
 class BTMON:
