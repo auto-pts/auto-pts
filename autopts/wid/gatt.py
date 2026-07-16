@@ -100,14 +100,16 @@ COMPARED_VALUE = []
 def hdl_wid_1(params: WIDParams):
     if 'LT2' in params.test_case_name:
         addr = btp.lt2_addr_get()
+        conn_count = 2
     else:
         addr = btp.pts_addr_get()
+        conn_count = 1
 
     stack = get_stack()
     btp.gap_set_connectable()
     btp.gap_set_general_discoverable()
     btp.gap_start_advertising(ad=stack.gap.ad)
-    stack.gap.wait_for_connection(timeout=10, addr=addr)
+    stack.gap.wait_for_connection(timeout=10, conn_count=conn_count, addr=addr)
     return True
 
 

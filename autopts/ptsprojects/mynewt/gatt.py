@@ -221,6 +221,7 @@ def test_cases_server(ptses):
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
                                 "GATT", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
+                        TestFunc(btp.set_lt2_addr, pts2.q_bd_addr, Addr.le_public),
     ]
 
     test_cases_lt2 = [
