@@ -33,7 +33,7 @@ def set_pixits(ptses):
 
     pts.set_pixit("PBP", "TSPX_time_guard", "180000")
     pts.set_pixit("PBP", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("PBP", "TSPX_broadcast_code", BROADCAST_CODE)
+    pts.set_pixit("PBP", "TSPX_Broadcast_Code", BROADCAST_CODE)
     pts.set_pixit("PBP", "TSPX_Program_Info", PROGRAM_INFO)
     pts.set_pixit("PBP", "TSPX_Broadcast_Name", BROADCAST_NAME)
 

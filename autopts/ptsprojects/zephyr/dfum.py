@@ -61,7 +61,6 @@ def set_pixits(ptses):
     pts.set_pixit("DFUM", "TSPX_Procedure_Timeout", "60")
     pts.set_pixit("DFUM", "TSPX_Client_BLOB_ID", "1100000000000011")
     pts.set_pixit("DFUM", "TSPX_Client_BLOB_Data", r"data.txt")
-    pts.set_pixit("DFUM", "TSPX_TTL", "2")
     pts.set_pixit("MBTM", "TSPX_Server_Timeout_Base", "5")
     pts.set_pixit("DFUM", "TSPX_Firmware_ID", "11000011")
     pts.set_pixit("DFUM", "TSPX_Firmware_Metadata", "1100000000000011")

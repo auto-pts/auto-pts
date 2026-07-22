@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.13.0, 4" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.14.0, 4" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313" SOURCE="FILE">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -752,6 +752,12 @@
             <Name>TSPC_BAP_5_4</Name>
             <Description>BAP v1.0.2 (C.4)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_5_5</Name>
+            <Description>BAP v1.0.3 (C.4)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1583,6 +1589,78 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BAP_17a_1</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17a_2</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17a_3</Name>
+            <Description>24_1_3 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17a_4</Name>
+            <Description>24_2_3 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17a_5</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17a_6</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17b_1</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17b_2</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17b_3</Name>
+            <Description>24_1_3 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17b_4</Name>
+            <Description>24_2_3 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17b_5</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_17b_6</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BAP_18_1</Name>
             <Description>Vendor-specific QoS Config Setting: Unicast Server is Audio Sink (C.1)</Description>
             <Value>TRUE</Value>
@@ -1982,6 +2060,12 @@
             <Name>TSPC_BAP_27_5</Name>
             <Description>BAP v1.0.2 (C.3)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_27_6</Name>
+            <Description>BAP v1.0.3 (C.3)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2867,6 +2951,78 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BAP_41a_1</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41a_2</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41a_3</Name>
+            <Description>24_1_3 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41a_4</Name>
+            <Description>24_2_3 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41a_5</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41a_6</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41b_1</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41b_2</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41b_3</Name>
+            <Description>24_1_3 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41b_4</Name>
+            <Description>24_2_3 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41b_5</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_41b_6</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BAP_42_1</Name>
             <Description>Vendor-specific QoS Config Setting: Unicast Client is Audio Sink (C.1)</Description>
             <Value>TRUE</Value>
@@ -3180,9 +3336,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_48_2</Name>
-            <Description>LE Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_48_3</Name>
@@ -3714,8 +3870,8 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_61_1</Name>
-            <Description>LE Encryption (C.1)</Description>
-            <Value>TRUE</Value>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4986,15 +5142,15 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_92_2</Name>
-            <Description>LE Extended Advertising (M)</Description>
+            <Description>LE Extended Advertising (C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_3</Name>
-            <Description>LE Periodic Advertising (M)</Description>
+            <Description>LE Periodic Advertising (C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_4</Name>
@@ -5004,19 +5160,19 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_92_5</Name>
-            <Description>Initiating Periodic Advertising Sync Transfer for Local Periodic Advertising (C.1)</Description>
-            <Value>TRUE</Value>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_6</Name>
-            <Description>Initiating Periodic Advertising Sync Transfer for Remote Periodic Advertising (C.1)</Description>
-            <Value>TRUE</Value>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_7</Name>
-            <Description>Synchronized Receiver (O)</Description>
+            <Description>Synchronized Receiver (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5256,7 +5412,7 @@
           </Row>
           <Row>
             <Name>TSPX_Codec_ID</Name>
-            <Description>Octet 0: Coding format. Please set TSPX_VS_Company_ID and TSPX_VS_Codec_ID accordingly (Default: 06)</Description>
+            <Description>Octet 0: Coding format.'06' is default LC3 codec. For the vendor specific codec, Please set this 'ff' value and set TSPX_VS_Company_ID and TSPX_VS_Codec_ID accordingly (Default: 06)</Description>
             <Type>OCTETSTRING</Type>
             <Value>06</Value>
           </Row>
@@ -5344,6 +5500,7 @@
               <ValueListItem>By Playing</ValueListItem>
               <ValueListItem>By Displaying</ValueListItem>
             </ValueList>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_METADATA_SELECTION</Name>
@@ -5368,7 +5525,7 @@
             <Value>03020100</Value>
           </Row>
           <Row>
-            <Name>TSPX_QOS_CONFIG_SINK_ASE_1</Name>
+            <Name>TSPX_QOS_CONFIG_SINK_ASEID1</Name>
             <Description>This IXIT is only used in the generic STR test cases.</Description>
             <Type>IA5STRING</Type>
             <Value>16_2_1</Value>
@@ -5408,7 +5565,7 @@
             </ValueList>
           </Row>
           <Row>
-            <Name>TSPX_QOS_CONFIG_SINK_ASE_2</Name>
+            <Name>TSPX_QOS_CONFIG_SINK_ASEID2</Name>
             <Description>This IXIT is only used in the generic STR test cases. If test case name contains _LT2, this IXIT will be loaded as expected configuration setting.</Description>
             <Type>IA5STRING</Type>
             <Value>16_2_1</Value>
@@ -5448,7 +5605,7 @@
             </ValueList>
           </Row>
           <Row>
-            <Name>TSPX_QOS_CONFIG_SOURCE_ASE_1</Name>
+            <Name>TSPX_QOS_CONFIG_SOURCE_ASEID1</Name>
             <Description>This IXIT is only used in the generic STR test cases.</Description>
             <Type>IA5STRING</Type>
             <Value>16_2_1</Value>
@@ -5488,7 +5645,7 @@
             </ValueList>
           </Row>
           <Row>
-            <Name>TSPX_QOS_CONFIG_SOURCE_ASE_2</Name>
+            <Name>TSPX_QOS_CONFIG_SOURCE_ASEID2</Name>
             <Description>This IXIT is only used in the generic STR test cases. If test case name contains _LT2, this IXIT will be loaded as expected configuration setting.</Description>
             <Type>IA5STRING</Type>
             <Value>16_2_1</Value>
@@ -5528,7 +5685,7 @@
             </ValueList>
           </Row>
           <Row>
-            <Name>TSPX_broadcast_code</Name>
+            <Name>TSPX_Broadcast_Code</Name>
             <Description>The 16 bytes Broadcast Code. (Default: 0xB803EAC6AFBB65A25A41F15305680201)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0102680553F1415AA265BBAFC6EA03B8</Value>
@@ -5538,6 +5695,7 @@
             <Description>Synchronization timeout for the periodic advertising train. Range: 10 to 0x4000. Time = TSPX_Sync_Timeout * 10 ms (Default: 3000, which is 30 seconds)</Description>
             <Type>INTEGER</Type>
             <Value>3000</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Broadcast_ID</Name>
@@ -5556,30 +5714,35 @@
             <Description>Connection interval for specific sampling frequency. unit 1.25ms(Default: 64 = 80ms)</Description>
             <Type>INTEGER</Type>
             <Value>64</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Extended_Adv_Interval_min</Name>
             <Description>Min Extended Advertisement interval for Extended Advertisement unit 0.625ms. Only used in BSNK test case group (Default: 1200 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>1200</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Extended_Adv_Interval_max</Name>
             <Description>Max Extended Advertisement interval for Extended Advertisement unit 0.625ms. Only used in BSNK test case group(Default: 1200 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>1200</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Periodic_Adv_Interval_min</Name>
             <Description>Min Periodic Advertisement interval for Periodic Advertisement. Only used in BSNK test case group. unit 1.25ms(Default: 600 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>600</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Periodic_Adv_Interval_max</Name>
             <Description>Max Periodic Advertisement interval for Periodic Advertisement. Only used in BSNK test case group. unit 1.25ms(Default: 600 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>600</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_EXPOSE_CSIS</Name>
@@ -5592,6 +5755,7 @@
             <Description>The 16 bytes SIRK value. (Default: 0X838E680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>838E680553F1415AA265BBAFC6EA03B8</Value>
+            <PTS>TRUE</PTS>
           </Row>
         </Rows>
       </PIXIT>
@@ -6475,7 +6639,7 @@
             </ValueList>
           </Row>
           <Row>
-            <Name>TSPX_broadcast_code</Name>
+            <Name>TSPX_Broadcast_Code</Name>
             <Description>The 16 bytes Broadcast Code. (Default: 0X0102680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0102680553F1415AA265BBAFC6EA03B8</Value>
@@ -6487,7 +6651,7 @@
             <Value>3000</Value>
           </Row>
           <Row>
-            <Name>TSPX_METADATA</Name>
+            <Name>TSPX_Metadata</Name>
             <Description>Meta data. Total Length will be calculated. Data must be LTV structure with litte endian for multi-octet. ex)length: 3, type: 2, value: 0x0001 =&gt; 03020100</Description>
             <Type>OCTETSTRING</Type>
             <Value>03020100</Value>
@@ -7502,6 +7666,7 @@
               <ValueListItem>SINK_ASE</ValueListItem>
               <ValueListItem>SOURCE_ASE</ValueListItem>
             </ValueList>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_TARGET_LATENCY</Name>
@@ -7530,75 +7695,7 @@
             <Description>Octet 0: Coding format, Octet 1-2: Company Id, Octet 3-4: Vendor-specific codec Id Value (Default: 0600000000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0600000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_Codec_Specific_Configuration</Name>
-            <Description>Vendor-Specific codec specific configuration. This is a big-endian format. ex)0001 means 0x0001 (Default: 0001)</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0001</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_Framing</Name>
-            <Description>Select Framing (Default: UNFRAMING)</Description>
-            <Type>IA5STRING</Type>
-            <Value>UNFRAMING</Value>
-            <ValueList>
-              <ValueListItem>UNFRAMING</ValueListItem>
-              <ValueListItem>FRAMING</ValueListItem>
-            </ValueList>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_PHY</Name>
-            <Description>Select PHY (Default: 2M_PHY)</Description>
-            <Type>IA5STRING</Type>
-            <Value>2M_PHY</Value>
-            <ValueList>
-              <ValueListItem>1M_PHY</ValueListItem>
-              <ValueListItem>2M_PHY</ValueListItem>
-              <ValueListItem>CODED_PHY</ValueListItem>
-            </ValueList>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_SDU_Interval</Name>
-            <Description>TSPX_VS_QoS_SDU_Interval. (Default: 64)</Description>
-            <Type>INTEGER</Type>
-            <Value>64</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_Max_SDU</Name>
-            <Description>TSPX_VS_QoS_Max_SDU. (Default: 10000)</Description>
-            <Type>INTEGER</Type>
-            <Value>10000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_Retransmission_Number</Name>
-            <Description>TSPX_VS_QoS_Retransmission_Number. (Default: 2)</Description>
-            <Type>INTEGER</Type>
-            <Value>2</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_Max_Transport_Latency</Name>
-            <Description>TSPX_VS_QoS_Max_Transport_Latency. (Default: 40)</Description>
-            <Type>INTEGER</Type>
-            <Value>40</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_QoS_Presentation_Delay</Name>
-            <Description>TSPX_VS_QoS_Presentation_Delay. (Default: 40000)</Description>
-            <Type>INTEGER</Type>
-            <Value>40000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_Company_ID</Name>
-            <Description>Company Id for vendor specific. This is a big-endian format. ex)0001 means 0x0001 (Default: 0000)</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_VS_Codec_ID</Name>
-            <Description>Codec Id for vendor specific. This is a big-endian format. ex)0001 means 0x0001 (Default: 0000)</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_METADATA_SELECTION</Name>
@@ -7623,7 +7720,7 @@
             <Value>03020100</Value>
           </Row>
           <Row>
-            <Name>TSPX_broadcast_code</Name>
+            <Name>TSPX_Broadcast_Code</Name>
             <Description>The 16 bytes Broadcast Code. (Default: 0X0102680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0102680553F1415AA265BBAFC6EA03B8</Value>
@@ -7633,12 +7730,14 @@
             <Description>Synchronization timeout for the periodic advertising train. Range: 10 to 0x4000. Time = TSPX_Sync_Timeout * 10 ms (Default: 3000, which is 30 seconds)</Description>
             <Type>INTEGER</Type>
             <Value>3000</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_sirk</Name>
             <Description>The 16 bytes SIRK value. (Default: 0X838E680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>838E680553F1415AA265BBAFC6EA03B8</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_STREAMING_DATA_CONFIRMATION_METHOD</Name>
@@ -7649,9 +7748,10 @@
               <ValueListItem>By Playing</ValueListItem>
               <ValueListItem>By Displaying</ValueListItem>
             </ValueList>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
-            <Name>TSPX_CONTEXT_TYPE</Name>
+            <Name>TSPX_Streaming_Audio_Contexts</Name>
             <Description>Streaming Audio Contexts type. This is a little-endian format. ex)0002 means 0x0200 (Default: 0002)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0002</Value>
@@ -7661,30 +7761,35 @@
             <Description>Connection interval for specific sampling frequency. unit 1.25ms(Default: 80 = 100ms)</Description>
             <Type>INTEGER</Type>
             <Value>80</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Extended_Adv_Interval_min</Name>
             <Description>Min Extended Advertisement interval for Extended Advertisement unit 0.625ms. Only used in BSNK test case group (Default: 1200 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>1200</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Extended_Adv_Interval_max</Name>
             <Description>Max Extended Advertisement interval for Extended Advertisement unit 0.625ms. Only used in BSNK test case group(Default: 1200 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>1200</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Periodic_Adv_Interval_min</Name>
             <Description>Min Periodic Advertisement interval for Periodic Advertisement. Only used in BSNK test case group. unit 1.25ms(Default: 600 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>600</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_Periodic_Adv_Interval_max</Name>
             <Description>Max Periodic Advertisement interval for Periodic Advertisement. Only used in BSNK test case group. unit 1.25ms(Default: 600 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>600</Value>
+            <PTS>TRUE</PTS>
           </Row>
           <Row>
             <Name>TSPX_BST_CODEC_CONFIG</Name>
@@ -7942,9 +8047,9 @@
           </Row>
           <Row>
             <Name>TSPC_CCP_5_3</Name>
-            <Description>LE Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CCP_6_1</Name>
@@ -8034,6 +8139,24 @@
             <Name>TSPC_CCP_6_15</Name>
             <Description>Out-of-Band (BR/EDR) (C.8)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_6_16</Name>
+            <Description>Peripheral (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_6_17</Name>
+            <Description>Central (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_6_18</Name>
+            <Description>LE Extended Advertising (C.11)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8607,6 +8730,24 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CCP_15_17</Name>
+            <Description>Peripheral (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_15_18</Name>
+            <Description>Central (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_15_19</Name>
+            <Description>LE Extended Advertising (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CCP_17_1</Name>
             <Description>GATT Client over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
@@ -8882,13 +9023,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIP_5_2</Name>
-            <Description>PSRI AD Type field over LE (C.1)</Description>
+            <Description>RSI AD Type over LE (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_5_3</Name>
-            <Description>PSRI AD Type over BR/EDR (C.2)</Description>
+            <Description>RSI AD Type over BR/EDR (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8936,13 +9077,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIP_5_11</Name>
-            <Description>Coordinated Set Name AD Type field over LE (C.5)</Description>
+            <Description>Coordinated Set Identification Service Data AD Type over LE (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_5_12</Name>
-            <Description>Coordinated Set Name AD Type over BR/EDR (C.6)</Description>
+            <Description>Coordinated Set Identification Service Data AD Type over BR/EDR (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9998,12 +10139,6 @@
             <Description>BLOB being transferred by the IUT.</Description>
             <Type>IA5STRING</Type>
             <Value />
-          </Row>
-          <Row>
-            <Name>TSPX_TTL</Name>
-            <Description>TTL. (Default: 2)</Description>
-            <Type>INTEGER</Type>
-            <Value>2</Value>
           </Row>
           <Row>
             <Name>TSPX_Server_Timeout_Base</Name>
@@ -11089,13 +11224,13 @@
           <Row>
             <Name>TSPC_GAP_13_3</Name>
             <Description>Synchronization State (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_13_3a</Name>
             <Description>Synchronized Receiver (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -13546,6 +13681,13 @@
             <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
             <Type>OCTETSTRING</Type>
             <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
+            <Helper>TRUE</Helper>
+          </Row>
+          <Row>
+            <Name>TSPX_higher_layer_profile_uuid</Name>
+            <Description>Higher Layer Profile defined UUID for TAK</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>2A19</Value>
             <Helper>TRUE</Helper>
           </Row>
         </Rows>
@@ -17239,7 +17381,7 @@
             <Value>03020100</Value>
           </Row>
           <Row>
-            <Name>TSPX_broadcast_code</Name>
+            <Name>TSPX_Broadcast_Code</Name>
             <Description>The 16 bytes Broadcast Code. (Default: 0X0102680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0102680553F1415AA265BBAFC6EA03B8</Value>
@@ -17989,12 +18131,6 @@
               <ValueListItem>LE_2M_PHY</ValueListItem>
               <ValueListItem>LE_CODED_PHY</ValueListItem>
             </ValueList>
-          </Row>
-          <Row>
-            <Name>TSPX_largest_preset_index</Name>
-            <Description>Largest preset index value. (Default: 1)</Description>
-            <Type>INTEGER</Type>
-            <Value>1</Value>
           </Row>
           <Row>
             <Name>TSPX_num_presets</Name>
@@ -20001,6 +20137,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_IOPT_3_1</Name>
+            <Description>MESH over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_3_2</Name>
+            <Description>MESH over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_1_2</Name>
             <Description>Limited discoverable mode (O)</Description>
             <Value>FALSE</Value>
@@ -21379,9 +21527,9 @@
           </Row>
           <Row>
             <Name>TSPC_MCP_5_4</Name>
-            <Description>LE Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Description>No longer used. (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_6_1</Name>
@@ -21471,6 +21619,24 @@
             <Name>TSPC_MCP_6_15</Name>
             <Description>Out-of-Band (BR/EDR) (C.7)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_6_16</Name>
+            <Description>Peripheral (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_6_17</Name>
+            <Description>Central (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_6_18</Name>
+            <Description>LE Extended Advertising (C.10)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -22131,6 +22297,24 @@
             <Name>TSPC_MCP_18_16</Name>
             <Description>Out-of-Band (BR/EDR) (C.7)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18_17</Name>
+            <Description>Peripheral (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18_18</Name>
+            <Description>Central (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18_19</Name>
+            <Description>LE Extended Advertising (C.10)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26440,6 +26624,18 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_PACS_3a_1</Name>
+            <Description>Unicast Audio Support (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3a_2</Name>
+            <Description>Broadcast Audio Sink Support (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_PACS_4_1</Name>
             <Description>Changeable Sink PAC Characteristic (C.1)</Description>
             <Value>TRUE</Value>
@@ -26513,9 +26709,9 @@
           </Row>
           <Row>
             <Name>TSPC_PACS_4_13</Name>
-            <Description>Changeable Available Audio Contexts Characteristic (M)</Description>
+            <Description>Changeable Available Audio Contexts Characteristic (C.13)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PACS_4_14</Name>
@@ -27255,7 +27451,7 @@
             <Value>-1</Value>
           </Row>
           <Row>
-            <Name>TSPX_broadcast_code</Name>
+            <Name>TSPX_Broadcast_Code</Name>
             <Description>The 16 bytes Broadcast Code. (Default: 0X0102680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0102680553F1415AA265BBAFC6EA03B8</Value>
@@ -28249,22 +28445,24 @@
             <Description>Incoming call target ID which is comprised of URI prefix like - tel: (Default: tel:+19991111234)</Description>
             <Type>IA5STRING</Type>
             <Value>tel:+19991111234</Value>
+            <Helper>TRUE</Helper>
           </Row>
           <Row>
             <Name>TSPX_Incoming_friendly_name</Name>
             <Description>Friendly name for the incoming call. The format is comprised of URI prefix like - tel: (Default: tel:+19991110011)</Description>
             <Type>IA5STRING</Type>
             <Value>tel:+19991110011</Value>
+            <Helper>TRUE</Helper>
           </Row>
           <Row>
             <Name>TSPX_Outgoing_Remote_Caller_URI</Name>
-            <Description>Outgoing Remote Caller-ID. The format is comprised of URI prefix like - tel: (Default: tel:+19991111234)</Description>
+            <Description>URI of remote device to call. The format is comprised of URI prefix like - tel: (Default: tel:+19991111234)</Description>
             <Type>IA5STRING</Type>
             <Value>tel:+19991111234</Value>
           </Row>
           <Row>
             <Name>TSPX_Signal_Strength_Reporting_Interval</Name>
-            <Description>Bearer Signal Strength Reporting Interval. Lower Tester utilizes this interval to configure IUT's new Signal Strength Reporting Interval (Default: 10s)</Description>
+            <Description>Signal Strength Reporting Interval. Lower Tester utilizes this interval to configure IUT's new Signal Strength Reporting Interval (Default: 10s)</Description>
             <Type>INTEGER</Type>
             <Value>10</Value>
           </Row>
@@ -28392,6 +28590,12 @@
             <Name>TSPC_TMAP_11_1</Name>
             <Description>TMAP v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_11_2</Name>
+            <Description>TMAP v1.0.2 (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -28539,6 +28743,54 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_16_7</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Source) (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_8</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Source) (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_9</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Source) (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_10</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Source) (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_11</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Sink) (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_12</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Sink) (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_13</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Sink) (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_16_14</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Sink) (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_17_1</Name>
             <Description>Configuration A: 1 bidirectional stream between CG and CT (M)</Description>
             <Value>TRUE</Value>
@@ -28626,6 +28878,12 @@
             <Name>TSPC_TMAP_31_1</Name>
             <Description>TMAP v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_31_2</Name>
+            <Description>TMAP v1.0.2 (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -28905,6 +29163,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_51_2</Name>
+            <Description>TMAP v1.0.2 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_52_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>TRUE</Value>
@@ -29127,6 +29391,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_71_2</Name>
+            <Description>TMAP v1.0.2 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_72_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>TRUE</Value>
@@ -29265,6 +29535,54 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_76_7</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Sink) (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_8</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Sink) (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_9</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Sink) (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_10</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Sink) (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_11</Name>
+            <Description>16_1_3 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Source) (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_12</Name>
+            <Description>16_2_3 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Source) (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_13</Name>
+            <Description>32_1_3 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 3 RTN, 15 Max_Transport_Latency (Audio Source) (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_76_14</Name>
+            <Description>32_2_3 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 3 RTN, 20 Max_Transport_Latency (Audio Source) (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_77_1</Name>
             <Description>1 audio output (M)</Description>
             <Value>TRUE</Value>
@@ -29316,6 +29634,12 @@
             <Name>TSPC_TMAP_91_1</Name>
             <Description>TMAP v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_91_2</Name>
+            <Description>TMAP v1.0.2 (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -29580,6 +29904,12 @@
             <Name>TSPC_TMAP_111_1</Name>
             <Description>TMAP v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_111_2</Name>
+            <Description>TMAP v1.0.2 (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -29863,6 +30193,12 @@
             <Description>LE 2M PHY (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_131_2</Name>
+            <Description>No longer used. (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_140_1</Name>
@@ -30242,7 +30578,7 @@
             <Value>03020100</Value>
           </Row>
           <Row>
-            <Name>TSPX_broadcast_code</Name>
+            <Name>TSPX_Broadcast_Code</Name>
             <Description>The 16 bytes Broadcast Code. (Default: 0X0102680553F1415AA265BBAFC6EA03B8)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0102680553F1415AA265BBAFC6EA03B8</Value>
@@ -30311,6 +30647,12 @@
             <Description>Outgoing Phone Number</Description>
             <Type>IA5STRING</Type>
             <Value>+1234567890</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Call_Volume_Minimum</Name>
+            <Description>Minimum call volume allowed by the CG IUT. (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
           </Row>
           <Row>
             <Name>TSPX_gvas_va_name</Name>
@@ -30383,9 +30725,9 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_5_4</Name>
-            <Description>LE Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCP_6_1</Name>
@@ -30443,13 +30785,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_6_10</Name>
-            <Description>LE Secure Connections (Peripheral) (C.6)</Description>
+            <Description>LE Secure Connections (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCP_6_11</Name>
-            <Description>Out of Band (Peripheral) (C.6)</Description>
+            <Description>Out of Band (LE) (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30461,7 +30803,19 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_6_13</Name>
-            <Description>Peripheral (C.1)</Description>
+            <Description>Peripheral (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_14</Name>
+            <Description>Central (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_15</Name>
+            <Description>LE Extended Advertising (C.9)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30857,7 +31211,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_18_1</Name>
-            <Description>Central (C.2)</Description>
+            <Description>Central (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_1b</Name>
+            <Description>Peripheral (C.9)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30935,13 +31295,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_18_14</Name>
-            <Description>LE Secure Connections (Central) (C.7)</Description>
+            <Description>LE Secure Connections (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCP_18_15</Name>
-            <Description>Out of Band (Central) (C.7)</Description>
+            <Description>Out of Band (LE) (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30949,6 +31309,12 @@
             <Name>TSPC_VCP_18_16</Name>
             <Description>Out-of-Band (BR/EDR) (C.8)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_17</Name>
+            <Description>LE Extended Advertising (C.10)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>

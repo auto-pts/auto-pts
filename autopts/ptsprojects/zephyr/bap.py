@@ -55,7 +55,7 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_STREAMING_DATA_CONFIRMATION_METHOD", "By Playing")
-    pts.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
+    pts.set_pixit("BAP", "TSPX_Broadcast_Code", BROADCAST_CODE)
     """
     TODO this should be set to -1 but PTS is return error when setting this with RPC so leave
     this on workspace default
@@ -82,7 +82,7 @@ def set_pixits(ptses):
     pts2.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_STREAMING_DATA_CONFIRMATION_METHOD", "By Playing")
-    pts2.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
+    pts2.set_pixit("BAP", "TSPX_Broadcast_Code", BROADCAST_CODE)
 
 
 def test_cases(ptses):

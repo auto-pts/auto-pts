@@ -65,7 +65,6 @@ def set_pixits(ptses):
     pts.set_pixit("HAS", "TSPX_security_enabled", "TRUE")
     pts.set_pixit("HAS", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts.set_pixit("HAS", "TSPX_Connection_Interval", "120")
-    pts.set_pixit("HAS", "TSPX_largest_preset_index", str(max_index))
     pts.set_pixit("HAS", "TSPX_num_presets", str(num_presets))
     pts.set_pixit("HAS", "TSPX_available_preset_index", available_presets_str)
     pts.set_pixit("HAS", "TSPX_unavailable_preset_index", unavailable_presets_str)
