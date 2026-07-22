@@ -101,8 +101,6 @@ def read_supported_commands(service):
     data_bytes = tuple_data[0] if isinstance(tuple_data, tuple) and tuple_data else tuple_data
     supported_cmds_value = int.from_bytes(data_bytes, 'little')
 
-    if not isinstance(stack.supported_cmds, dict):
-        stack.supported_cmds = {}
     stack.supported_cmds[svc_key] = supported_cmds_value
 
 
