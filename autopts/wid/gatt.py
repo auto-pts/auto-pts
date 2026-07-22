@@ -1084,13 +1084,17 @@ def hdl_wid_93(params: WIDParams):
         addr_type, addr = (btp.pts_addr_type_get(), btp.pts_addr_get())
 
     db = gatt_server_fetch_db().db
-    handles = [
-        db[i].handle + 1
-        for i in range(1, len(db) + 1)
-        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify
-    ]
+    handles = []
 
-    btp.gatts_notify_mult(addr_type, addr, len(handles), handles)
+    for i in range(1, len(db) + 1):
+        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
+            handles.append(db[i].handle + 1)
+            # Limit to max 2 handles to ensure the ATT_MULTIPLE_HANDLE_VALUE_NTF PDU
+            # fits within ATT_MTU without truncating HLV tuples.
+            if len(handles) == 2:
+                break
+
+    btp.gatts_notify_mult(addr_type, addr, 2, handles)
     return True
 
 
@@ -2024,8 +2028,9 @@ def hdl_wid_304(params: WIDParams):
 
 
 def hdl_wid_308(params: WIDParams):
-    # description: Please do not send an ATT_Handle_value_Multiple_notification to Lower tester until timeout(30s).
-
+    """
+    Please do not send an ATT_Handle_value_Multiple_notification to Lower tester until timeout(30s).
+    """
     # PTS description is bit odd because in test spec UT is expected to request sending
     # ATT_Handle_value_Multiple_notification and IUT should ignore that.
 
@@ -2035,17 +2040,27 @@ def hdl_wid_308(params: WIDParams):
         addr_type, addr = (btp.pts_addr_type_get(), btp.pts_addr_get())
 
     db = gatt_server_fetch_db().db
-    handles = [
-        db[i].handle + 1
-        for i in range(1, len(db) + 1)
-        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify
-    ]
+    handles = []
 
+    for i in range(1, len(db) + 1):
+        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
+            handles.append(db[i].handle + 1)
+            # Limit to max 2 handles to ensure the ATT_MULTIPLE_HANDLE_VALUE_NTF PDU
+            # fits within ATT_MTU without truncating HLV tuples.
+            if len(handles) == 2:
+                break
     # IUT may fail here (or silently ignore and return success)
     try:
-        btp.gatts_notify_mult(addr_type, addr, len(handles), handles)
-    except BTPError:
-        pass
+        btp.gatts_notify_mult(addr_type, addr, 2, handles)
+    except BTPError as e:
+        if len(handles) < 2:
+            logging.error(
+                "gatts_notify_mult failed due to insufficient handles. The database contains %d"
+                " characteristic(s) with notify properties, but at least 2 are required. BTPError: %s", len(handles), e
+            )
+            return False
+
+        logging.error("BTPError occured but is safe to ignore with valid setup")
 
     return True
 
