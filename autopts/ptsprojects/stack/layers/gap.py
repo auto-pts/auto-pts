@@ -489,7 +489,7 @@ class Gap:
     def set_connection_sec_level(self, addr, level):
         self.connections[addr].sec_level = level
 
-    def gap_wait_for_sec_lvl_change(self, level, timeout=5, addr=None):
+    def gap_wait_for_sec_lvl_change(self, level=None, min_level=None, timeout=5, addr=None):
         if not self.is_connected(addr=addr):
             raise Exception("Not connected")
 
@@ -498,8 +498,16 @@ class Gap:
         else:
             addr, conn = list(self.connections.items())[0]
 
-        if conn.sec_level != level:
-            wait_for_event(timeout, lambda: conn.sec_level == level)
+        def is_met():
+            # min_level takes precedence if provided
+            if min_level is not None:
+                return conn.sec_level >= min_level
+            if level is not None:
+                return conn.sec_level == level
+            raise ValueError("Must specify either 'level' or 'min_level'")
+
+        if not is_met():
+            wait_for_event(timeout, is_met)
 
         return conn.sec_level
 
