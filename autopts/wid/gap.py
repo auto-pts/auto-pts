@@ -2915,3 +2915,12 @@ def hdl_wid_357(_: WIDParams):
         return False
 
     return True
+
+
+def hdl_wid_249(_: WIDParams):
+    '''
+    Please initiate the bonding procedure in bondable mode with Dedicated Bonding specified in the
+    Authentication_Requirements.
+    '''
+    btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_2)
+    return True
