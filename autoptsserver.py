@@ -52,6 +52,7 @@ import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
+from autopts.types import PTSProxy
 from autopts.utils import (
     CounterWithFlag,
     active_hub_server_replug_usb,
@@ -432,7 +433,7 @@ def delete_workspaces():
     recursive(os.path.join(PROJECT_DIR, 'autopts/workspaces'), init_depth)
 
 
-class Server(threading.Thread):
+class Server(threading.Thread, PTSProxy):
     def __init__(self, finish_count, _args=None):
         init_logging(_args)
         threading.Thread.__init__(self, daemon=True)
