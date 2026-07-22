@@ -72,7 +72,6 @@ def set_pixits(ptses):
     pts.set_pixit("HAP", "TSPX_Periodic_Adv_Interval_max", "600")
     pts.set_pixit("HAP", "TSPX_TARGET_LATENCY", "TARGET_BALANCED_LATENCY_RELIABILITY")
     pts.set_pixit("HAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
-    pts.set_pixit("HAP", "TSPX_largest_preset_index", str(max_index))
     pts.set_pixit("HAP", "TSPX_num_presets", str(num_presets))
 
 

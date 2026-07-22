@@ -52,7 +52,7 @@ def set_pixits(ptses):
     pts.set_pixit("BASS", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("BASS", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("BASS", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
-    pts.set_pixit("BASS", "TSPX_broadcast_code", broadcast_code)
+    pts.set_pixit("BASS", "TSPX_Broadcast_Code", broadcast_code)
     pts.set_pixit("BASS", "TSPX_Sync_Timeout", "8000")
 
     if len(ptses) < 2:
@@ -71,7 +71,7 @@ def set_pixits(ptses):
     pts2.set_pixit("BASS", "TSPX_delete_ltk", "TRUE")
     pts2.set_pixit("BASS", "TSPX_security_enabled", "FALSE")
     pts2.set_pixit("BASS", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
-    pts2.set_pixit("BASS", "TSPX_broadcast_code", broadcast_code)
+    pts2.set_pixit("BASS", "TSPX_Broadcast_Code", broadcast_code)
     pts.set_pixit("BASS", "TSPX_Sync_Timeout", "8000")
 
 
