@@ -2062,7 +2062,7 @@ def hdl_wid_400(params: WIDParams):
         addr = btp.pts_addr_get()
 
     stack = get_stack()
-    gap_ev = stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
+    gap_ev = stack.gap.gap_wait_for_sec_lvl_change(min_level=1, timeout=30, addr=addr)
     if gap_ev is None:
         return False
 
