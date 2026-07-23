@@ -19,7 +19,7 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import L2CapChannelStatusCode, get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
@@ -152,18 +152,6 @@ def l2cap_conn_v2(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=
     logging.debug("id %r", chan_ids)
 
     return chan_ids
-
-
-l2cap_result_str = {0: "Success",
-                    2: "LE_PSM not supported",
-                    4: "Insufficient Resources",
-                    5: "insufficient authentication",
-                    6: "insufficient authorization",
-                    7: "insufficient encryption key size",
-                    8: "insufficient encryption",
-                    9: "Invalid Source CID",
-                    10: "Source CID already allocated",
-                    }
 
 
 def l2cap_conn_rsp():
@@ -400,11 +388,14 @@ def l2cap_disconnected_ev(l2cap, data, data_len):
 
     hdr_fmt = '<HBHB6s'
     res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
-    result_str = l2cap_result_str[res]
-    l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, result_str)
+    status = L2CapChannelStatusCode(res)
+    l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, status)
+    if status != L2CapChannelStatusCode.SUCCESS:
+        # L2CAP connection request failed
+        l2cap.conn_req_reject_reason = status
 
     logging.debug("id:%r on psm:%r, addr %r type %r, res %r",
-                  chan_id, psm, bd_addr, bd_addr_type, result_str)
+                  chan_id, psm, bd_addr, bd_addr_type, status.name)
 
 
 def l2cap_data_rcv_ev(l2cap, data, data_len):

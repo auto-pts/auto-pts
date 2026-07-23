@@ -14,7 +14,7 @@
 # more details.
 #
 import logging
-from enum import Enum, auto
+from enum import Enum, IntEnum, auto
 
 from autopts.ptsprojects.stack.common import wait_for_event
 
@@ -24,6 +24,20 @@ class L2capChanState(Enum):
     CONNECTING = auto()
     CONNECTED = auto()
     DISCONNECTED = auto()
+
+
+class L2CapChannelStatusCode(IntEnum):
+    SUCCESS = 0x0000
+    LE_PSM_NOT_SUPPORTED = 0x0002
+    INSUFFICIENT_RESOURCES = 0x0004
+    INSUFFICIENT_AUTHENTICATION = 0x0005
+    INSUFFICIENT_AUTHORIZATION = 0x0006
+    INSUFFICIENT_ENCRYPTION_KEY_SIZE = 0x0007
+    INSUFFICIENT_ENCRYPTION = 0x0008
+    INVALID_SOURCE_CID = 0x0009
+    SOURCE_CID_ALREADY_ALLOCATED = 0x000a
+    UNACCEPTABLE_PARAMETERS = 0x000b
+    INVALID_PARAMETERS = 0x000c
 
 
 class L2capChan:
@@ -90,26 +104,26 @@ class L2capChan:
 
 
 class L2cap:
-    """L2CAP layer - manages L2CAP channels """
-    connection_success = 0x0000
-    unknown_le_psm = 0x0002
-    no_resources = 0x0004
-    insufficient_authen = 0x0005
-    insufficient_author = 0x0006
-    insufficient_key_sz = 0x0007
-    insufficient_enc = 0x0008
-    invalid_source_cid = 0x0009
-    source_cid_already_used = 0x000a
-    unacceptable_parameters = 0x000b
-    invalid_parameters = 0x000c
+    """
+    L2CAP layer - manages L2CAP channels.
 
-    def __init__(self, psm, initial_mtu):
-        # PSM used for testing for Client role
+    Attributes:
+        psm (int): Protocol/Service Multiplexer used for testing client role.
+        initial_mtu (int): Initial Maximum Transmission Unit.
+        channels (list[L2capChan]): List of currently active L2CAP channels.
+        hold_credits (int): Number of flow control credits currently held.
+        num_channels (int): Default or maximum number of channels.
+        conn_req_reject_reason (L2CapChannelStatusCode | None): The reason a
+            connection request was rejected, or None if no rejection occurred.
+    """
+
+    def __init__(self, psm: int, initial_mtu: int):
         self.psm = psm
         self.initial_mtu = initial_mtu
-        self.channels = []
+        self.channels: list[L2capChan] = []
         self.hold_credits = 0
         self.num_channels = 2
+        self.conn_req_reject_reason: L2CapChannelStatusCode | None = None
 
     def chan_lookup_id(self, chan_id):
         """ lookup L2CAP channel with specified channel ID"""
@@ -210,6 +224,22 @@ class L2cap:
             return True
 
         return wait_for_event(timeout, lambda: not self.is_connected(chan_id) and not self.is_connecting(chan_id))
+
+    def wait_for_conn_req_reject_ev(self, timeout: int = 30):
+        """
+        Waits for a L2CAP connection request to be rejected.
+
+        Args:
+            timeout (int): The maximum time to wait for the event in seconds.
+
+        Returns:
+            bool: True if the event occurred within the timeout, False otherwise.
+        """
+
+        if self.conn_req_reject_reason:
+            return True
+
+        return wait_for_event(timeout, lambda: self.conn_req_reject_reason is not None)
 
     def wait_for_connection(self, chan_id, timeout=5):
         """ Wait for channel connection """
