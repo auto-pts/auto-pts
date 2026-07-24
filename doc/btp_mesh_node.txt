@@ -1382,6 +1382,22 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x79 - Read Supported Events command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported events>
+                (variable)
+
+                Each bit in response is a flag indicating if event with
+                opcode matching bit number is supported.
+                Bit set to 1 means that event is supported.
+                If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that event
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - Output number action Event
 

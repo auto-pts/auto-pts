@@ -48,16 +48,26 @@ from autopts.ptsprojects.stack.layers.vocs import VOCS
 
 # GENERATOR append 1
 from autopts.ptsprojects.stack.synch import Synch
-from autopts.pybtp import common
+from autopts.pybtp import common, defs
 
 _get_stack = None
 log = logging.debug
+
+SERVICE_ID_TO_LAYER = {
+    defs.BTP_SERVICE_ID_GAP: "gap",
+    defs.BTP_SERVICE_ID_GATT: "gatt",
+    defs.BTP_SERVICE_ID_GATTC: "gatt_cl",
+    defs.BTP_SERVICE_ID_L2CAP: "l2cap",
+    defs.BTP_SERVICE_ID_MESH: "mesh",
+    defs.BTP_SERVICE_ID_BAP: "bap",
+}
 
 
 class Stack:
     def __init__(self):
         self.supported_svcs = 0
-        self.supported_cmds = 0
+        self.supported_cmds = {}
+        self.supported_events = {}
         self.synch = None
 
         self.gap = None
@@ -91,30 +101,115 @@ class Stack:
         self.csis = None
         self.rfcomm = None
         # GENERATOR append 2
-        self.supported_svcs_cmds = common.supported_svcs_cmds
 
     def is_svc_supported(self, svc):
-        svc_value = self.supported_svcs_cmds.get(svc, {}).get("service", 0)
+        svc_value = common.supported_svcs_cmds.get(svc, {}).get("service", 0)
         return (self.supported_svcs & svc_value) > 0
+
+    def _layer_name_for_service(self, service_id):
+        """
+        Return the stack layer attribute name for a BTP service id.
+
+        Raises:
+            ValueError: If this stack does not expose a layer for service_id.
+        """
+        try:
+            return SERVICE_ID_TO_LAYER[service_id]
+        except KeyError as err:
+            raise ValueError(
+                f"No stack layer mapping for BTP service id {service_id}"
+            ) from err
+
+    def _layer_for_service(self, service_id):
+        """
+        Return the initialized stack layer for a BTP service id.
+
+        Raises:
+            ValueError: If this stack does not expose a layer for service_id.
+            RuntimeError: If the layer is mapped but has not been initialized.
+        """
+        layer_name = self._layer_name_for_service(service_id)
+        layer = getattr(self, layer_name, None)
+        if layer is None:
+            raise RuntimeError(
+                f"Stack layer {layer_name!r} is not initialized "
+                f"for BTP service id {service_id}"
+            )
+
+        return layer
+
+    def _layer_is_initialized(self, service_id):
+        """
+        Return True when service_id has an initialized exposed layer.
+        """
+        layer_name = SERVICE_ID_TO_LAYER.get(service_id)
+        return (layer_name is not None and
+                getattr(self, layer_name, None) is not None)
+
+    def _set_layer_bitmap(self, service_id, bitmap_name, bitmap):
+        """
+        Set a supported command/event bitmap on an initialized layer.
+
+        The caller must only use this once the layer is expected to exist. Missing
+        mappings or missing layer instances are treated as programming errors.
+        """
+        setattr(self._layer_for_service(service_id), bitmap_name, bitmap)
+
+    def set_supported_commands(self, service_id, bitmap):
+        """
+        Store the supported commands bitmap for a BTP service.
+
+        If the matching stack layer is already initialized, expose the bitmap on
+        that layer as supported_commands. Otherwise, keep it in supported_cmds so
+        the layer init path can apply it later.
+        """
+        self.supported_cmds[service_id] = bitmap
+        if self._layer_is_initialized(service_id):
+            self._set_layer_bitmap(service_id, "supported_commands", bitmap)
+
+    def set_supported_events(self, service_id, bitmap):
+        """
+        Store the supported events bitmap for a BTP service.
+
+        If the matching stack layer is already initialized, expose the bitmap on
+        that layer as supported_events. Otherwise, keep it in supported_events so
+        the layer init path can apply it later.
+        """
+        self.supported_events[service_id] = bitmap
+        if self._layer_is_initialized(service_id):
+            self._set_layer_bitmap(service_id, "supported_events", bitmap)
+
+    def _apply_layer_capabilities(self, service_id):
+        """
+        Apply cached command/event bitmaps to an initialized stack layer.
+        """
+        self._set_layer_bitmap(service_id, "supported_commands",
+                               self.supported_cmds.get(service_id, 0))
+        self._set_layer_bitmap(service_id, "supported_events",
+                               self.supported_events.get(service_id, 0))
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
                  le_supp_feat=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
                        svcs, uri, periodic_data, le_supp_feat)
+        self._apply_layer_capabilities(defs.BTP_SERVICE_ID_GAP)
 
     def mesh_init(self, uuid, uuid_lt2=None):
         if self.mesh:
             return
 
         self.mesh = Mesh(uuid, uuid_lt2)
+        self._apply_layer_capabilities(defs.BTP_SERVICE_ID_MESH)
 
     def l2cap_init(self, psm, initial_mtu):
         self.l2cap = L2cap(psm, initial_mtu)
+        self._apply_layer_capabilities(defs.BTP_SERVICE_ID_L2CAP)
 
     def gatt_init(self):
         self.gatt = Gatt()
         self.gatt_cl = self.gatt
+        self._apply_layer_capabilities(defs.BTP_SERVICE_ID_GATT)
 
     def vcs_init(self):
         self.vcs = VCS()
@@ -136,6 +231,7 @@ class Stack:
 
     def bap_init(self):
         self.bap = BAP()
+        self._apply_layer_capabilities(defs.BTP_SERVICE_ID_BAP)
 
     def ccp_init(self):
         self.ccp = CCP()
@@ -160,6 +256,7 @@ class Stack:
 
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
+        self._apply_layer_capabilities(defs.BTP_SERVICE_ID_GATTC)
 
     def synch_init(self):
         if not self.synch:
