@@ -30,6 +30,7 @@ from autopts.bot import common
 from autopts.bot.common_features import github
 from autopts.client import PtsServer
 from autopts.config import AUTOPTS_ROOT_DIR
+from autopts.winutils import kill_all_processes
 
 log = logging.debug
 
@@ -413,6 +414,8 @@ def pull_server_logs(args, tmp_dir, xml_folder):
     def _pull_logs(_pts):
         last_xml = ('', '')
         file_list = _pts.list_workspace_tree(workspace_dir)
+
+        kill_all_processes('Ellisys.BluetoothAnalyzer.exe')
 
         if args.cron_optim:
             _pts.shutdown_pts_bpv()
