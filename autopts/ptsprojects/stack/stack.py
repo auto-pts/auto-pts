@@ -57,7 +57,7 @@ log = logging.debug
 class Stack:
     def __init__(self):
         self.supported_svcs = 0
-        self.supported_cmds = 0
+        self.supported_cmds = {}
         self.synch = None
 
         self.gap = None
