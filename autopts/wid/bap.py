@@ -30,6 +30,7 @@ from autopts.pybtp.btp import (
     pts_addr_get,
     pts_addr_type_get,
 )
+from autopts.pybtp.defs import BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2
 from autopts.pybtp.types import (
     CODEC_CONFIG_SETTINGS,
     FRAME_DURATION_STR_TO_CODE,
@@ -963,7 +964,7 @@ def hdl_wid_114(params: WIDParams):
     presentation_delay = 40000
     subgroups = 1
 
-    if params.test_case_name.startswith("BAP/BSRC/SCC/BV-38-C"):
+    if stack.is_cmd_supported('BAP', BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2):
         btp.bap_broadcast_source_setup_v2(broadcast_id, streams_per_subgroup, subgroups,
                                           coding_format, vid, cid, codec_ltvs_bytes,
                                           bas_config.sdu_interval_us,
@@ -2667,11 +2668,19 @@ def hdl_wid_380(_: WIDParams):
     presentation_delay = 40000
     streams_per_subgroup = 2
     subgroups = 1
-    broadcast_id = btp.bap_broadcast_source_setup(
-        streams_per_subgroup, subgroups, coding_format, vid, cid,
-        codec_ltvs_bytes, *qos_config, presentation_delay)
 
-    stack.bap.broadcast_id = broadcast_id
+    if stack.is_cmd_supported('BAP', BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2):
+        broadcast_id = stack.bap.broadcast_id
+
+        btp.bap_broadcast_source_setup_v2(broadcast_id, streams_per_subgroup, subgroups,
+                                          coding_format, vid, cid, codec_ltvs_bytes, *qos_config,
+                                          presentation_delay)
+    else:
+        broadcast_id = btp.bap_broadcast_source_setup(streams_per_subgroup, subgroups,
+                                                      coding_format, vid, cid, codec_ltvs_bytes,
+                                                      *qos_config, presentation_delay)
+
+        stack.bap.broadcast_id = broadcast_id
 
     btp.bap_broadcast_adv_start(broadcast_id)
 
