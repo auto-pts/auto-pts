@@ -8,6 +8,8 @@ GATT/CL/GAR/BV-11-C: https://github.com/zephyrproject-rtos/zephyr/issues/74485
 GMCS/SR/SPN/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/65062
 GMCS/SR/SPN/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/issues/65062
 
+IOPT/OTS/SR/GATTDB/BV-01-I: https://github.com/zephyrproject-rtos/zephyr/issues/71754
+
 MESH/CL/DPROX/BV-02-C: ES-24237
 MESH/CL/PROX/BV-11-C: ES-24124
 MESH/CL/PROX/BV-12-C: ES-24124
