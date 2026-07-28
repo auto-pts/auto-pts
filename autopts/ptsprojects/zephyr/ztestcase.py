@@ -43,6 +43,7 @@ class ZTestCase(TestCaseLT1):
             iut.start(self)
             # Await IUT ready event
             iut.wait_iut_ready_event(False)
+            iut.get_supported_svcs()
 
             if iut.iut_mode == "native":
                 iut.remove_flash_bin()
