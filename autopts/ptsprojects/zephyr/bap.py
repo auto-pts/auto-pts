@@ -56,12 +56,8 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_STREAMING_DATA_CONFIRMATION_METHOD", "By Playing")
     pts.set_pixit("BAP", "TSPX_Broadcast_Code", BROADCAST_CODE)
-    """
-    TODO this should be set to -1 but PTS is return error when setting this with RPC so leave
-    this on workspace default
-    pts.set_pixit("BAP", "TSPX_Broadcast_ID", "0")
-    """
-    pts.set_pixit("BAP", "TSPX_Broadcast_ID_2", "0")
+    pts.set_pixit("BAP", "TSPX_Broadcast_ID", BROADCAST_ID)
+    pts.set_pixit("BAP", "TSPX_Broadcast_ID_2", BROADCAST_ID_2)
 
     if len(ptses) < 2:
         return
@@ -135,6 +131,8 @@ def test_cases(ptses):
                       TestFunc(stack.ascs_init),
                       TestFunc(stack.bap_init),
                       TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),
+                      TestFunc(lambda: stack.bap.set_broadcast_id(BROADCAST_ID)),
+                      TestFunc(lambda: stack.bap.set_broadcast_id_2(BROADCAST_ID_2)),
                       TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
                       ]
