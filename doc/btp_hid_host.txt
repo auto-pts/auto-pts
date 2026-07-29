@@ -1,0 +1,309 @@
+HID Host Service (ID 0x29)
+==========================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Register command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to register the HID host, including the
+		HID SDP service record and the HID host application, so that
+		the IUT can initiate and accept HID connections to and from a
+		HID device.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Unregister command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to unregister the previously registered
+		HID host.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Connect command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to establish a HID connection (the HID
+		Control and Interrupt L2CAP channels) to the peer HID device.
+		Address is the peer BD_ADDR.
+		A Connected Event shall be expected after issuing this command
+		once the HID connection has been established.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05 - Disconnect command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to disconnect an existing HID connection
+		to the peer HID device.
+		Address is the peer BD_ADDR.
+		A Disconnected Event shall be expected after issuing this
+		command once the HID connection has been torn down.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06 - Get Report command
+
+		Controller Index:	<controller id>
+		Command parameters:	Report_Type (1 octet)
+					Report_ID (1 octet)
+					Buffer_Size (2 octets)
+		Response parameters:	<none>
+
+		This command is used to send a HID GET_REPORT request to the
+		connected HID device on the Control channel.
+		Report_Type identifies the type of the requested report (for
+		example Input, Output or Feature).
+		Report_ID is the identifier of the requested report. A device
+		whose report descriptor uses report IDs rejects a request that
+		carries no report ID.
+		Buffer_Size is the maximum size in octets of the report the
+		host is able to accept, or 0 to omit the size field from the
+		request.
+		A Get Report Event shall be expected once the HID device has
+		answered the transaction.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07 - Set Report command
+
+		Controller Index:	<controller id>
+		Command parameters:	Report_Type (1 octet)
+					Data_Length (2 octets)
+					Data (variable)
+		Response parameters:	<none>
+
+		This command is used to send a HID SET_REPORT request to the
+		connected HID device on the Control channel.
+		Report_Type identifies the type of the report being set (for
+		example Input, Output or Feature).
+		Data_Length is the length in octets of the report Data that
+		follows.
+		Data is the report payload. For a device whose report
+		descriptor uses report IDs, the report ID is the first octet of
+		Data.
+		A Set Report Event shall be expected once the HID device has
+		answered the transaction.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08 - Get Protocol command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to send a HID GET_PROTOCOL request to the
+		connected HID device on the Control channel, asking which
+		protocol mode (Boot or Report) the device is currently using.
+		A Get Protocol Event shall be expected once the HID device has
+		answered the transaction.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x09 - Set Protocol command
+
+		Controller Index:	<controller id>
+		Command parameters:	Protocol (1 octet)
+		Response parameters:	<none>
+
+		This command is used to send a HID SET_PROTOCOL request to the
+		connected HID device on the Control channel, selecting the
+		protocol mode the device shall use.
+
+		Valid Protocol values:
+			0x00 - Boot Protocol mode
+			0x01 - Report Protocol mode
+
+		A Set Protocol Event shall be expected once the HID device has
+		answered the transaction.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0a - Send Output Report command
+
+		Controller Index:	<controller id>
+		Command parameters:	Data_Length (2 octets)
+					Data (variable)
+		Response parameters:	<none>
+
+		This command is used to send a HID output report to the
+		connected HID device over the Interrupt channel. Unlike the Set
+		Report command this is an unacknowledged DATA transfer, so no
+		handshake is returned by the device.
+		Data_Length is the length in octets of the report Data that
+		follows.
+		Data is the report payload. For a device whose report
+		descriptor uses report IDs, the report ID is the first octet of
+		Data, and the payload size must match the size declared for
+		that report in the device report descriptor.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0b - Suspend command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to send a HID_CONTROL SUSPEND control
+		operation to the connected HID device, indicating that the host
+		is entering a reduced power state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0c - Exit Suspend command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to send a HID_CONTROL EXIT_SUSPEND control
+		operation to the connected HID device, indicating that the host
+		is leaving the reduced power state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0d - Virtual Cable Unplug command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to send a HID VIRTUAL CABLE UNPLUG control
+		operation to the connected HID device, requesting that the
+		virtual cable connection between the HID host and the HID
+		device be removed.
+		Address is the peer BD_ADDR.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0e - Sniff Subrating command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Max_Latency (2 octets)
+					Min_Remote_Timeout (2 octets)
+					Min_Local_Timeout (2 octets)
+		Response parameters:	<none>
+
+		This command is used to request sniff subrating on the BR/EDR
+		ACL link to the peer HID device.
+		Address is the peer BD_ADDR.
+		Max_Latency, Min_Remote_Timeout and Min_Local_Timeout are
+		expressed in baseband slots of 0.625 ms and are passed to
+		HCI_Sniff_Subrating unmodified.
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Connected Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address (6 octets)
+
+		This event indicates that a HID connection to the peer HID
+		device has been established.
+		Address is the peer BD_ADDR.
+
+	Opcode 0x81 - Disconnected Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address (6 octets)
+
+		This event indicates that the HID connection to the peer HID
+		device has been disconnected.
+		Address is the peer BD_ADDR.
+
+	Opcode 0x82 - Input Report Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Data_Length (2 octets)
+					Data (Data_Length octets)
+
+		This event indicates that an input report has been received
+		from the connected HID device on the Interrupt channel.
+		Data_Length is the length in octets of the report Data that
+		follows.
+		Data is the received report payload.
+
+	Opcode 0x83 - Get Report Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Result_Code (1 octet)
+					Report_Type (1 octet)
+					Data_Length (2 octets)
+					Data (Data_Length octets)
+
+		This event reports the outcome of a Get Report command.
+		Result_Code is the HID handshake result returned by the device,
+		0x00 meaning successful.
+		Report_Type identifies the type of the returned report.
+		Data_Length is the length in octets of the report Data that
+		follows, and is 0 when the device rejected the request.
+		Data is the returned report payload.
+
+	Opcode 0x84 - Set Report Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Result_Code (1 octet)
+
+		This event reports the outcome of a Set Report command.
+		Result_Code is the HID handshake result returned by the device,
+		0x00 meaning successful.
+
+	Opcode 0x85 - Get Protocol Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Result_Code (1 octet)
+					Protocol (1 octet)
+
+		This event reports the outcome of a Get Protocol command.
+		Result_Code is the HID handshake result returned by the device,
+		0x00 meaning successful.
+		Protocol is the protocol mode reported by the device, 0x00 for
+		Boot Protocol mode and 0x01 for Report Protocol mode. It is
+		only valid when Result_Code is 0x00.
+
+	Opcode 0x86 - Set Protocol Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Result_Code (1 octet)
+
+		This event reports the outcome of a Set Protocol command.
+		Result_Code is the HID handshake result returned by the device,
+		0x00 meaning successful.
