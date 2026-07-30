@@ -659,13 +659,6 @@ def hdl_wid_108(params: WIDParams):
 
     stack = get_stack()
 
-    if params.test_case_name in ['GAP/SEC/SEM/BV-28-C', 'GAP/SEC/SEM/BV-42-C']:
-        if not stack.gap.delay_mmi:
-            # Note: this is part of a workaround related to PTS issue 136305 which
-            # is needed to properly handle two conflicting MMIs (208 and 227)
-            hdl_wid_227(params, 7)
-            stack.gap.delay_mmi = True
-
     if params.test_case_name in ['GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-51-C',
                                  'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-53-C',
                                  'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C']:
@@ -1285,16 +1278,7 @@ def hdl_wid_206(params: WIDParams):
     return True
 
 
-def hdl_wid_208(params: WIDParams):
-    stack = get_stack()
-
-    if params.test_case_name in ['GAP/SEC/SEM/BV-26-C']:
-        if not stack.gap.delay_mmi:
-            # Note: this is part of a workaround related to PTS issue 136305 which
-            # is needed to properly handle two conflicting MMIs (208 and 227)
-            hdl_wid_227(params, 7)
-            stack.gap.delay_mmi = True
-
+def hdl_wid_208(_: WIDParams):
     btp.gap_pair()
 
     return True
@@ -1345,7 +1329,7 @@ def hdl_wid_226(_: WIDParams):
     return True
 
 
-def hdl_wid_227(params: WIDParams, desc_handle=None):
+def hdl_wid_227(params: WIDParams):
     """
         Please triggers the authentication procedure on the IUT,
         by an L2CAP channel establishment or a GATT service request(Write Request to handle 0x0007).
@@ -1354,12 +1338,6 @@ def hdl_wid_227(params: WIDParams, desc_handle=None):
     # Should be removed if PTS fix this.
     stack = get_stack()
 
-    if params.test_case_name in ['GAP/SEC/SEM/BV-26-C', 'GAP/SEC/SEM/BV-28-C', 'GAP/SEC/SEM/BV-42-C']:
-        # Note: this is part of a workaround related to PTS issue 136305 which
-        # is needed to properly handle two conflicting MMIs (208 and 227)
-        if stack.gap.delay_mmi is True:
-            return True
-
     if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
         btp.gap_pair()
         return True
@@ -1367,7 +1345,7 @@ def hdl_wid_227(params: WIDParams, desc_handle=None):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    handle = btp.parse_handle_description(params.description) or desc_handle
+    handle = btp.parse_handle_description(params.description)
     if not handle:
         return False
 
@@ -1387,7 +1365,6 @@ def hdl_wid_227(params: WIDParams, desc_handle=None):
         if btp.verify_att_error("insufficient encryption"):
             btp.gap_pair()
 
-    stack.gap.delay_mmi = True
     return True
 
 
