@@ -1281,6 +1281,15 @@ def hdl_wid_109(params: WIDParams):
     return True
 
 
+def hdl_wid_130(_: WIDParams):
+    """
+    Please delete security key before connecting to PTS if IUT was bonded previously.
+    """
+    btp.gap_unpair()
+
+    return True
+
+
 def hdl_wid_140(params: WIDParams):
     """
     Please send Read Multiple Variable Length characteristic requests on the "ATT" using these handles:
