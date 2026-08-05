@@ -19,12 +19,14 @@ from binascii import hexlify
 from uuid import uuid4
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import MeshVals
-from autopts.wid import mesh_wid_hdl
+
+mesh_wid_hdl = get_wid_handler("mynewt", "mesh")
 
 
 def set_pixits(ptses):
@@ -604,7 +606,6 @@ def test_cases(ptses):
 
     test_case_name_list = pts.get_test_case_list('MESH')
     tc_list = []
-
     for tc_name in test_case_name_list:
         instance = ZTestCase('MESH', tc_name,
                              cmds=pre_conditions,

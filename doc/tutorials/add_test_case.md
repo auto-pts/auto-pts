@@ -210,19 +210,9 @@ It is convenient to create a separate file in your project for this, e.g:
 # profile_wid.py file
 import logging
 
-from autopts.wid import generic_wid_hdl
 from autopts.pybtp.types import WIDParams
 
 log = logging.debug
-
-
-def profile_wid_hdl(wid, description, test_case_name):
-    log(f'{profile_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-
-    # Try to find the WID handler in this file, if not found then proceed to
-    # the generic autopts/wid/profile.py.
-    return generic_wid_hdl(wid, description, test_case_name,
-                           [__name__, 'autopts.wid.profile'])
 
 
 def hdl_wid_104(_: WIDParams):
@@ -341,13 +331,13 @@ Synch Points mechanism.
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 384),
                                 SynchPoint("BAP/BA/BASS/BV-04-C", 345)])],
-                  generic_wid_hdl=bap_wid_hdl,
+                  generic_wid_hdl=get_wid_handler("zephyr", "bap"),
                   lt2="BAP/BA/BASS/BV-04-C_LT2"),
     ]
 
     test_cases_lt2 = [
         ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-04-C_LT2",
                        cmds=pre_conditions_lt2,
-                       generic_wid_hdl=bap_wid_hdl),
+                       generic_wid_hdl=get_wid_handler("zephyr", "bap")),
     ]
 ```

@@ -23,12 +23,6 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
-def mcp_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{mcp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 class SearchTypes:
     TRACK_NAME = 0x01
     ARTIST_NAME = 0x02
@@ -41,6 +35,7 @@ class SearchTypes:
     ONLY_GORUPS = 0x09
 
 
+# wid handlers section begin
 def hdl_wid_15(params: WIDParams):
     """Please confirm IUT received all error Result Codes -
     OPCODE NOT SUPPORTED(0x02), MEDIA PLAYER INACTIVE(0x03)

@@ -19,14 +19,8 @@ import time
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import AdType, Prop, WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def gap_wid_hdl(wid, description, test_case_name):
-    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.gap'])
 
 
 def hdl_wid_47(_: WIDParams):

@@ -18,14 +18,8 @@ import logging
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams, create_lc3_ltvs_bytes
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def bap_wid_hdl(wid, description, test_case_name):
-    log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.bap'])
 
 
 def hdl_wid_380(_: WIDParams):
