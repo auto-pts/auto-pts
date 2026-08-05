@@ -2477,6 +2477,109 @@ def hdl_wid_349(params: WIDParams):
     return True
 
 
+def hdl_wid_388(params: WIDParams):
+    """Please ADD Broadcast Source to Lower Tester with PA SYNC with PAST(01), BIS INDEX: 0x00000001"""
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    broadcaster_addr = lt2_addr_get()
+    broadcaster_addr_type = lt2_addr_type_get()
+
+    ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+    if ev is None:
+        return False
+
+    base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+    if base_found_ev is None:
+        return False
+
+    advertiser_sid = ev['advertiser_sid']
+    broadcast_id = ev['broadcast_id']
+    padv_interval = ev['padv_interval']
+    padv_sync = int(re.search(r'PAST\((\d+)\)', params.description).group(1), 10)
+    num_subgroups = 1
+    bis_sync = int(re.search(r'BIS INDEX:\s*(0x[0-9A-Fa-f]+)', params.description).group(1), 16)
+    metadata = base_found_ev['ltvs']
+    metadata_len = len(metadata)
+    subgroups = struct.pack('<IB', bis_sync, metadata_len) + metadata
+    btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
+                              padv_interval, num_subgroups, subgroups,
+                              broadcaster_addr_type, broadcaster_addr,
+                              addr_type, addr)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, PaSyncState.SYNC_INFO_REQ, timeout=10, remove=True)
+
+    if ev is None:
+        return False
+
+    stack.bap.set_brs_src_id(ev['src_id'])
+
+    btp.bap_send_past(ev['src_id'])
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, PaSyncState.SYNCED, remove=True)
+
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_389(params: WIDParams):
+    """Please MODIFY Broadcast Source to Lower Tester with PA SYNC with PAST(01), BIS INDEX: 0x00000001"""
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    broadcaster_addr = lt2_addr_get()
+    broadcaster_addr_type = lt2_addr_type_get()
+
+    ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+    if ev is None:
+        return False
+
+    base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+    if base_found_ev is None:
+        return False
+
+    broadcast_id = ev['broadcast_id']
+    padv_interval = ev['padv_interval']
+    src_id = stack.bap.brs_src_id
+    if src_id is None:
+        return False
+
+    padv_sync = int(re.search(r'PAST\((\d+)\)', params.description).group(1), 10)
+    num_subgroups = 1
+    bis_sync = int(re.search(r'BIS INDEX:\s*(0x[0-9A-Fa-f]+)', params.description).group(1), 16)
+    metadata = base_found_ev['ltvs']
+    metadata_len = len(metadata)
+    subgroups = struct.pack('<IB', bis_sync, metadata_len) + metadata
+    btp.bap_modify_broadcast_src(src_id, padv_sync, padv_interval,
+                                 num_subgroups, subgroups,
+                                 addr_type, addr)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, PaSyncState.SYNC_INFO_REQ, timeout=10, remove=True)
+    if ev is None:
+        return False
+
+    btp.bap_send_past(src_id)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, PaSyncState.SYNCED,
+        subgroups=subgroups, timeout=20, remove=True)
+    if ev is None:
+        return False
+
+    return True
+
+
 def hdl_wid_353(_: WIDParams):
     """Wait for Broadcast ISO request.
     """

@@ -18,6 +18,26 @@ from autopts.pybtp import defs
 
 
 class BAP:
+    """
+    Class that represents BAP runtime state used by WID handlers and stack events.
+
+    Attributes:
+        peers (dict[tuple[int, str], BAP.Peer]): Per-device peer state keyed by
+                                                 (addr_type, addr).
+        ase_configs (list): ASE configuration objects used across WID flows.
+        broadcast_id (int | None): BIG Broadcast_ID used by local Broadcast Source procedures.
+        broadcast_id_2 (int | None): Secondary BIG Broadcast_ID used by dual-broadcast
+                                     test flows.
+        brs_src_id (int | None): Broadcast Receive State src_id assigned by
+                                 Add Source/Receive State procedures.
+        broadcast_code (str): Broadcast_Code used for encrypted broadcast procedures.
+        hdl_wid_114_cnt (int): Counter for hdl_wid_114 invocations to select
+                               primary/secondary broadcast context.
+        event_queues (dict[int, list]): Event queues grouped by BTP event type.
+        event_handlers (dict[int, callable]): Event-specific handlers keyed by BTP
+                                              event type.
+    """
+
     class Peer:
         def __init__(self):
             self.discovery_completed = False
@@ -27,6 +47,7 @@ class BAP:
         self.ase_configs = []
         self.broadcast_id = None
         self.broadcast_id_2 = None
+        self.brs_src_id = None
         self.broadcast_code = ''
         self.hdl_wid_114_cnt = 0
         self.event_queues = {
@@ -62,6 +83,9 @@ class BAP:
 
     def set_broadcast_id_2(self, broadcast_id):
         self.broadcast_id_2 = broadcast_id
+
+    def set_brs_src_id(self, src_id):
+        self.brs_src_id = src_id
 
     def event_received(self, event_type, event_data_tuple):
         if event_type in self.event_handlers:
