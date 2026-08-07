@@ -814,7 +814,7 @@ Commands and responses:
 
                 This command is used to set scanning parameters for discovery.
                 Command should be issued before the 'Start Discovery' command.
-                If command is issued during ongoing discovery process it should 
+                If command is issued during ongoing discovery process it should
                 be considered as an error.
 
                 Interval: The time interval when the device starts its last scan
@@ -829,7 +829,7 @@ Commands and responses:
 
                 Phy: Bitfield to select Phys to be used in the discovery.
                 Possible values for the Flags parameter are a bit-wise OR
-                of the following bits: 
+                of the following bits:
                         0 = PHY 1M
                         1 = PHY Coded
 
@@ -913,6 +913,24 @@ Commands and responses:
                 Possible values for the Flags parameter are a bit-wise OR
                 of the following bits:
                         0 = Include TX Power
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x35 - Set Extended Inquiry Response command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Fec_required (1 octet)
+                                        Eir_Data_Len (1 octet)
+                                        Eir_Data (0-240 octets)
+                Return Parameters:      <none>
+
+                This command is used to set extended inquiry response data.
+
+                Eir_Data is a list of { EIR_Data_Type, EIR_Data_Len, EIR_data } structures.
+
+                Possible values for the Fec_required parameter are:
+                        0 = FEC is not required
+                        1 = FEC is required
 
                 In case of an error, the error response will be returned.
 

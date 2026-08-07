@@ -581,6 +581,13 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_bondable_off),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/IDLE/DNDIS/BV-01-C",
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_extended_inquiry_response,
+                               eir={AdType.name_full: iut_device_name}),
+                      TestFunc(btp.gap_set_general_discoverable),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
