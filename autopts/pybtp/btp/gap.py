@@ -171,6 +171,9 @@ GAP = {
     "encrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_ENCRYPT_EAD_DATA, CONTROLLER_INDEX),
     "decrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_DECRYPT_EAD_DATA, CONTROLLER_INDEX),
     "pawr_configure": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAWR_CONFIGURE, CONTROLLER_INDEX),
+    "set_extended_inquiry_response": (defs.BTP_SERVICE_ID_GAP,
+                                      defs.BTP_GAP_CMD_SET_EXTENDED_INQUIRY_RESPONSE,
+                                      CONTROLLER_INDEX),
 }
 
 
@@ -1887,3 +1890,41 @@ def gap_set_uuid16_svc_data(adv_data, uuid, service_data=None):
         adv_data[AdType.uuid16_svc_data] += [struct.pack('<H', uuid)]
     else:
         adv_data[AdType.uuid16_svc_data] += [struct.pack('<H', uuid) + service_data]
+
+
+def gap_set_extended_inquiry_response(eir=None, fec_required=False):
+    logging.debug("%r %r", eir, fec_required)
+
+    if eir is None:
+        eir = {}
+
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    eir_ba = bytearray()
+    data = bytearray()
+
+    for eir_type, eir_data in list(eir.items()):
+        if isinstance(eir_data, list):
+            for item in eir_data:
+                data = item
+                eir_ba.extend(bytes([eir_type]))
+                eir_ba.extend(chr(len(data)).encode('utf-8'))
+                eir_ba.extend(data)
+        else:
+            if isinstance(eir_data, str):
+                data = bytes.fromhex(eir_data)
+            elif isinstance(eir_data, bytes):
+                data = eir_data
+
+            eir_ba.extend(bytes([eir_type]))
+            eir_ba.extend(chr(len(data)).encode('utf-8'))
+            eir_ba.extend(data)
+
+    data_ba.extend(chr(int(fec_required)).encode('utf-8'))
+    data_ba.extend(chr(len(eir_ba)).encode('utf-8'))
+    data_ba.extend(eir_ba)
+
+    iutctl.btp_socket.send(*GAP['set_extended_inquiry_response'], data=data_ba)
+
+    gap_command_rsp_succ()
