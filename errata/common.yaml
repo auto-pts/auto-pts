@@ -2,6 +2,8 @@
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
 
+BAP/BA/BASS/BV-08-C: https://support.bluetooth.com/hc/en-us/requests/190836
+
 GAP/CONN/CPUP/BV-08-C: Laird PTS LE-only dongle required
 GAP/CONN/CPUP/BV-10-C: Laird PTS LE-only dongle required
 GAP/CONN/DCON/BV-05-C: Request ID 183721
@@ -23,3 +25,5 @@ MCP/CL/CGGIT/CHA/BV-11-C: https://support.bluetooth.com/hc/en-us/requests/188923
 MCP/CL/CGGIT/CHA/BV-12-C: https://support.bluetooth.com/hc/en-us/requests/188923
 MCP/CL/CGGIT/CHA/BV-14-C: https://support.bluetooth.com/hc/en-us/requests/188923
 MCP/CL/CGGIT/CHA/BV-15-C: https://support.bluetooth.com/hc/en-us/requests/188923
+
+TMAP/UMS/VRC/BV-02-C: https://support.bluetooth.com/hc/en-us/requests/190838
