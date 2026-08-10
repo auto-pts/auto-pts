@@ -115,6 +115,32 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x08 - Send RLS command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Channel (1 octet)
+                                        Line_Status (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send Remote Line Status (RLS)
+                command over RFCOMM connection.
+                Address is the peer BD_ADDR and Channel is the RFCOMM
+                server channel number.
+
+                Available Line_Status:
+                bit 0 - Error indicator:
+                  0 - No errors.
+                  1 - Error occurred.
+                bits [1 - 3] are only valid if bit 0 is 1:
+                  0b001 - Overrun Error, received character overwrote an unread character.
+                  0b010 - Parity Error, received character’s parity was incorrect.
+                  0b100 - Framing Error, a character did not terminate with a stop bit.
+                bits [4 - 7] are reserved.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - Connected Event
 
