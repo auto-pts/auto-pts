@@ -226,13 +226,17 @@ def hdl_wid_22(_: WIDParams):
     return True
 
 
-def hdl_wid_23(_: WIDParams):
+def hdl_wid_23(params: WIDParams):
     """
     Take multiple actions to send data on the open DLC on PTS.
-
-    This function sends multiple data frames with different content
-    over the established RFCOMM Data Link Connection (DLC) to the PTS tester.
+    Or,
+    Take action to initiate RLS command with Framing Error status.
     """
+
+    if params.test_case_name in ['RFCOMM/DEVA-DEVB/RFC/BV-14-C']:
+        btp.rfcomm_send_rls(line_status=defs.BTP_RFCOMM_RLS_FRAMING_ERROR)
+        return True
+
     btp.rfcomm_send_data(val="01", val_mtp=10)
     btp.rfcomm_send_data(val="0F", val_mtp=10)
     btp.rfcomm_send_data(val="AA", val_mtp=10)
