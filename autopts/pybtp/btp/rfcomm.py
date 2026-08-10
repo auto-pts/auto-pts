@@ -41,6 +41,8 @@ RFCOMM = {
                  CONTROLLER_INDEX),
     "get_dlc_info": (defs.BTP_SERVICE_ID_RFCOMM, defs.BTP_RFCOMM_CMD_GET_DLC_INFO,
                      CONTROLLER_INDEX),
+    "send_rls": (defs.BTP_SERVICE_ID_RFCOMM, defs.BTP_RFCOMM_CMD_SEND_RLS,
+                 CONTROLLER_INDEX),
 }
 
 
@@ -197,6 +199,27 @@ def rfcomm_get_dlc_info_rsp():
     logging.debug("mtu:%r, state:%r", mtu, state)
 
     return mtu, state
+
+
+def rfcomm_send_rls(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=5,
+                    line_status=defs.BTP_RFCOMM_RLS_NO_ERROR):
+    logging.debug("%r %r %r %r", bd_addr, bd_addr_type, channel, line_status)
+
+    iutctl = get_iut()
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_type_ba = struct.pack('B', bd_addr_type)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
+
+    data_ba = bytearray()
+    data_ba.extend(bd_addr_type_ba)
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('B', channel))
+    data_ba.extend(struct.pack('B', line_status))
+
+    iutctl.btp_socket.send_wait_rsp(*RFCOMM['send_rls'], data=data_ba)
 
 
 def rfcomm_connected_ev(rfcomm, data, data_len):
