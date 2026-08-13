@@ -204,12 +204,12 @@ def hdl_wid_202(_: WIDParams):
 
 
 wid_310_settings = {
-    "CAP/INI/UST/BV-32-C": pack_metadata(stream_context=0x0200),
-    "CAP/INI/UST/BV-33-C": pack_metadata(stream_context=0x0200),
-    "CAP/INI/UST/BV-34-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00]),
-    "CAP/INI/UST/BV-35-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00]),
-    "CAP/INI/UST/BV-36-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01]),
-    "CAP/INI/UST/BV-37-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01]),
+    "CAP/INI/UST/BV-32-C": pack_metadata(stream_context=0x0100),
+    "CAP/INI/UST/BV-33-C": pack_metadata(stream_context=0x0100),
+    "CAP/INI/UST/BV-34-C": pack_metadata(stream_context=0x0100, ccid_list=[0x00]),
+    "CAP/INI/UST/BV-35-C": pack_metadata(stream_context=0x0100, ccid_list=[0x00]),
+    "CAP/INI/UST/BV-36-C": pack_metadata(stream_context=0x0100, ccid_list=[0x00, 0x01]),
+    "CAP/INI/UST/BV-37-C": pack_metadata(stream_context=0x0100, ccid_list=[0x00, 0x01]),
 }
 
 
