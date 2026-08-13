@@ -926,6 +926,7 @@ def hdl_wid_20110(params: WIDParams):
     if match:
         volume_setting = match.group(1)
         btp.vcp_set_vol(volume_setting, addr_type, addr)
+        get_stack().vcp.wait_vcp_procedure_ev(addr_type, addr, 10)
 
     return True
 
