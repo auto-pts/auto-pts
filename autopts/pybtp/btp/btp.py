@@ -607,6 +607,10 @@ def core_reg_svc_rfcomm():
     core_reg_svc_univ("rfcomm_reg", "RFCOMM")
 
 
+def core_reg_svc_opp():
+    core_reg_svc_univ("opp_reg", "OPP")
+
+
 # GENERATOR append 1
 
 
@@ -717,6 +721,7 @@ def event_handler(hdr, data):
         MESH_EV,
         MICP_EV,
         MICS_EV,
+        OPP_EV,
         OTS_EV,
         PACS_EV,
         PBP_EV,
@@ -763,6 +768,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
         defs.BTP_SERVICE_ID_SDP: (SDP_EV, stack.sdp),
         defs.BTP_SERVICE_ID_RFCOMM: (RFCOMM_EV, stack.rfcomm),
+        defs.BTP_SERVICE_ID_OPP: (OPP_EV, stack.opp),
         # GENERATOR append 3
     }
 
