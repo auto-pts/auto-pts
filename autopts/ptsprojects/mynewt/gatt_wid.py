@@ -14,11 +14,8 @@
 #
 
 import logging
-import time
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
-from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -33,18 +30,3 @@ def gatt_wid_hdl(wid, description, test_case_name):
     log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name,
                            [__name__, 'autopts.wid.gatt'])
-
-
-def hdl_wid_3(_: WIDParams):
-    time.sleep(2)
-    btp.gap_disconnect(btp.pts_addr_get(), btp.pts_addr_type_get())
-    return True
-
-
-def hdl_wid_49(_: WIDParams):
-    time.sleep(30)
-    return True
-
-
-def hdl_wid_118(_: WIDParams):
-    return f'{65000:04x}'
