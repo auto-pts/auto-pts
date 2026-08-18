@@ -48,6 +48,9 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("L2CAP", "TSPX_spsm", "0000")
     pts.set_pixit("L2CAP", "TSPX_psm_unsupported", "0000")
+    pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_min", "0064")
+    pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_max", "0064")
+    pts.set_pixit("L2CAP", "TSPX_l2ca_cbmtu_max", "00E6")
 
 
 def test_cases(ptses):
