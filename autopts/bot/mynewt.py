@@ -81,8 +81,6 @@ def get_build_info_file(project_path):
 class MynewtBotConfigArgs(bot.common.BotConfigArgs):
     def __init__(self, args):
         super().__init__(args)
-        self.board_name = args['board']
-        self.tty_file = args.get('tty_file', None)
 
 
 class MynewtBotCliParser(bot.common.BotCliParser):
