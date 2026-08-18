@@ -177,11 +177,9 @@ def hdl_wid_44(params: WIDParams):
        current track to a track other than the first or last within a group
        of tracks."""
 
-    if params.test_case_name in ['GMCS/SR/MCP/BV-41-C', 'GMCS/SR/MCP/BV-45-C']:
-        # This applies only for testcases where media player is initially
-        # in inactive state
-        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+    MEDIA_PROXY_OP_GOTO_TRACK = 0x34
+
+    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_GOTO_TRACK, 1, 2)
 
     return True
 
