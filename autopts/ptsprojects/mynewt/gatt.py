@@ -126,19 +126,7 @@ def set_pixits(ptses):
     pts2 = ptses[1]
 
     pts2.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts2.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts2.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_delete_link_key", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_time_guard", "180000")
-    pts2.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_mtu_size", "23")
-    pts2.set_pixit("GATT", "TSPX_pin_code", "0000")
-    pts2.set_pixit("GATT", "TSPX_use_dynamic_pin", "FALSE")
     pts2.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_tester_appearance", "0000")
     pts2.set_pixit("GATT", "TSPX_bearer_for_le", "EATT")
 
 
