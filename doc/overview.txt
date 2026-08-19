@@ -122,4 +122,5 @@ ID  Name
  0x1f SDP Service
  0x20 RFCOMM Service
  0x21 Mesh NLCP Service
+ 0x2a FTP Service
  # GENERATOR append 1
