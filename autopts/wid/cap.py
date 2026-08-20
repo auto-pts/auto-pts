@@ -33,7 +33,16 @@ from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
-from autopts.pybtp.types import BASS_PA_INTERVAL_UNKNOWN, UUID, Addr, ASCSState, BAPAnnouncement, CAPAnnouncement, WIDParams
+from autopts.pybtp.types import (
+    BASS_PA_INTERVAL_UNKNOWN,
+    UUID,
+    Addr,
+    ASCSState,
+    BAPAnnouncement,
+    CAPAnnouncement,
+    PaSyncRequest,
+    WIDParams,
+)
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
@@ -317,7 +326,7 @@ def hdl_wid_345(params: WIDParams):
         broadcast_id = ev['broadcast_id']
         padv_interval = ev['padv_interval']
 
-    padv_sync = 0x02
+    padv_sync = PaSyncRequest.SYNC_NO_PAST
     num_subgroups = 1
     bis_sync = 1
     result = re.search(r'BIS INDEX: 0x(\d+)', params.description)
@@ -396,7 +405,7 @@ def hdl_wid_347(params: WIDParams):
     advertiser_sid = ev['advertiser_sid']
     padv_interval = ev['padv_interval']
     num_subgroups = 1
-    padv_sync = 0x02
+    padv_sync = PaSyncRequest.SYNC_NO_PAST
     bis_sync = 1
     result = re.search(r'BIS INDEX: 0x(\d+)', params.description)
     if result:
@@ -426,7 +435,7 @@ def hdl_wid_347(params: WIDParams):
         broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     # stop sync with Modify Source
-    padv_sync = 0x0
+    padv_sync = PaSyncRequest.NO_SYNC
     bis_sync = 0
     subgroups = struct.pack('<IB', bis_sync, metadata_len)
     source_id = (ev['src_id'])
@@ -845,7 +854,7 @@ def hdl_wid_413(params: WIDParams):
     addr_type = pts_addr_type_get()
 
     # first stop sync with Modify Source
-    pa_sync = 0x0
+    pa_sync = PaSyncRequest.NO_SYNC
     bis_sync = 0
     metadata_len = 0
     num_subgroups = 1
@@ -894,7 +903,7 @@ def hdl_wid_414(params: WIDParams):
     broadcaster_addr_type = Addr.le_random if stack.gap.iut_addr_is_random() else Addr.le_public
     broadcast_id = stack.cap.local_broadcast_id
 
-    padv_sync = 0x02
+    padv_sync = PaSyncRequest.SYNC_NO_PAST
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
         broadcaster_addr, padv_sync, timeout=10, remove=False)

@@ -22,9 +22,9 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import __gap_current_settings_update
 from autopts.pybtp.types import (
-    BASSPASyncState,
     BIGEncryption,
     BTPError,
+    PaSyncState,
     addr_str_to_le_bytes,
     hex_str_to_le_bytes,
     le_bytes_to_hex_str,
@@ -402,7 +402,7 @@ def bap_scan_delegator_add_src(broadcaster_addr_type, broadcaster_addr,
                                big_encryption, num_subgroups, subgroups):
     logging.debug("")
 
-    if not BASSPASyncState.NOT_SYNCED <= pa_sync_state <= BASSPASyncState.NO_PAST:
+    if not PaSyncState.NOT_SYNCED <= pa_sync_state <= PaSyncState.NO_PAST:
         raise BTPError(f'Invalid pa_sync_state {pa_sync_state}')
 
     if not BIGEncryption.NOT_ENCRYPTED <= big_encryption <= BIGEncryption.BAD_CODE:
