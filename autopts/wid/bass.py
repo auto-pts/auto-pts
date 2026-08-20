@@ -23,8 +23,8 @@ from autopts.pybtp.types import (
     UUID,
     AdFlags,
     AdType,
-    BASSPASyncState,
     BIGEncryption,
+    PaSyncRequest,
     WIDParams,
     gap_settings_btp2txt,
     uuid_to_le_hex_str,
@@ -232,7 +232,7 @@ def hdl_wid_116(_: WIDParams):
     btp.bap_scan_delegator_add_src(
         broadcaster_addr_type, broadcaster_addr,
         advertiser_sid, broadcast_id,
-        BASSPASyncState.NOT_SYNCED, big_encryption, 1, subgroups)
+        PaSyncRequest.NO_SYNC, big_encryption, 1, subgroups)
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, WildCard(), WildCard(),

@@ -693,23 +693,17 @@ class PaSyncState:
     NO_PAST = 0x04
 
 
+class PaSyncRequest:
+    NO_SYNC = 0x00
+    SYNC_PAST = 0x01
+    SYNC_NO_PAST = 0x02
+
+
 class BIGEncryption:
     NOT_ENCRYPTED = 0x00
     BROADCAST_CODE_REQUIRED = 0x01
     DECRYPTING = 0x02
     BAD_CODE = 0x03
-
-
-class BASSPASyncState:
-    """Periodic Advertising state reported by the Scan Delegator.
-
-    Values match enum bt_bap_pa_state in Zephyr.
-    """
-    NOT_SYNCED = 0x00
-    INFO_REQ = 0x01
-    SYNCED = 0x02
-    FAILED = 0x03
-    NO_PAST = 0x04
 
 
 # 0xFFFF indicates "unknown" as per the BASS specification
