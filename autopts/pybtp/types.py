@@ -700,18 +700,6 @@ class BIGEncryption:
     BAD_CODE = 0x03
 
 
-class BASSPASyncState:
-    """Periodic Advertising state reported by the Scan Delegator.
-
-    Values match enum bt_bap_pa_state in Zephyr.
-    """
-    NOT_SYNCED = 0x00
-    INFO_REQ = 0x01
-    SYNCED = 0x02
-    FAILED = 0x03
-    NO_PAST = 0x04
-
-
 # 0xFFFF indicates "unknown" as per the BASS specification
 BASS_PA_INTERVAL_UNKNOWN: Final[int] = 0xFFFF
 
