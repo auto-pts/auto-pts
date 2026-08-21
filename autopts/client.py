@@ -103,6 +103,7 @@ class PtsServerProxy(xmlrpc.client.ServerProxy, PTSProxy):
                          use_datetime=False, use_builtin_types=False,
                          headers=(), context=None)
         self.info = f"{server_address}:{server_port}"
+        self.server_address = server_address
         self.callback_thread = None
         self.callback = None
 
@@ -612,6 +613,9 @@ def init_pts(args: Namespace, proxy_list: list[PTSProxy]):
         for i in range(len(proxy_list), server_count):
             proxy = PTSProxyFactory.create(_id=i, args=args)
             proxy_list.append(proxy)
+
+    for _id, proxy in enumerate(proxy_list, 1):
+        proxy.shutdown_pts_bpv(False, True)
 
     if len(proxy_list) == 1 or args.autopts_mode == AutoPTSMode.GUI_CLIENT_ONLY:
         _pts_init_from_main(proxy_list, args)
@@ -1840,7 +1844,7 @@ def run_recovery(args, ptses):
     if hasattr(iut, 'select_iut'):
         iut.select_iut(0)
 
-    for pts in ptses:
+    for i, pts in enumerate(ptses):
         req_sent = False
         last_restart_time = None
 
@@ -1852,6 +1856,18 @@ def run_recovery(args, ptses):
 
                 if not req_sent:
                     log(f'Recovering PTS {pts} ...')
+                    if isinstance(pts, PtsServerProxy):
+                        skip_shutdown_bpv = False
+
+                        if i > 0:
+                            for j in range(i):
+                                if ptses[j].server_address == pts.server_address:
+                                    skip_shutdown_bpv = True
+                                    break
+
+                        if not skip_shutdown_bpv:
+                            pts.shutdown_pts_bpv(False, True)
+
                     pts.recover_pts()
                     req_sent = True
                     err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)

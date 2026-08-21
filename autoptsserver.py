@@ -626,10 +626,13 @@ class Server(threading.Thread, PTSProxy):
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path, ignore_errors=True)
 
-    def shutdown_pts_bpv(self):
+    def shutdown_pts_bpv(self, end_pts=True, end_bpv=True):
         self._update_request_time()
-        kill_all_processes('PTS.exe')
-        kill_all_processes('Fts.exe')
+        if end_pts:
+            kill_all_processes('PTS.exe')
+        if end_bpv:
+            kill_all_processes('Fts.exe')
+            kill_all_processes('Ellisys.BluetoothAnalyzer.exe')
 
 
 if __name__ == "__main__":
