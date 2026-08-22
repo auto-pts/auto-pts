@@ -41,6 +41,7 @@ from autopts.pybtp.types import (
     AdType,
     ASCSState,
     AudioDir,
+    BIGEncryption,
     BTPError,
     PaSyncState,
     WIDParams,
@@ -2284,12 +2285,13 @@ def hdl_wid_346(params: WIDParams):
     if ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
         btp.bap_send_past(ev['src_id'])
 
-        ev = stack.bap.wait_broadcast_receive_state_ev(
-            broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), timeout=10, remove=True)
+    # PTS drops the Modify Source write if the BIG sync is not established yet
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type, broadcaster_addr,
+        PaSyncState.SYNCED, subgroups=subgroups, remove=True)
 
-        if ev is None:
-            return False
+    if ev is None:
+        return False
 
     padv_sync = 0x00
     bis_sync = 0
@@ -2301,7 +2303,7 @@ def hdl_wid_346(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), timeout=10, remove=True)
+        broadcaster_addr, PaSyncState.NOT_SYNCED, subgroups=subgroups, remove=True)
 
     if ev is None:
         return False
@@ -2332,9 +2334,9 @@ def hdl_wid_347(params: WIDParams):
     broadcast_id = ev['broadcast_id']
     padv_interval = ev['padv_interval']
     num_subgroups = 1
-    # Ignore wrong values of PA SYNC and BIS INDEX in WID description
-    padv_sync = 0x02
-    bis_sync = 1
+    # Add receive state without requesting to PA or BIS Sync as per the WID description
+    padv_sync = 0x00
+    bis_sync = 0
     metadata_len = 0
     subgroups = struct.pack('<IB', bis_sync, metadata_len)
     btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
@@ -2344,26 +2346,16 @@ def hdl_wid_347(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), timeout=10, remove=True)
+        broadcaster_addr, PaSyncState.NOT_SYNCED, subgroups=subgroups, remove=True)
 
     if ev is None:
         return False
-
-    if ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
-        btp.bap_send_past(ev['src_id'])
-
-        ev = stack.bap.wait_broadcast_receive_state_ev(
-            broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), timeout=10, remove=True)
-
-        if ev is None:
-            return False
 
     btp.bap_remove_broadcast_src(ev['src_id'], addr_type, addr)
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, timeout=10, remove=False)
+        broadcaster_addr, PaSyncState.NOT_SYNCED, remove=False)
 
     if ev is None:
         return False
@@ -2410,17 +2402,19 @@ def hdl_wid_348(params: WIDParams):
     if ev is None:
         return False
 
-    btp.bap_set_broadcast_code(ev['src_id'], stack.bap.broadcast_code)
-
     if ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
         btp.bap_send_past(ev['src_id'])
 
-        ev = stack.bap.wait_broadcast_receive_state_ev(
-            broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), timeout=10, remove=True)
+    # PTS drops the Set Broadcast Code write until it reports Broadcast_Code_Required
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type, broadcaster_addr,
+        PaSyncState.SYNCED, big_encryption=BIGEncryption.BROADCAST_CODE_REQUIRED,
+        remove=True)
 
-        if ev is None:
-            return False
+    if ev is None:
+        return False
+
+    btp.bap_set_broadcast_code(ev['src_id'], stack.bap.broadcast_code)
 
     return True
 
