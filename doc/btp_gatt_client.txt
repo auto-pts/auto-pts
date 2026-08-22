@@ -590,3 +590,11 @@ Events:
                         Value (Value_Len octets)
 
                 If Status is non-zero Data_Length shall be set to 0.
+
+        Opcode 0x92 - ATT Timeout event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates an ATT transaction timeout.
