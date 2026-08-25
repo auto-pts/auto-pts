@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="nimble-master" PATH="nimble-master" CREATED_WITH="Profile Tuning Suite, 8.13.0, 4" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="331839">
+<WORKSPACE_INFORMATION NAME="nimble-master" PATH="nimble-master" CREATED_WITH="Profile Tuning Suite, 8.14.1, 6" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="331839">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -433,7 +433,7 @@
           <Row>
             <Name>TSPC_GAP_6_3</Name>
             <Description>LE 2M PHY (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -457,19 +457,19 @@
           <Row>
             <Name>TSPC_GAP_7_3a</Name>
             <Description>Isochronous Broadcaster (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_7_3b</Name>
             <Description>Encrypted Broadcast Isochronous Stream (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_7_3c</Name>
             <Description>Unencrypted Broadcast Isochronous Stream (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -781,7 +781,7 @@
           <Row>
             <Name>TSPC_GAP_12_3</Name>
             <Description>LE 2M PHY (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2838,25 +2838,37 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_1_1</Name>
-            <Description>Generic Attribute Profile Client (C.1)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_1</Name>
+            <Description>GATT Client over LE (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_3</Name>
+            <Description>GATT Server over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_17</Name>
-            <Description>Notifications (C.7)</Description>
+            <Description>Single Notification (see Note) (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_18</Name>
-            <Description>Indications (M)</Description>
+            <Description>Indication (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3a_1</Name>
-            <Description>Peripheral (O)</Description>
+            <Description>GAP LE Peripheral (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2868,7 +2880,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_48a</Name>
-            <Description>Enhanced Credit Based Flow Control Mode - BR/EDR (O)</Description>
+            <Description>Enhanced Credit Based Flow Control Mode - BR/EDR (C.26)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3256,6 +3268,13 @@
             <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
             <Type>OCTETSTRING</Type>
             <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
+            <Helper>TRUE</Helper>
+          </Row>
+          <Row>
+            <Name>TSPX_higher_layer_profile_uuid</Name>
+            <Description>Higher Layer Profile defined UUID for TAK</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>2A19</Value>
             <Helper>TRUE</Helper>
           </Row>
         </Rows>
@@ -4048,7 +4067,7 @@
           <Row>
             <Name>TSPC_GATT_10_13</Name>
             <Description>Change Database during connection (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4108,7 +4127,7 @@
           <Row>
             <Name>TSPC_CORE_2a_63</Name>
             <Description>Host Core v6.3 or later (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4120,7 +4139,7 @@
           <Row>
             <Name>TSPC_CORE_2b_62</Name>
             <Description>Host Core v6.2 or earlier (C.8)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4815,25 +4834,19 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_1a_2</Name>
-            <Description>GATT Client over BR/EDR (C.2)</Description>
+            <Description>GATT Client over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1a_3</Name>
-            <Description>GATT Server over LE (C.3)</Description>
+            <Description>GATT Server over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1a_4</Name>
-            <Description>GATT Server over BR/EDR (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GATT_2_3</Name>
-            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
+            <Description>GATT Server over BR/EDR (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4847,6 +4860,12 @@
             <Name>TSPC_GATT_2_3b</Name>
             <Description>Enhanced ATT bearer over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_2a_63</Name>
+            <Description>Host Core v6.3 or later (C.9)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5136,7 +5155,7 @@
           <Row>
             <Name>TSPC_SM_4b_4</Name>
             <Description>Numeric Comparison (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5260,38 +5279,8 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_CORE_1a_60</Name>
-            <Description>Controller Core v6.0 or later (C.6)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CORE_1a_62</Name>
-            <Description>Controller Core v6.2 or later (C.6)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CORE_1b_60</Name>
-            <Description>Controller Core v6.0 or later (C.6)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CORE_1b_62</Name>
-            <Description>Controller Core v6.2 or later (C.6)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_CORE_2a_53</Name>
             <Description>Host Core v5.3 or later (C.4)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CORE_2a_54</Name>
-            <Description>Host Core v5.4 or later (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5303,14 +5292,14 @@
           </Row>
           <Row>
             <Name>TSPC_CORE_2a_62</Name>
-            <Description>Host Core v6.2 or later (C.6)</Description>
+            <Description>Host Core v6.2 or later (C.8)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CORE_2a_63</Name>
-            <Description>Host Core v6.3 or later (C.6)</Description>
-            <Value>FALSE</Value>
+            <Description>Host Core v6.3 or later (C.9)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5320,8 +5309,14 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_CORE_2b_60</Name>
-            <Description>Host Core v6.0 or earlier (C.6)</Description>
+            <Name>TSPC_CORE_2b_61</Name>
+            <Description>Host Core v6.1 or earlier (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_2b_62</Name>
+            <Description>Host Core v6.2 or earlier (C.8)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
