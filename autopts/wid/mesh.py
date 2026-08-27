@@ -17,6 +17,7 @@ import logging
 import re
 import time
 
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import MeshVals, Perm, WIDParams
@@ -26,8 +27,7 @@ log = logging.debug
 
 
 def _make_mesh_handler():
-    from autopts.ptsprojects.common_wid import get_wid_handler
-    return get_wid_handler("zephyr", "mesh")
+    return get_wid_handler(Backend.ZEPHYR, Service.MESH)
 
 
 mesh_wid_hdl = _make_mesh_handler()

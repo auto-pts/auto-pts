@@ -20,7 +20,7 @@ from binascii import hexlify
 from uuid import uuid4
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -32,7 +32,7 @@ from autopts.wid import (
     mesh_wid_hdl_rpr_persistent_storage_alt,
 )
 
-mesh_wid_hdl = get_wid_handler("zephyr", "mesh")
+mesh_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.MESH)
 
 
 def set_pixits(ptses):

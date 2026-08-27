@@ -13,11 +13,29 @@
 # more details.
 #
 
+import re
 from datetime import datetime
 from os.path import abspath, dirname
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 print(AUTOPTS_REPO)
+
+common_wid_path = f"{AUTOPTS_REPO}/autopts/ptsprojects/common_wid.py"
+
+
+def get_next_service_id(path):
+    with open(path) as f:
+        content = f.read()
+    # Find the block inside class Service up to the generator comment
+    match = re.search(r"class Service.*?(?=# GENERATOR append profile_enum)", content, re.DOTALL)
+    if match:
+        matches = re.findall(r"=\s*(\d+)", match.group(0))
+        if matches:
+            return int(matches[-1]) + 1
+    return 1
+
+
+next_service_id = get_next_service_id(common_wid_path)
 
 
 def append_lines(file_path, change_id, new_lines):
@@ -55,6 +73,7 @@ profile_id = input('Enter new BTP service ID: ').strip() or 0xff
 code_owner = input('Enter code owner name (e.g. Codecoup): ').strip() or 'Codecoup'
 profile_name_lower = profile_name.lower()
 profile_name_upper = profile_name.upper()
+project_name_upper = project_name.upper()
 
 
 copyright_text = f'Copyright (c) {datetime.now().year}, {code_owner}.'
@@ -83,10 +102,10 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.{project_name}.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.pybtp.types import Addr
-from autopts.ptsprojects.common_wid import get_wid_handler
 
-{profile_name_lower}_wid_hdl = get_wid_handler("{project_name}", "{profile_name_lower}")
+{profile_name_lower}_wid_hdl = get_wid_handler(Backend.{project_name_upper}, Service.{profile_name_upper})
 
 def set_pixits(ptses):
     pts = ptses[0]
@@ -275,6 +294,9 @@ Events:
 }
 
 changes_to_prepend = {
+    common_wid_path: {
+        "profile_enum": f"    {profile_name_upper} = {next_service_id}\n",
+    },
     f"{project_path}/__init__.py": {
         1: (
             f"               {profile_name_lower},\n"

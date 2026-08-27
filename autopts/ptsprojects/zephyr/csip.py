@@ -16,7 +16,7 @@
 """CSIP test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave, ZTestCaseSlave2
@@ -25,7 +25,7 @@ from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
-csip_wid_hdl = get_wid_handler("zephyr", "csip")
+csip_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.CSIP)
 
 
 def set_pixits(ptses):
