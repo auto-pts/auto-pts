@@ -55,6 +55,7 @@ profile_id = input('Enter new BTP service ID: ').strip() or 0xff
 code_owner = input('Enter code owner name (e.g. Codecoup): ').strip() or 'Codecoup'
 profile_name_lower = profile_name.lower()
 profile_name_upper = profile_name.upper()
+project_name_upper = project_name.upper()
 
 
 copyright_text = f'Copyright (c) {datetime.now().year}, {code_owner}.'
@@ -83,10 +84,10 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.{project_name}.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.pybtp.types import Addr
-from autopts.ptsprojects.common_wid import get_wid_handler
 
-{profile_name_lower}_wid_hdl = get_wid_handler("{project_name}", "{profile_name_lower}")
+{profile_name_lower}_wid_hdl = get_wid_handler(Backend.{project_name_upper}, Service.{profile_name_upper})
 
 def set_pixits(ptses):
     pts = ptses[0]
@@ -275,6 +276,9 @@ Events:
 }
 
 changes_to_prepend = {
+    f"{AUTOPTS_REPO}/autopts/ptsprojects/common_wid.py": {
+        "profile_enum": f"    {profile_name_upper} = auto()\n",
+    },
     f"{project_path}/__init__.py": {
         1: (
             f"               {profile_name_lower},\n"

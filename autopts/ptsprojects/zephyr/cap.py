@@ -18,7 +18,7 @@
 import struct
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -38,7 +38,7 @@ from autopts.pybtp.types import (
 )
 from autopts.utils import ResultWithFlag
 
-cap_wid_hdl = get_wid_handler("zephyr", "cap")
+cap_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.CAP)
 
 
 def set_pixits(ptses):

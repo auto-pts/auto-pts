@@ -17,7 +17,7 @@
 import binascii
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
@@ -25,7 +25,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap
 
-gap_wid_hdl = get_wid_handler("mynewt", "gap")
+gap_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.GAP)
 
 
 class SVC:

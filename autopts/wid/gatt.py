@@ -18,7 +18,6 @@ import struct
 from binascii import hexlify
 from time import sleep
 
-from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import (
     GattCharacteristic,
     GattCharacteristicDescriptor,
@@ -36,7 +35,6 @@ from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams, le
 log = logging.debug
 
 indication_subbed_already = False
-gatt_wid_hdl = get_wid_handler("mynewt", "gatt")
 
 
 def gatt_server_fetch_db():

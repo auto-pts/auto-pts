@@ -16,7 +16,7 @@
 """GATT test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -24,8 +24,8 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
-gatt_wid_hdl = get_wid_handler("mynewt", "gatt")
-gattc_wid_hdl = get_wid_handler("mynewt", "gattc")
+gatt_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.GATT)
+gattc_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.GATTC)
 
 
 class Value:

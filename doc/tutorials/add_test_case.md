@@ -135,7 +135,7 @@ the project.
 ### `autopts/ptsprojects/stack/layers/profile.py`
 
 The `class Stack` is a good place for global variables that have to be shared
-between MMI/WID handlers, because the Stack instance is reinitialized before 
+between MMI/WID handlers, because the Stack instance is reinitialized before
 start of each test case. So create a class like `class Profile` and make it a part
 of the Stack.
 
@@ -183,7 +183,7 @@ def test_cases(ptses):
     test_case_name_list = pts.get_test_case_list('PROFILE')
     tc_list = []
 
-    # Use the same preconditions and MMI/WID handler for all test cases of the profile 
+    # Use the same preconditions and MMI/WID handler for all test cases of the profile
     for tc_name in test_case_name_list:
         instance = ZTestCase('PROFILE', tc_name, cmds=pre_conditions,
                              generic_wid_hdl=profile_wid_hdl)
@@ -323,7 +323,7 @@ Synch Points mechanism.
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/BA/BASS/BV-04-C", 20100),
                                 SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 100)]),
-                      
+
                      # Barrier no. 2:
                      # LT2 will not execute the WID 384 until LT1 receives
                      # the WID 345 request. LT1 will not execute WID 345
@@ -331,13 +331,13 @@ Synch Points mechanism.
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 384),
                                 SynchPoint("BAP/BA/BASS/BV-04-C", 345)])],
-                  generic_wid_hdl=get_wid_handler("zephyr", "bap"),
+                  generic_wid_hdl=get_wid_handler(Backend.ZEPHYR, Profile.BAP),
                   lt2="BAP/BA/BASS/BV-04-C_LT2"),
     ]
 
     test_cases_lt2 = [
         ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-04-C_LT2",
                        cmds=pre_conditions_lt2,
-                       generic_wid_hdl=get_wid_handler("zephyr", "bap")),
+                       generic_wid_hdl=get_wid_handler(Backend.ZEPHYR, Profile.BAP)),
     ]
 ```

@@ -16,14 +16,14 @@
 """L2CAP test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import L2cap, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 
-l2cap_wid_hdl = get_wid_handler("mynewt", "l2cap")
+l2cap_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.L2CAP)
 le_psm = 128
 psm_unsupported = 241
 psm_authentication_required = 242
