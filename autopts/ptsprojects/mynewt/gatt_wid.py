@@ -15,5 +15,4 @@
 
 import logging
 
-
 log = logging.debug

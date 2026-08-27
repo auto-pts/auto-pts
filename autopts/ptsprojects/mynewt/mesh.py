@@ -19,14 +19,14 @@ from binascii import hexlify
 from uuid import uuid4
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import MeshVals
 
-mesh_wid_hdl = get_wid_handler("mynewt", "mesh")
+mesh_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.MESH)
 
 
 def set_pixits(ptses):

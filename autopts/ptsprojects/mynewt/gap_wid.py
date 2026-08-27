@@ -16,7 +16,7 @@
 import logging
 from time import sleep
 
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
@@ -24,7 +24,7 @@ from autopts.wid.gap import hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
 
 log = logging.debug
 
-gap_wid_hdl = get_wid_handler("mynewt", "gap")
+gap_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.GAP)
 
 
 # For tests in SC only, mode 1 level 3
@@ -39,8 +39,7 @@ def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
 # For tests in SC only, mode 1 level 4
 def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
     if wid == 139:
-        log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl4.__name__, wid, description,
-            test_case_name)
+        log("%r, %r, %s", wid, description, test_case_name)
         return hdl_wid_139_mode1_lvl4(description)
     return gap_wid_hdl(wid, description, test_case_name)
 
