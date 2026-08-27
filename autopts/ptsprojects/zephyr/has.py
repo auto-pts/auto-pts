@@ -16,7 +16,7 @@
 """HAS test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
@@ -29,7 +29,7 @@ from autopts.pybtp.defs import (
 from autopts.pybtp.types import Addr
 from autopts.wid.has import PresetProperty
 
-has_wid_hdl = get_wid_handler("zephyr", "has")
+has_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.HAS)
 
 
 def set_pixits(ptses):

@@ -16,7 +16,7 @@
 """BAP test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -24,7 +24,7 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
-bap_wid_hdl = get_wid_handler("mynewt", "bap")
+bap_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.BAP)
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
 

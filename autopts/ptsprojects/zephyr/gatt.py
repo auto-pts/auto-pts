@@ -17,7 +17,7 @@
 import logging
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -25,7 +25,7 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, IOCap, Perm, Prop
 from autopts.utils import ResultWithFlag
 
-gatt_wid_hdl = get_wid_handler("zephyr", "gatt")
+gatt_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.GATT)
 
 
 class Value:
