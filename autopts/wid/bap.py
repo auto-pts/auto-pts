@@ -761,23 +761,28 @@ def hdl_wid_100(params: WIDParams):
                                 5, 100, False, 0, ev['addr_type'], ev['addr'])
 
     broadcast_id = ev['broadcast_id']
-    ev = stack.bap.wait_bis_found_ev(broadcast_id, 20, False)
-    if ev is None:
-        log(f'BIS not found, broadcast ID {broadcast_id}')
-        return False
 
     if params.test_case_name.startswith('BAP/BA'):
         return True
 
-    # BIS_Sync bitfield uses bit 0 for BIS Index 1
-    requested_bis_sync = 1
-    bis_ids = [1]
-    if params.test_case_name.startswith('BAP/BSNK/STR') or \
-            params.test_case_name.startswith('BAP/BSRC/STR'):
-        tc_num = int(re.findall(r'\d+', params.test_case_name)[0])
-        if tc_num >= 18 and tc_num <= 34:
-            requested_bis_sync |= 2
-            bis_ids.append(2)
+    bis_events = {}
+    while True:
+        # Only apply a long timeout for the first event as any remaining events would come right after
+        wait_timeout = 20 if not bis_events else 1
+        bis_event = stack.bap.wait_bis_found_ev(broadcast_id, wait_timeout, True)
+        if bis_event is None:
+            break
+        bis_events[bis_event['bis_id']] = bis_event
+
+    if not bis_events:
+        log(f'BIS not found for broadcast ID {broadcast_id}')
+        return False
+
+    bis_ids = sorted(bis_events)
+    requested_bis_sync = 0
+    for bis_index in bis_ids:
+        # Add the BIS index to the bitfield (BIS index 0x01 => BIT(0), index 0x02 => BIT(1), etc.)
+        requested_bis_sync |= defs.BIT(bis_index - 1)
 
     btp.bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync)
 
