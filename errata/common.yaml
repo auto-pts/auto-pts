@@ -34,6 +34,8 @@ GAP/CONN/CPUP/BV-10-C: Laird PTS LE-only dongle required
 GAP/SEC/AUT/BV-13-C: ES-28650
 GAP/SEC/AUT/BV-14-C: ES-28650
 
+GMCS/SR/MCP/BV-14-C: https://bluetooth.atlassian.net/browse/ES-29526
+
 GTBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
 GTBS/SR/CP/BV-11-C: https://bluetooth.atlassian.net/browse/ES-29033
 TBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
