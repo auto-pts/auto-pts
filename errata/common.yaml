@@ -38,6 +38,8 @@ GAP/SEC/AUT/BV-14-C: ES-28650
 GATT/CL/GAS/BV-01-C: Request ID 184148
 GATT/SR/GAW/BV-01-C: https://support.bluetooth.com/hc/en-us/requests/191618
 
+GMCS/SR/MCP/BV-14-C: https://bluetooth.atlassian.net/browse/ES-29526
+
 L2CAP/COS/CED/BI-29-C: ES-28495
 
 GTBS/SR/CP/BV-09-C: https://bluetooth.atlassian.net/browse/ES-29033
