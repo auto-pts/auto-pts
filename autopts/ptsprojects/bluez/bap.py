@@ -152,6 +152,10 @@ def test_cases(ptses):
                   cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
                         pre_conditions,
                   generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-050-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
         BTestCase("BAP", "BAP/UCL/SCC/BV-054-C",
                   cmds=[TestFunc(lambda: iut.set_audio_profile("low-latency"))] +
                         pre_conditions,
@@ -169,6 +173,10 @@ def test_cases(ptses):
                         pre_conditions,
                   generic_wid_hdl=bap_wid_hdl),
         BTestCase("BAP", "BAP/UCL/SCC/BV-080-C",
+                  cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
+                        pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
+        BTestCase("BAP", "BAP/UCL/SCC/BV-082-C",
                   cmds=[TestFunc(lambda: iut.set_audio_profile("high-reliability"))] +
                         pre_conditions,
                   generic_wid_hdl=bap_wid_hdl),
