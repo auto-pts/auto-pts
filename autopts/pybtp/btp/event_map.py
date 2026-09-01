@@ -10,6 +10,8 @@ from .gatt import GATT_EV
 from .gatt_cl import GATTC_EV
 from .gmcs import GMCS_EV
 from .hap import HAP_EV
+from .hfp_ag import HFP_AG_EV
+from .hfp_hf import HFP_HF_EV
 from .ias import IAS_EV
 from .l2cap import L2CAP_EV
 from .mcp import MCP_EV
@@ -58,5 +60,7 @@ __all__ = [
     "VCP_EV",
     "VCS_EV",
     "VOCS_EV",
+    "HFP_HF_EV",
+    "HFP_AG_EV",
 # GENERATOR append 2
 ]
