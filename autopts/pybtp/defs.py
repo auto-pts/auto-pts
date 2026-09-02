@@ -57,6 +57,7 @@ BTP_SERVICE_ID_OTS = 0x1d
 BTP_SERVICE_ID_PBP = 0x1e
 BTP_SERVICE_ID_SDP = 0x1f
 BTP_SERVICE_ID_RFCOMM = 0x20
+BTP_SERVICE_ID_A2DP = 0x21
 # GENERATOR append 1
 BTP_SERVICE_ID_VENDOR = 0xff
 
@@ -178,6 +179,17 @@ BTP_GAP_CMD_SET_EAD_KEY_MATERIAL = 0x31
 BTP_GAP_CMD_ENCRYPT_EAD_DATA = 0x32
 BTP_GAP_CMD_DECRYPT_EAD_DATA = 0x33
 BTP_GAP_CMD_PAWR_CONFIGURE = 0x34
+
+# BR/EDR page and inquiry scan. BTP_GAP_CMD_SET_CONNECTABLE and
+# _SET_DISCOVERABLE are LE-only by design, so they cannot make the IUT reachable
+# over BR/EDR.
+BTP_GAP_CMD_SET_BR_SCAN_MODE = 0x40
+
+# Values for BTP_GAP_CMD_SET_BR_SCAN_MODE. Discoverable implies connectable, so
+# this is a tri-state rather than two independent flags.
+BT_SCAN_MODE_NONE = 0x00
+BT_SCAN_MODE_CONNECTABLE = 0x01
+BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE = 0x02
 BTP_GAP_EV_NEW_SETTINGS = 0x80
 GAP_DEVICE_FOUND_FLAG_RSSI = 0x01
 GAP_DEVICE_FOUND_FLAG_AD = 0x02
@@ -1012,6 +1024,59 @@ BTP_RFCOMM_EV_CONNECTED = 0x80
 BTP_RFCOMM_EV_DISCONNECTED = 0x81
 BTP_RFCOMM_EV_DATA_RECEIVED = 0x82
 BTP_RFCOMM_EV_DATA_SENT = 0x83
+
+# A2DP BTP commands and events
+BTP_A2DP_CMD_READ_SUPPORTED_COMMANDS = 0x01
+BTP_A2DP_CMD_CONNECT = 0x02
+BTP_A2DP_CMD_DISCONNECT = 0x03
+BTP_A2DP_CMD_START_STREAM = 0x04
+BTP_A2DP_CMD_STOP_STREAM = 0x05
+BTP_A2DP_CMD_SET_CONFIGURATION = 0x06
+BTP_A2DP_CMD_GET_CONFIGURATION = 0x07
+BTP_A2DP_CMD_SET_ROLE = 0x08
+
+# Answer an AVDTP operation the tester initiated. Modelled on
+# BTP_GAP_EV_PAIRING_CONSENT_REQ / BTP_GAP_PAIRING_CONSENT: the IUT raises
+# BTP_A2DP_EV_OPERATION_REQ when a decision is actually pending and the client
+# answers it. An IUT whose stack answers these itself never raises the event, so
+# the exchange stays silent rather than the client sending a command documented
+# to do nothing.
+BTP_A2DP_CMD_OPERATION_RSP = 0x09
+BTP_A2DP_CMD_SEND_DELAY_REPORT = 0x0a
+BTP_A2DP_CMD_GET_CAPABILITY = 0x0b
+# Questions BTP_A2DP_CMD_GET_CAPABILITY can ask. Some PTS prompts are yes/no
+# questions about the implementation rather than instructions, and the answer
+# belongs to the IUT - a client that hardcodes it is describing whichever
+# implementation it was written against.
+A2DP_CAP_CONNECT_UNPAIRED = 0x01
+A2DP_CAP_DELAY_ACCEPTABLE = 0x02
+BTP_A2DP_EV_OPERATION_REQ = 0x83
+
+# AVDTP Signal Identifiers (AVDTP 8.5), carried by the event and the response.
+AVDTP_SIG_DISCOVER = 0x01
+AVDTP_SIG_GET_CAPABILITIES = 0x02
+AVDTP_SIG_SET_CONFIGURATION = 0x03
+AVDTP_SIG_GET_CONFIGURATION = 0x04
+AVDTP_SIG_RECONFIGURE = 0x05
+AVDTP_SIG_OPEN = 0x06
+AVDTP_SIG_START = 0x07
+AVDTP_SIG_CLOSE = 0x08
+AVDTP_SIG_SUSPEND = 0x09
+AVDTP_SIG_ABORT = 0x0a
+AVDTP_SIG_SECURITY_CONTROL = 0x0b
+AVDTP_SIG_GET_ALL_CAPABILITIES = 0x0c
+AVDTP_SIG_DELAYREPORT = 0x0d
+
+# Not AVDTP signals, but part of the same family of prompts: accepting the
+# signalling channel itself and the transport channels of a configured stream.
+AVDTP_SIG_SIGNALING_CHANNEL = 0xf0
+AVDTP_SIG_TRANSPORT_CHANNEL = 0xf1
+
+# AVDTP Error Codes (AVDTP 8.20.6), for rejecting an operation.
+AVDTP_ERR_NOT_SUPPORTED_SAMPLING_FREQUENCY = 0x33
+BTP_A2DP_EV_CONNECTED = 0x80
+BTP_A2DP_EV_DISCONNECTED = 0x81
+BTP_A2DP_EV_AUDIO_STATE = 0x82
 
 # GENERATOR append 2
 
