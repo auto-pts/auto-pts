@@ -49,8 +49,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     :param debugger_snr: JLink serial number
     :return: TTY path
     """
-    logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
-                  board, overlay)
+    logging.debug("%s %s %s", project_path, board, overlay)
 
     nrfutil = NrfUtil(board, debugger_snr)
     if debugger_snr is None:

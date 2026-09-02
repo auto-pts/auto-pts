@@ -63,8 +63,7 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
     """
     source_dir = os.getenv("AUTOPTS_SOURCE_DIR_APP")
 
-    logging.debug("%s: %s %s %s %s %s", build_and_flash.__name__, zephyr_wd, tester_app_dir,
-                  board, conf_file, source_dir)
+    logging.debug("%s %s %s %s %s", zephyr_wd, tester_app_dir, board, conf_file, source_dir)
 
     app_core_configs = []
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
