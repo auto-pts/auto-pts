@@ -370,6 +370,7 @@ class IutCtl:
     def wait_iut_ready_event(self, reset=True):
         """Wait until IUT sends ready event after power up"""
         if self.gdb:
+            self.rtt_logger_start()
             return
 
         if reset:
