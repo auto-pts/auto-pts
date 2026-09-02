@@ -36,6 +36,7 @@ from .mics import mics_wid_hdl
 from .mmdl import mmdl_wid_hdl
 from .ots import ots_wid_hdl
 from .pacs import pacs_wid_hdl
+from .pbap import pbap_wid_hdl
 from .pbp import pbp_wid_hdl
 from .rfcomm import rfcomm_wid_hdl
 from .sdp import sdp_wid_hdl
@@ -79,6 +80,7 @@ __all__ = [
     "vcs_wid_hdl",
     "vocs_wid_hdl",
     "rfcomm_wid_hdl",
+    "pbap_wid_hdl",
 # GENERATOR append 2
     "generic_wid_hdl",
 ]
