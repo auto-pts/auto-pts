@@ -32,7 +32,6 @@ from autopts.pybtp.types import (
     WIDParams,
     create_lc3_ltvs_bytes,
 )
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
@@ -53,11 +52,6 @@ def create_default_config():
                      codec_ltvs=None,
                      metadata_ltvs=None,
                      mono=None)
-
-
-def hap_wid_hdl(wid, description, test_case_name):
-    log(f'{hap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 def hap_start_hap_discovery(addr_type, addr):

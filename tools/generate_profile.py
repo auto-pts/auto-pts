@@ -55,6 +55,7 @@ profile_id = input('Enter new BTP service ID: ').strip() or 0xff
 code_owner = input('Enter code owner name (e.g. Codecoup): ').strip() or 'Codecoup'
 profile_name_lower = profile_name.lower()
 profile_name_upper = profile_name.upper()
+project_name_upper = project_name.upper()
 
 
 copyright_text = f'Copyright (c) {datetime.now().year}, {code_owner}.'
@@ -82,10 +83,11 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.{project_name}.ztestcase import ZTestCase
 from autopts.pybtp import btp
-from autopts.ptsprojects.{project_name}.{profile_name_lower}_wid import {profile_name_lower}_wid_hdl
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.pybtp.types import Addr
 
+{profile_name_lower}_wid_hdl = get_wid_handler(Backend.{project_name_upper}, Service.{profile_name_upper})
 
 def set_pixits(ptses):
     pts = ptses[0]
@@ -134,45 +136,20 @@ def test_cases(ptses):
 """,
     # END of autopts/ptsprojects/zephyr/profile.py
 
-    # START of autopts/ptsprojects/zephyr/profile_wid.py
-    f'{project_path}/{profile_name_lower}_wid.py':
-f"""{license_text}
-
-import logging
-
-from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
-
-log = logging.debug
-
-
-def {profile_name_lower}_wid_hdl(wid, description, test_case_name):
-"""
-"    log(f'{" + profile_name_lower + "_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')\n"
-f"    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.{profile_name_lower}'])\n",
-    # END of autopts/ptsprojects/zephyr/profile_wid.py
-
     # START of autopts/wid/profile.py
     f'{AUTOPTS_REPO}/autopts/wid/{profile_name_lower}.py':
 f"""{license_text}
 import logging
+
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
-def {profile_name_lower}_wid_hdl(wid, description, test_case_name):
-"""
-"    log(f'{" + profile_name_lower + "_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')\n"
-"""    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
-def hdl_wid_1(params: WIDParams):
-    # Example WID
-
-    return True
+# Add custom WID handlers here as needed. Example:
+# def hdl_wid_1(params: WIDParams):
+#     return True
 """,
     # END of autopts/wid/profile.py
 
@@ -299,6 +276,9 @@ Events:
 }
 
 changes_to_prepend = {
+    f"{AUTOPTS_REPO}/autopts/ptsprojects/common_wid.py": {
+        "profile_enum": f"    {profile_name_upper} = auto()\n",
+    },
     f"{project_path}/__init__.py": {
         1: (
             f"               {profile_name_lower},\n"
@@ -321,10 +301,6 @@ changes_to_prepend = {
         2: f"        self.{profile_name_lower} = None\n",
         3: f"    def {profile_name_lower}_init(self):\n        self.{profile_name_lower} = {profile_name_upper}()\n\n",
         4: f"        if self.{profile_name_lower}:\n            self.{profile_name_lower}_init()\n\n",
-    },
-    f'{AUTOPTS_REPO}/autopts/wid/__init__.py': {
-        1: f"from .{profile_name_lower} import {profile_name_lower}_wid_hdl\n",
-        2: f'    "{profile_name_lower}_wid_hdl",\n'
     },
     f'{AUTOPTS_REPO}/autopts/pybtp/btp/btp.py': {
         1: f"""def core_reg_svc_{profile_name_lower}():

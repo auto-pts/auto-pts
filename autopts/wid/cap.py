@@ -43,7 +43,6 @@ from autopts.pybtp.types import (
     PaSyncRequest,
     WIDParams,
 )
-from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
     CODEC_CONFIG_SETTINGS,
@@ -58,13 +57,7 @@ from autopts.wid.common import _safe_bap_send
 log = logging.debug
 
 
-def cap_wid_hdl(wid, description, test_case_name):
-    log(f'{cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
-
 def hdl_wid_100(params: WIDParams):
     """
     Please synchronize with Broadcast ISO request
