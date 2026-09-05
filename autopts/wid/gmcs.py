@@ -241,18 +241,19 @@ def hdl_wid_20141(params: WIDParams):
     """Please update Media Player Name/Track Title characteristic with value
        whose length is greater than the (ATT_MTU-3). Click OK when it is ready."""
 
-    # TODO: GMCS/SR/SPN/BV-01-C, GMCS/SR/SPN/BV-02-C
-    #  There is no way to do that with current API.
+    if params.test_case_name == 'GMCS/SR/SPN/BV-01-C':
+        return True
 
     return False
 
 
 def hdl_wid_20142(params: WIDParams):
-    """Please update Track Title characteristic(Handle = 0x005E) and send a
+    """Please update Media Player Name/Track Title characteristic and send a
        notification containing the updated value of the characteristic with
        a different value whose length is greater than the (ATT_MTU-3)."""
 
-    # TODO: GMCS/SR/SPN/BV-01-C, GMCS/SR/SPN/BV-02-C
-    #  There is no way to do that with current API.
+    if params.test_case_name == 'GMCS/SR/SPN/BV-01-C':
+        btp.gmcs_player_name_set("Player0 oversized update")
+        return True
 
     return False

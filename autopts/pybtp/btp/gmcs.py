@@ -41,6 +41,9 @@ GMCS = {
     'parent_group_set':          (defs.BTP_SERVICE_ID_GMCS,
                                   defs.BTP_GMCS_CMD_PARENT_GROUP_SET,
                                   CONTROLLER_INDEX, ""),
+    'player_name_set':          (defs.BTP_SERVICE_ID_GMCS,
+                                 defs.BTP_GMCS_CMD_PLAYER_NAME_SET,
+                                 CONTROLLER_INDEX),
 }
 
 
@@ -145,6 +148,16 @@ def gmcs_parent_group_set():
 
     iutctl.btp_socket.send(*GMCS['parent_group_set'])
 
+    return gmcs_command_rsp_succ()
+
+
+def gmcs_player_name_set(name):
+    logging.debug("")
+
+    data = bytes([len(name)]) + name.encode("utf-8")
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GMCS['player_name_set'], data=data)
     return gmcs_command_rsp_succ()
 
 
