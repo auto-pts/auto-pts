@@ -765,11 +765,14 @@ def hdl_wid_100(params: WIDParams):
     if params.test_case_name.startswith('BAP/BA'):
         return True
 
+    biginfo = stack.gap.read_periodic_biginfo(timeout=20)
+    if biginfo is None:
+        log(f'BIGInfo not found for broadcast ID {broadcast_id}')
+        return False
+
     bis_events = {}
-    while True:
-        # Only apply a long timeout for the first event as any remaining events would come right after
-        wait_timeout = 20 if not bis_events else 1
-        bis_event = stack.bap.wait_bis_found_ev(broadcast_id, wait_timeout, True)
+    for _ in range(biginfo.num_bis):
+        bis_event = stack.bap.wait_bis_found_ev(broadcast_id, 20, True)
         if bis_event is None:
             break
         bis_events[bis_event['bis_id']] = bis_event
