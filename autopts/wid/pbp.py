@@ -79,6 +79,11 @@ def hdl_wid_100(_: WIDParams):
 
     bis_id = 1
     requested_bis_sync = 1
+
+    if stack.gap.read_periodic_biginfo() is None:
+        log(f'BIGInfo not found for broadcast ID {broadcast_id}')
+        return False
+
     btp.bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync, addr_type, addr)
 
     ev = stack.bap.wait_bis_synced_ev(broadcast_id, bis_id, 20, False)
