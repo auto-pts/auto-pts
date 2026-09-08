@@ -188,6 +188,11 @@ def hdl_wid_113(_: WIDParams):
 
     # BIS_Sync bitfield uses bit 0 for BIS Index 1
     requested_bis_sync = 1 << (ev['bis_id'] - 1)
+
+    if stack.gap.read_periodic_biginfo(timeout=20) is None:
+        log(f'BIGInfo not found for broadcast ID {broadcast_id}')
+        return False
+
     btp.bap_broadcast_sink_bis_sync(ev['broadcast_id'], requested_bis_sync)
 
     bis_id = ev['bis_id']
