@@ -30,6 +30,7 @@ from .gtbs import *  # noqa: F403 # used in many files : TODO import directly in
 from .hap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .ias import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .l2cap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .map import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .mcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .mesh import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .micp import *  # noqa: F403 # used in many files : TODO import directly in files not with *

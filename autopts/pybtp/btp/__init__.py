@@ -32,6 +32,7 @@ from autopts.pybtp.btp.gmcs import *  # noqa: F403 # used in many files : TODO i
 from autopts.pybtp.btp.hap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.has import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.l2cap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from autopts.pybtp.btp.map import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.mcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.mesh import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.micp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
