@@ -607,6 +607,10 @@ def core_reg_svc_rfcomm():
     core_reg_svc_univ("rfcomm_reg", "RFCOMM")
 
 
+def core_reg_svc_a2dp():
+    core_reg_svc_univ("a2dp_reg", "A2DP")
+
+
 # GENERATOR append 1
 
 
@@ -699,6 +703,7 @@ set_get_stack_method(_get_stack)
 def event_handler(hdr, data):
     logging.debug("%r %r", hdr, data)
     from .event_map import (
+        A2DP_EV,
         AICS_EV,
         ASCS_EV,
         BAP_EV,
@@ -763,6 +768,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
         defs.BTP_SERVICE_ID_SDP: (SDP_EV, stack.sdp),
         defs.BTP_SERVICE_ID_RFCOMM: (RFCOMM_EV, stack.rfcomm),
+        defs.BTP_SERVICE_ID_A2DP: (A2DP_EV, stack.a2dp),
         # GENERATOR append 3
     }
 

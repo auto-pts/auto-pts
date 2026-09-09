@@ -603,6 +603,10 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_RFCOMM,
         "supported_commands": defs.BTP_RFCOMM_CMD_READ_SUPPORTED_COMMANDS
     },
+    "A2DP": {
+        "service": 1 << defs.BTP_SERVICE_ID_A2DP,
+        "supported_commands": defs.BTP_A2DP_CMD_READ_SUPPORTED_COMMANDS
+    },
 # GENERATOR append 1
     "VENDOR": {
         "service": 1 << defs.BTP_SERVICE_ID_VENDOR,
@@ -685,6 +689,8 @@ reg_unreg_service = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_SDP),
     "rfcomm_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_RFCOMM),
+    "a2dp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_A2DP),
 # GENERATOR append 2
     "vendor_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VENDOR),

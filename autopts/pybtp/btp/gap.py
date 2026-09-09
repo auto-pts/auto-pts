@@ -79,6 +79,8 @@ GAP = {
                       CONTROLLER_INDEX, defs.GAP_GENERAL_DISCOVERABLE),
     "set_limdiscov": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, defs.GAP_LIMITED_DISCOVERABLE),
+    "set_br_scan_mode": (defs.BTP_SERVICE_ID_GAP,
+                         defs.BTP_GAP_CMD_SET_BR_SCAN_MODE, CONTROLLER_INDEX),
     "set_powered_on": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_POWERED,
                        CONTROLLER_INDEX, 1),
     "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_POWERED,
@@ -1046,6 +1048,25 @@ def gap_set_limited_discoverable():
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
+
+
+def gap_set_br_scan_mode(mode=defs.BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE,
+                         bondable=True):
+    """Set the BR/EDR page and inquiry scan mode.
+
+    gap_set_connectable() and gap_set_general_discoverable() only affect LE, so
+    this is what actually makes the IUT reachable or findable over BR/EDR. The
+    "prepare the IUT into a connectable mode" prompts need it: without it a
+    handler can only assume something outside the test already arranged the scan
+    mode, which holds for this tester but not for other systems.
+    """
+    logging.debug("%s mode=%d bondable=%s", gap_set_br_scan_mode.__name__,
+                  mode, bondable)
+
+    iutctl = get_iut()
+
+    data = struct.pack('BB', mode, 1 if bondable else 0)
+    iutctl.btp_socket.send_wait_rsp(*GAP['set_br_scan_mode'], data=data)
 
 
 def gap_set_powered_on():
