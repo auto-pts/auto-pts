@@ -1158,8 +1158,14 @@ def hdl_wid_82(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     execute write request.
     """
-    # This is handled by host
-    return True
+    stack = get_stack()
+
+    execute_write_request = stack.gatt_cl.wait_for_write_long_rsp()
+    if execute_write_request:
+        # clear flag
+        stack.gatt_cl.write_long_completed = False
+        return True
+    return False
 
 
 def hdl_wid_90(params: WIDParams):
