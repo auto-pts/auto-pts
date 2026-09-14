@@ -182,6 +182,10 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/TIM/BV-03-C",
                   pre_conditions_gatt,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-22-C",
+                  pre_conditions +
+                  [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "True"))],
+                  generic_wid_hdl=l2cap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
