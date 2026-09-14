@@ -271,6 +271,8 @@ def test_cases(ptses):
                 TestFunc(get_stack().synch.add_synch_element,
                     [SynchPoint("TMAP/CG/VRC/BV-09-C", 502), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 502)]),
                 TestFunc(get_stack().synch.add_synch_element,
+                    [SynchPoint("TMAP/CG/VRC/BV-09-C", 20107), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20107)]),
+                TestFunc(get_stack().synch.add_synch_element,
                     [SynchPoint("TMAP/CG/VRC/BV-09-C", 20110), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20110)]),
                 TestFunc(get_stack().synch.add_synch_element,
                     [SynchPoint("TMAP/CG/VRC/BV-09-C", 20110), SynchPoint("TMAP/CG/VRC/BV-09-C_LT2", 20110)]),
