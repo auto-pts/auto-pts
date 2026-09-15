@@ -1,0 +1,2617 @@
+BIP Service (ID 33)
+===================
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - Connect RFCOMM command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Channel (1 octet)
+                Response parameters:    <none>
+
+                This command creates the RFCOMM transport that will carry the
+                BIP OBEX session. Address is the peer BD_ADDR and Channel is
+                the RFCOMM server channel number, typically obtained from the
+                SDP Discover command (0x09) or from a PIXIT. RFCOMM Connected
+                Event (0x80) (or RFCOMM Disconnected Event (0x81) in case of an
+                error) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x04 - Disconnect RFCOMM command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command closes the RFCOMM transport identified by Address
+                (the peer BD_ADDR). RFCOMM Disconnected Event (0x81) shall be
+                expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x06 - Connect L2CAP command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        PSM (2 octets)
+                Response parameters:    <none>
+
+                This command creates the L2CAP transport that will carry the
+                BIP OBEX session. Address is the peer BD_ADDR and PSM is the
+                L2CAP Protocol/Service Multiplexer, typically obtained from the
+                SDP Discover command (0x09) or from a PIXIT. L2CAP Connected
+                Event (0x82) (or L2CAP Disconnected Event (0x83) in case of an
+                error) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x07 - Disconnect L2CAP command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command closes the L2CAP transport identified by Address
+                (the peer BD_ADDR). L2CAP Disconnected Event (0x83) shall be
+                expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x09 - SDP Discover command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        UUID (2 octets)
+                Response parameters:    <none>
+
+                This command generates an SDP service search on Address for the
+                BIP service class given by UUID (see BIPImagingSvclass in
+                autopts/pybtp/types.py: 0x111A Imaging, 0x111B Imaging
+                Responder, 0x111C Imaging Automatic Archive, 0x111D Imaging
+                Referenced Objects). The discovered RFCOMM Channel/L2CAP PSM
+                and the BIP SDP record attributes (SupportedCapabilities,
+                SupportedFeatures, SupportedFunctions) are returned
+                asynchronously in the SDP Discovered Event (0xaa).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0a - Server Register command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Conn_Type (1 octet)
+                Response parameters:    <none>
+
+                This command registers a local BIP OBEX server for the primary
+                imaging connection associated with Address, so the IUT starts
+                accepting incoming OBEX CONNECT requests. Conn_Type selects the
+                primary connection role advertised by the server (see
+                BIPConnType in autopts/pybtp/types.py, e.g. PRIM_IMAGE_PUSH=0,
+                PRIM_IMAGE_PULL=1, PRIM_ADVANCED_IMAGE_PRINTING=2,
+                PRIM_AUTO_ARCHIVE=3, PRIM_REMOTE_CAMERA=4,
+                PRIM_REMOTE_DISPLAY=5). Once registered, incoming OBEX requests
+                are signalled through the Server *_Req events (0x84-0x96); the
+                test script answers each of them with the matching *_Rsp
+                command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0b - Server Unregister command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command unregisters the local primary BIP OBEX server
+                previously registered with the Server Register command (0x0a)
+                for Address.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0c - Client Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Conn_Type (1 octet)
+                Response parameters:    <none>
+
+                This command makes the IUT act as an OBEX client and send an
+                OBEX CONNECT to the peer's primary BIP server identified by
+                Address, over a transport already established with the Connect
+                RFCOMM (0x03) or Connect L2CAP (0x06) command. Conn_Type
+                selects the primary connection role being requested (see
+                BIPConnType). The outcome is reported asynchronously in the
+                Client Connected Event (0x97).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0d - OBEX Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send an
+                OBEX DISCONNECT for the primary session on Address. The outcome
+                is reported asynchronously in the Client Disconnected Event
+                (0x98).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0e - OBEX Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send an
+                OBEX ABORT for the ongoing primary operation on Address. The
+                outcome is reported asynchronously in the Client Aborted Event
+                (0x99).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0f - Connect Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming OBEX CONNECT request
+                signalled by the Server Connect Req Event (0x84). Rsp_Code is
+                the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py, e.g. 0xa0 SUCCESS). Data carries the
+                OBEX headers/body to return with the response (see OBEXHdr in
+                autopts/pybtp/types.py); typically only the Who header, echoing
+                the target UUID from the request, is present.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x10 - Disconnect Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming OBEX DISCONNECT request
+                signalled by the Server Disconnect Req Event (0x85). Rsp_Code
+                is the OBEX response code.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x11 - Abort Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming OBEX ABORT request signalled
+                by the Server Abort Req Event (0x86). Rsp_Code is the OBEX
+                response code.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x12 - GetCapabilities command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetCapabilities request (OBEX GET, Type header
+                "x-bt/img-capabilities") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetCapabilities Rsp Event (0x9a)
+                rather than as a synchronous response; on an OBEX CONTINUE
+                reply the IUT automatically issues the next continuation
+                request.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x13 - GetCapabilities Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetCapabilities request
+                signalled by the Server GetCapabilities Req Event (0x87).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x14 - GetImageList command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetImagesList request (OBEX GET, Type header
+                "x-bt/img-listing") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetImageList Rsp Event (0x9b)
+                rather than as a synchronous response; on an OBEX CONTINUE
+                reply the IUT automatically issues the next continuation
+                request. The Application-Parameters header carries
+                NbReturnedHandles, ListStartOffset and LatestCapturedImages
+                (see BIPAppParamTag in autopts/pybtp/types.py); an
+                Img-Description header carrying the image handles
+                descriptor/filter is always present, even when empty.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x15 - GetImageList Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetImagesList request
+                signalled by the Server GetImageList Req Event (0x88). Rsp_Code
+                is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x16 - GetImageProperties command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetImageProperties request (OBEX GET, Type header
+                "x-bt/img-properties") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetImageProperties Rsp Event
+                (0x9c) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Img-Handle header identifies the
+                requested image.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x17 - GetImageProperties Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetImageProperties request
+                signalled by the Server GetImageProperties Req Event (0x89).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x18 - GetImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetImage request (OBEX GET, Type header "x-bt/img-img") to the
+                peer's primary BIP server on Address. Final indicates whether
+                this is the last request packet (1) or more request packets
+                follow (0); Data carries the OBEX headers/body for this request
+                (see OBEXHdr in autopts/pybtp/types.py). The peer's reply is
+                reported asynchronously in the Client GetImage Rsp Event (0x9d)
+                rather than as a synchronous response; on an OBEX CONTINUE
+                reply the IUT automatically issues the next continuation
+                request. The Img-Handle header identifies the requested image;
+                an optional Img-Description header may request a specific
+                variant.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x19 - GetImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetImage request signalled
+                by the Server GetImage Req Event (0x8a). Rsp_Code is the OBEX
+                response code (see OBEXRspCode in autopts/pybtp/types.py), e.g.
+                0x90 CONTINUE while more response packets follow and 0xa0
+                SUCCESS on the final packet; Data carries the OBEX headers/body
+                of this response packet. The first response packet carries a
+                Length header with the total image size.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1a - GetLinkedThumbnail command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetLinkedThumbnail request (OBEX GET, Type header
+                "x-bt/img-thm") to the peer's primary BIP server on Address.
+                Final indicates whether this is the last request packet (1) or
+                more request packets follow (0); Data carries the OBEX
+                headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetLinkedThumbnail Rsp Event
+                (0x9e) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Img-Handle header identifies the
+                image whose thumbnail is requested.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1b - GetLinkedThumbnail Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetLinkedThumbnail request
+                signalled by the Server GetLinkedThumbnail Req Event (0x8b).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1c - GetLinkedAttachment command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetLinkedAttachment request (OBEX GET, Type header
+                "x-bt/img-attachment") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetLinkedAttachment Rsp Event
+                (0x9f) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Img-Handle header identifies the
+                linked image and the Name header identifies the attachment
+                file, as returned by a prior GetImageProperties response.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1d - GetLinkedAttachment Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetLinkedAttachment request
+                signalled by the Server GetLinkedAttachment Req Event (0x8c).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1e - GetPartialImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetPartialImage request (OBEX GET, Type header
+                "x-bt/img-partial") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetPartialImage Rsp Event (0xa0)
+                rather than as a synchronous response; on an OBEX CONTINUE
+                reply the IUT automatically issues the next continuation
+                request. The Application-Parameters header carries
+                PartialFileLength and PartialFileStartOffset (see
+                BIPAppParamTag).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1f - GetPartialImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetPartialImage request
+                signalled by the Server GetPartialImage Req Event (0x8d).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. The
+                first response packet carries a Length header with the length
+                of the partial file returned in this response, plus the same
+                Application-Parameters as the request.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x20 - GetMonitoringImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetMonitoringImage request (OBEX GET, Type header
+                "x-bt/img-monitoring") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client GetMonitoringImage Rsp Event
+                (0xa1) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Application-Parameters header carries
+                the StoreFlag (see BIPAppParamTag).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x21 - GetMonitoringImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetMonitoringImage request
+                signalled by the Server GetMonitoringImage Req Event (0x8e).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. An
+                Img-Handle header is present in the response only when
+                StoreFlag requested that the captured image be stored and a
+                handle was allocated for it.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x22 - GetStatus command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetStatus request (OBEX GET, Type header "x-bt/img-status") to
+                the peer's primary BIP server on Address. Final indicates
+                whether this is the last request packet (1) or more request
+                packets follow (0); Data carries the OBEX headers/body for this
+                request (see OBEXHdr in autopts/pybtp/types.py). The peer's
+                reply is reported asynchronously in the Client GetStatus Rsp
+                Event (0xa2) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x23 - GetStatus Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetStatus request signalled
+                by the Server GetStatus Req Event (0x8f). Rsp_Code is the OBEX
+                response code (see OBEXRspCode in autopts/pybtp/types.py), e.g.
+                0x90 CONTINUE while more response packets follow and 0xa0
+                SUCCESS on the final packet; Data carries the OBEX headers/body
+                of this response packet. The response carries a response code
+                only, with no OBEX headers and Data typically empty.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x24 - PutImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                PutImage request (OBEX PUT, Type header "x-bt/img-img") to the
+                peer's primary BIP server on Address. Final indicates whether
+                this is the last request packet (1) or more request packets
+                follow (0); Data carries the OBEX headers/body for this request
+                (see OBEXHdr in autopts/pybtp/types.py). The peer's reply is
+                reported asynchronously in the Client PutImage Rsp Event (0xa3)
+                rather than as a synchronous response; on an OBEX CONTINUE
+                reply the IUT automatically issues the next continuation
+                request. The Name and Img-Description headers describe the
+                image being sent; Body/End-of-Body carry the image data,
+                chunked across packets when it exceeds one OBEX packet. On
+                success the response carries the server-allocated Img-Handle.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x25 - PutImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming PutImage request signalled
+                by the Server PutImage Req Event (0x90). Rsp_Code is the OBEX
+                response code (see OBEXRspCode in autopts/pybtp/types.py), e.g.
+                0x90 CONTINUE while more response packets follow and 0xa0
+                SUCCESS on the final packet; Data carries the OBEX headers/body
+                of this response packet. On success the response carries the
+                server-allocated Img-Handle.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x26 - PutLinkedThumbnail command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                PutLinkedThumbnail request (OBEX PUT, Type header
+                "x-bt/img-thm") to the peer's primary BIP server on Address.
+                Final indicates whether this is the last request packet (1) or
+                more request packets follow (0); Data carries the OBEX
+                headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client PutLinkedThumbnail Rsp Event
+                (0xa4) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Img-Handle header identifies the
+                image the thumbnail is linked to; Body/End-of-Body carry the
+                thumbnail file.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x27 - PutLinkedThumbnail Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming PutLinkedThumbnail request
+                signalled by the Server PutLinkedThumbnail Req Event (0x91).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x28 - PutLinkedAttachment command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                PutLinkedAttachment request (OBEX PUT, Type header
+                "x-bt/img-attachment") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client PutLinkedAttachment Rsp Event
+                (0xa5) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Img-Handle header identifies the
+                linked image, the Img-Description header carries the
+                attachment-descriptor XML, and Body/End-of-Body carry the
+                attachment file.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x29 - PutLinkedAttachment Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming PutLinkedAttachment request
+                signalled by the Server PutLinkedAttachment Req Event (0x92).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2a - RemoteDisplay command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                RemoteDisplay request (OBEX PUT, Type header
+                "x-bt/img-display") to the peer's primary BIP server on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request (see OBEXHdr in
+                autopts/pybtp/types.py). The peer's reply is reported
+                asynchronously in the Client RemoteDisplay Rsp Event (0xa6)
+                rather than as a synchronous response; on an OBEX CONTINUE
+                reply the IUT automatically issues the next continuation
+                request. The Img-Handle header is present (empty unless
+                display_func selects a specific image) and the
+                Application-Parameters header carries the DisplayedImage value
+                (see BIPRemoteDisplay in autopts/pybtp/types.py:
+                NEXT_IMAGE=0x01, PREVIOUS_IMAGE=0x02, SELECT_IMAGE=0x03,
+                CURRENT_IMAGE=0x04).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2b - RemoteDisplay Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming RemoteDisplay request
+                signalled by the Server RemoteDisplay Req Event (0x93).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. The
+                Img-Handle header must always be present, empty when no image
+                is currently displayed.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2c - DeleteImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                DeleteImage request (OBEX DELETE, Type header "x-bt/img-img")
+                to the peer's primary BIP server on Address. Final indicates
+                whether this is the last request packet (1) or more request
+                packets follow (0); Data carries the OBEX headers/body for this
+                request (see OBEXHdr in autopts/pybtp/types.py). The peer's
+                reply is reported asynchronously in the Client DeleteImage Rsp
+                Event (0xa7) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. The Img-Handle header identifies the
+                image to delete.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2d - DeleteImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming DeleteImage request
+                signalled by the Server DeleteImage Req Event (0x94). Rsp_Code
+                is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2e - StartPrint command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                StartPrint request (OBEX PUT, Type header "x-bt/img-print") to
+                the peer's primary BIP server on Address. Final indicates
+                whether this is the last request packet (1) or more request
+                packets follow (0); Data carries the OBEX headers/body for this
+                request (see OBEXHdr in autopts/pybtp/types.py). The peer's
+                reply is reported asynchronously in the Client StartPrint Rsp
+                Event (0xa8) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. Body/End-of-Body carry the DPOF print-job
+                object.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x2f - StartPrint Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming StartPrint request signalled
+                by the Server StartPrint Req Event (0x95). Rsp_Code is the OBEX
+                response code (see OBEXRspCode in autopts/pybtp/types.py), e.g.
+                0x90 CONTINUE while more response packets follow and 0xa0
+                SUCCESS on the final packet; Data carries the OBEX headers/body
+                of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x30 - StartArchive command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                StartArchive request (OBEX PUT, Type header "x-bt/img-archive")
+                to the peer's primary BIP server on Address. Final indicates
+                whether this is the last request packet (1) or more request
+                packets follow (0); Data carries the OBEX headers/body for this
+                request (see OBEXHdr in autopts/pybtp/types.py). The peer's
+                reply is reported asynchronously in the Client StartArchive Rsp
+                Event (0xa9) rather than as a synchronous response; on an OBEX
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. Body/End-of-Body carry the
+                archive-descriptor object; this triggers the IUT to open the
+                secondary (Archived Objects) connection and push the referenced
+                images.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x31 - StartArchive Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming StartArchive request
+                signalled by the Server StartArchive Req Event (0x96). Rsp_Code
+                is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x32 - Second Server Register command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Conn_Type (1 octet)
+                Response parameters:    <none>
+
+                This command registers a local BIP OBEX server for the
+                secondary (Referenced Objects / Automatic Archive) connection
+                associated with Address, so the IUT starts accepting incoming
+                OBEX CONNECT requests on that independent OBEX session (see
+                BIPObexRole in autopts/ptsprojects/stack/layers/bip.py).
+                Conn_Type selects the secondary connection role advertised by
+                the server (see BIPConnType: SEC_REFERENCED_OBJECTS=10,
+                SEC_ARCHIVED_OBJECTS=11). Once registered, incoming OBEX
+                requests are signalled through the Second Server *_Req events
+                (0xab-0xb7); the test script answers each of them with the
+                matching Second *_Rsp command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x33 - Second Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Conn_Type (1 octet)
+                Response parameters:    <none>
+
+                This command makes the IUT act as an OBEX client and send an
+                OBEX CONNECT to the peer's secondary BIP server identified by
+                Address, over a transport already established with the Second
+                Connect RFCOMM (0x42) or Second Connect L2CAP (0x41) command.
+                Conn_Type selects the secondary connection role being requested
+                (default SEC_REFERENCED_OBJECTS, see BIPConnType). The outcome
+                is reported asynchronously in the Second Client Connected Event
+                (0xae).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x34 - Second OBEX Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send an
+                OBEX DISCONNECT for the secondary session on Address. The
+                outcome is reported asynchronously in the Second Client
+                Disconnected Event (0xaf).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x35 - Second OBEX Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send an
+                OBEX ABORT for the ongoing secondary operation on Address. The
+                outcome is reported asynchronously in the Second Client Aborted
+                Event (0xb0).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x36 - Second Connect Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the
+                secondary OBEX server, to answer an incoming OBEX CONNECT
+                request signalled by the Second Server Connect Req Event
+                (0xab). Rsp_Code is the OBEX response code. Data carries the
+                OBEX headers/body to return with the response, typically only
+                the Who header echoing the target UUID from the request.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x37 - Second Disconnect Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the
+                secondary OBEX server, to answer an incoming OBEX DISCONNECT
+                request signalled by the Second Server Disconnect Req Event
+                (0xac). Rsp_Code is the OBEX response code.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x38 - Second Abort Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the
+                secondary OBEX server, to answer an incoming OBEX ABORT request
+                signalled by the Second Server Abort Req Event (0xad). Rsp_Code
+                is the OBEX response code.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x39 - Second Server Unregister command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command unregisters the local secondary BIP OBEX server
+                previously registered with the Second Server Register command
+                (0x32) for Address.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x3a - Second GetCapabilities Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetCapabilities request
+                signalled by the Second Server GetCapabilities Req Event
+                (0xb1). Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x3b - Second GetImageList Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetImagesList request
+                signalled by the Second Server GetImageList Req Event (0xb2).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x3c - Second GetImageProperties Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetImageProperties request
+                signalled by the Second Server GetImageProperties Req Event
+                (0xb3). Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x3d - Second GetImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetImage request signalled
+                by the Second Server GetImage Req Event (0xb4). Rsp_Code is the
+                OBEX response code (see OBEXRspCode in autopts/pybtp/types.py),
+                e.g. 0x90 CONTINUE while more response packets follow and 0xa0
+                SUCCESS on the final packet; Data carries the OBEX headers/body
+                of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x3e - Second GetLinkedThumbnail Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetLinkedThumbnail request
+                signalled by the Second Server GetLinkedThumbnail Req Event
+                (0xb5). Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x3f - Second GetLinkedAttachment Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming GetLinkedAttachment request
+                signalled by the Second Server GetLinkedAttachment Req Event
+                (0xb6). Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x40 - Second DeleteImage Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used by the test script, acting as the primary
+                OBEX server, to answer an incoming DeleteImage request
+                signalled by the Second Server DeleteImage Req Event (0xb7).
+                Rsp_Code is the OBEX response code (see OBEXRspCode in
+                autopts/pybtp/types.py), e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x41 - Second Connect L2CAP command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        PSM (2 octets)
+                Response parameters:    <none>
+
+                This command creates the L2CAP transport that will carry the
+                secondary (Referenced/Archived Objects) BIP OBEX session,
+                binding it to the IUT's secondary BIP instance so its role is
+                set to Initiator before the subsequent Second Connect command
+                (0x33) configures capabilities/features/functions. Address is
+                the peer BD_ADDR and PSM is the L2CAP Protocol/Service
+                Multiplexer. Second L2CAP Connected Event (0xc2) (or Second
+                L2CAP Disconnected Event (0xc3) in case of an error) shall be
+                expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x42 - Second Connect RFCOMM command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Channel (1 octet)
+                Response parameters:    <none>
+
+                This command creates the RFCOMM transport that will carry the
+                secondary (Referenced/Archived Objects) BIP OBEX session,
+                binding it to the IUT's secondary BIP instance the same way
+                Second Connect L2CAP (0x41) does. Address is the peer BD_ADDR
+                and Channel is the RFCOMM server channel number. Second RFCOMM
+                Connected Event (0xc0) (or Second RFCOMM Disconnected Event
+                (0xc1) in case of an error) shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x43 - Second GetImageList command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetImagesList request (OBEX GET, Type header
+                "x-bt/img-listing") to the peer's secondary BIP server
+                (Referenced/Archived Objects session, see BIPObexRole) on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request. This is a client request:
+                the peer's reply is reported asynchronously in the Second
+                Client GetImageList Rsp Event (0xb9), which is distinct from
+                Opcode 0x3b, the response command the test script uses when the
+                IUT instead acts as the secondary OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x44 - Second GetCapabilities command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetCapabilities request (OBEX GET, Type header
+                "x-bt/img-capabilities") to the peer's secondary BIP server
+                (Referenced/Archived Objects session, see BIPObexRole) on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request. This is a client request:
+                the peer's reply is reported asynchronously in the Second
+                Client GetCapabilities Rsp Event (0xb8), which is distinct from
+                Opcode 0x3a, the response command the test script uses when the
+                IUT instead acts as the secondary OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x45 - Second GetImageProperties command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetImageProperties request (OBEX GET, Type header
+                "x-bt/img-properties") to the peer's secondary BIP server
+                (Referenced/Archived Objects session, see BIPObexRole) on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request. This is a client request:
+                the peer's reply is reported asynchronously in the Second
+                Client GetImageProperties Rsp Event (0xba), which is distinct
+                from Opcode 0x3c, the response command the test script uses
+                when the IUT instead acts as the secondary OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x46 - Second GetImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetImage request (OBEX GET, Type header "x-bt/img-img") to the
+                peer's secondary BIP server (Referenced/Archived Objects
+                session, see BIPObexRole) on Address. Final indicates whether
+                this is the last request packet (1) or more request packets
+                follow (0); Data carries the OBEX headers/body for this
+                request. This is a client request: the peer's reply is reported
+                asynchronously in the Second Client GetImage Rsp Event (0xbb),
+                which is distinct from Opcode 0x3d, the response command the
+                test script uses when the IUT instead acts as the secondary
+                OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x47 - Second GetLinkedThumbnail command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetLinkedThumbnail request (OBEX GET, Type header
+                "x-bt/img-thm") to the peer's secondary BIP server
+                (Referenced/Archived Objects session, see BIPObexRole) on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request. This is a client request:
+                the peer's reply is reported asynchronously in the Second
+                Client GetLinkedThumbnail Rsp Event (0xbc), which is distinct
+                from Opcode 0x3e, the response command the test script uses
+                when the IUT instead acts as the secondary OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x48 - Second GetLinkedAttachment command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetLinkedAttachment request (OBEX GET, Type header
+                "x-bt/img-attachment") to the peer's secondary BIP server
+                (Referenced/Archived Objects session, see BIPObexRole) on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request. This is a client request:
+                the peer's reply is reported asynchronously in the Second
+                Client GetLinkedAttachment Rsp Event (0xbd), which is distinct
+                from Opcode 0x3f, the response command the test script uses
+                when the IUT instead acts as the secondary OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x49 - Second GetPartialImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                GetPartialImage request (OBEX GET, Type header
+                "x-bt/img-partial") to the peer's secondary BIP server
+                (Referenced/Archived Objects session, see BIPObexRole) on
+                Address. Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body for this request. This is a client request:
+                the peer's reply is reported asynchronously in the Second
+                Client GetPartialImage Rsp Event (0xbe). There is no secondary
+                server-response command counterpart for this operation.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x4a - Second DeleteImage command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command makes the IUT, acting as an OBEX client, send a
+                DeleteImage request (OBEX DELETE, Type header "x-bt/img-img")
+                to the peer's secondary BIP server (Referenced/Archived Objects
+                session, see BIPObexRole) on Address. Final indicates whether
+                this is the last request packet (1) or more request packets
+                follow (0); Data carries the OBEX headers/body for this
+                request. This is a client request: the peer's reply is reported
+                asynchronously in the Second Client DeleteImage Rsp Event
+                (0xbf), which is distinct from Opcode 0x40, the response
+                command the test script uses when the IUT instead acts as the
+                secondary OBEX server.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x4b - Second Disconnect L2CAP command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command tears down the secondary (Referenced/Archived
+                Objects) L2CAP transport identified by Address, acting on the
+                IUT's secondary BIP instance. Second L2CAP Disconnected Event
+                (0xc3) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x4c - Second Disconnect RFCOMM command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command tears down the secondary (Referenced/Archived
+                Objects) RFCOMM transport identified by Address, acting on the
+                IUT's secondary BIP instance. Second RFCOMM Disconnected Event
+                (0xc1) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+Events:
+
+        Opcode 0x80 - RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the RFCOMM transport for the primary
+                BIP OBEX session with Address (the peer BD_ADDR) has been
+                established.
+
+        Opcode 0x81 - RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the RFCOMM transport for the primary
+                BIP OBEX session with Address (the peer BD_ADDR) has been
+                closed.
+
+        Opcode 0x82 - L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the L2CAP transport for the primary
+                BIP OBEX session with Address (the peer BD_ADDR) has been
+                established.
+
+        Opcode 0x83 - L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the L2CAP transport for the primary
+                BIP OBEX session with Address (the peer BD_ADDR) has been
+                closed.
+
+        Opcode 0x84 - Server Connect Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received an OBEX CONNECT request from Address (the peer
+                BD_ADDR). Version is the OBEX protocol version and MOPL is the
+                peer's Maximum OBEX Packet Length; Data carries the OBEX
+                headers sent with the request (typically the Target header
+                identifying the requested BIP UUID). The test script answers
+                with the Connect Response command (0x0f).
+
+        Opcode 0x85 - Server Disconnect Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received the corresponding OBEX request from Address
+                (the peer BD_ADDR); Data carries the OBEX headers sent with the
+                request. The test script answers with the Disconnect Response
+                command (0x10).
+
+        Opcode 0x86 - Server Abort Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received the corresponding OBEX request from Address
+                (the peer BD_ADDR); Data carries the OBEX headers sent with the
+                request. The test script answers with the Abort Response
+                command (0x11).
+
+        Opcode 0x87 - Server GetCapabilities Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetCapabilities request from Address (the
+                peer BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetCapabilities Response command (0x13).
+
+        Opcode 0x88 - Server GetImageList Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetImagesList request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetImageList Response command (0x15).
+
+        Opcode 0x89 - Server GetImageProperties Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetImageProperties request from Address (the
+                peer BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetImageProperties Response command (0x17).
+
+        Opcode 0x8a - Server GetImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetImage request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetImage Response command (0x19).
+
+        Opcode 0x8b - Server GetLinkedThumbnail Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetLinkedThumbnail request from Address (the
+                peer BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetLinkedThumbnail Response command (0x1b).
+
+        Opcode 0x8c - Server GetLinkedAttachment Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetLinkedAttachment request from Address
+                (the peer BD_ADDR). Final indicates whether this is the last
+                request packet (1) or more request packets follow (0); Data
+                carries the OBEX headers/body sent with the request. The test
+                script answers with the GetLinkedAttachment Response command
+                (0x1d).
+
+        Opcode 0x8d - Server GetPartialImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetPartialImage request from Address (the
+                peer BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetPartialImage Response command (0x1f).
+
+        Opcode 0x8e - Server GetMonitoringImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetMonitoringImage request from Address (the
+                peer BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetMonitoringImage Response command (0x21).
+
+        Opcode 0x8f - Server GetStatus Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a GetStatus request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the GetStatus Response command (0x23).
+
+        Opcode 0x90 - Server PutImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a PutImage request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the PutImage Response command (0x25).
+
+        Opcode 0x91 - Server PutLinkedThumbnail Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a PutLinkedThumbnail request from Address (the
+                peer BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the PutLinkedThumbnail Response command (0x27).
+
+        Opcode 0x92 - Server PutLinkedAttachment Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a PutLinkedAttachment request from Address
+                (the peer BD_ADDR). Final indicates whether this is the last
+                request packet (1) or more request packets follow (0); Data
+                carries the OBEX headers/body sent with the request. The test
+                script answers with the PutLinkedAttachment Response command
+                (0x29).
+
+        Opcode 0x93 - Server RemoteDisplay Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a RemoteDisplay request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the RemoteDisplay Response command (0x2b).
+
+        Opcode 0x94 - Server DeleteImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a DeleteImage request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the DeleteImage Response command (0x2d).
+
+        Opcode 0x95 - Server StartPrint Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a StartPrint request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the StartPrint Response command (0x2f).
+
+        Opcode 0x96 - Server StartArchive Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received a StartArchive request from Address (the peer
+                BD_ADDR). Final indicates whether this is the last request
+                packet (1) or more request packets follow (0); Data carries the
+                OBEX headers/body sent with the request. The test script
+                answers with the StartArchive Response command (0x31).
+
+        Opcode 0x97 - Client Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Conn_Id (4 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the OBEX CONNECT
+                request sent by the Client Connect command (0x0c). Rsp_Code is
+                the OBEX response code (0xa0 SUCCESS on success); Version is
+                the peer's OBEX protocol version, MOPL its Maximum OBEX Packet
+                Length, and Conn_Id the connection ID assigned by the peer for
+                this primary session. Data carries any OBEX headers returned
+                with the response.
+
+        Opcode 0x98 - Client Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the OBEX DISCONNECT
+                request sent by the OBEX Disconnect command (0x0d), and the
+                primary OBEX connection has been torn down. Rsp_Code is the
+                OBEX response code; Data carries any OBEX headers returned with
+                the response.
+
+        Opcode 0x99 - Client Aborted Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the OBEX ABORT
+                request sent with the OBEX Abort command (0x0e). Rsp_Code is
+                the OBEX response code; Data carries the OBEX headers/body of
+                this response.
+
+        Opcode 0x9a - Client GetCapabilities Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the GetCapabilities
+                request request sent with the GetCapabilities command (0x12).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0x9b - Client GetImageList Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the GetImagesList
+                request request sent with the GetImageList command (0x14).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0x9c - Client GetImageProperties Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the
+                GetImageProperties request request sent with the
+                GetImageProperties command (0x16). Rsp_Code is the OBEX
+                response code, e.g. 0x90 CONTINUE while more response packets
+                follow and 0xa0 SUCCESS on the final packet; Data carries the
+                OBEX headers/body of this response packet. On a CONTINUE reply
+                the IUT automatically issues the next continuation request.
+
+        Opcode 0x9d - Client GetImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the GetImage request
+                request sent with the GetImage command (0x18). Rsp_Code is the
+                OBEX response code, e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. On a
+                CONTINUE reply the IUT automatically issues the next
+                continuation request.
+
+        Opcode 0x9e - Client GetLinkedThumbnail Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the
+                GetLinkedThumbnail request request sent with the
+                GetLinkedThumbnail command (0x1a). Rsp_Code is the OBEX
+                response code, e.g. 0x90 CONTINUE while more response packets
+                follow and 0xa0 SUCCESS on the final packet; Data carries the
+                OBEX headers/body of this response packet. On a CONTINUE reply
+                the IUT automatically issues the next continuation request.
+
+        Opcode 0x9f - Client GetLinkedAttachment Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the
+                GetLinkedAttachment request request sent with the
+                GetLinkedAttachment command (0x1c). Rsp_Code is the OBEX
+                response code, e.g. 0x90 CONTINUE while more response packets
+                follow and 0xa0 SUCCESS on the final packet; Data carries the
+                OBEX headers/body of this response packet. On a CONTINUE reply
+                the IUT automatically issues the next continuation request.
+
+        Opcode 0xa0 - Client GetPartialImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the GetPartialImage
+                request request sent with the GetPartialImage command (0x1e).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xa1 - Client GetMonitoringImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the
+                GetMonitoringImage request request sent with the
+                GetMonitoringImage command (0x20). Rsp_Code is the OBEX
+                response code, e.g. 0x90 CONTINUE while more response packets
+                follow and 0xa0 SUCCESS on the final packet; Data carries the
+                OBEX headers/body of this response packet. On a CONTINUE reply
+                the IUT automatically issues the next continuation request.
+
+        Opcode 0xa2 - Client GetStatus Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the GetStatus request
+                request sent with the GetStatus command (0x22). Rsp_Code is the
+                OBEX response code, e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. On a
+                CONTINUE reply the IUT automatically issues the next
+                continuation request.
+
+        Opcode 0xa3 - Client PutImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the PutImage request
+                request sent with the PutImage command (0x24). Rsp_Code is the
+                OBEX response code, e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. On a
+                CONTINUE reply the IUT automatically issues the next
+                continuation request. On success Data carries the
+                server-allocated Img-Handle, which the IUT records for use by a
+                subsequent PutLinkedThumbnail/PutLinkedAttachment.
+
+        Opcode 0xa4 - Client PutLinkedThumbnail Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the
+                PutLinkedThumbnail request request sent with the
+                PutLinkedThumbnail command (0x26). Rsp_Code is the OBEX
+                response code, e.g. 0x90 CONTINUE while more response packets
+                follow and 0xa0 SUCCESS on the final packet; Data carries the
+                OBEX headers/body of this response packet. On a CONTINUE reply
+                the IUT automatically issues the next continuation request.
+
+        Opcode 0xa5 - Client PutLinkedAttachment Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the
+                PutLinkedAttachment request request sent with the
+                PutLinkedAttachment command (0x28). Rsp_Code is the OBEX
+                response code, e.g. 0x90 CONTINUE while more response packets
+                follow and 0xa0 SUCCESS on the final packet; Data carries the
+                OBEX headers/body of this response packet. On a CONTINUE reply
+                the IUT automatically issues the next continuation request.
+
+        Opcode 0xa6 - Client RemoteDisplay Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the RemoteDisplay
+                request request sent with the RemoteDisplay command (0x2a).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xa7 - Client DeleteImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the DeleteImage
+                request request sent with the DeleteImage command (0x2c).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xa8 - Client StartPrint Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the StartPrint
+                request request sent with the StartPrint command (0x2e).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xa9 - Client StartArchive Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the StartArchive
+                request request sent with the StartArchive command (0x30).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xaa - SDP Discovered Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Channel (1 octet)
+                                        PSM (2 octets)
+                                        Capabilities (1 octet)
+                                        Features (2 octets)
+                                        Functions (4 octets)
+
+                This event returns the result of the SDP Discover command
+                (0x09) for Address (the peer BD_ADDR): Channel is the RFCOMM
+                server channel number and PSM the L2CAP PSM found in the
+                discovered BIP SDP record's ProtocolDescriptorList;
+                Capabilities, Features and Functions are the record's
+                SupportedCapabilities, SupportedFeatures and SupportedFunctions
+                attribute bitmasks.
+
+        Opcode 0xab - Second Server Connect Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received an OBEX CONNECT request from Address (the peer
+                BD_ADDR) on the Referenced/Archived Objects session. Version is
+                the OBEX protocol version and MOPL is the peer's Maximum OBEX
+                Packet Length; Data carries the OBEX headers sent with the
+                request. The test script answers with the Second Connect
+                Response command (0x36).
+
+        Opcode 0xac - Second Server Disconnect Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received the corresponding OBEX request from Address
+                (the peer BD_ADDR); Data carries the OBEX headers sent with the
+                request. The test script answers with the Second Disconnect
+                Response command (0x37).
+
+        Opcode 0xad - Second Server Abort Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the primary OBEX
+                server, received the corresponding OBEX request from Address
+                (the peer BD_ADDR); Data carries the OBEX headers sent with the
+                request. The test script answers with the Second Abort Response
+                command (0x38).
+
+        Opcode 0xae - Second Client Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Conn_Id (4 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the OBEX CONNECT
+                request sent by the Second Connect command (0x33). Rsp_Code is
+                the OBEX response code; Version and MOPL are the peer's OBEX
+                protocol version and Maximum OBEX Packet Length, and Conn_Id is
+                the connection ID assigned by the peer for this secondary
+                session. Data carries any OBEX headers returned with the
+                response.
+
+        Opcode 0xaf - Second Client Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the OBEX DISCONNECT
+                request sent by the Second OBEX Disconnect command (0x34), and
+                the secondary OBEX connection has been torn down. Rsp_Code is
+                the OBEX response code; Data carries any OBEX headers returned
+                with the response.
+
+        Opcode 0xb0 - Second Client Aborted Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response to the OBEX ABORT
+                request sent with the Second OBEX Abort command (0x35).
+                Rsp_Code is the OBEX response code; Data carries the OBEX
+                headers/body of this response.
+
+        Opcode 0xb1 - Second Server GetCapabilities Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a GetCapabilities request from Address (the
+                peer BD_ADDR) on the Referenced/Archived Objects session. Final
+                indicates whether this is the last request packet (1) or more
+                request packets follow (0); Data carries the OBEX headers/body
+                sent with the request. The test script answers with the Second
+                GetCapabilities Response command (0x3a).
+
+        Opcode 0xb2 - Second Server GetImageList Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a GetImagesList request from Address (the peer
+                BD_ADDR) on the Referenced/Archived Objects session. Final
+                indicates whether this is the last request packet (1) or more
+                request packets follow (0); Data carries the OBEX headers/body
+                sent with the request. The test script answers with the Second
+                GetImageList Response command (0x3b).
+
+        Opcode 0xb3 - Second Server GetImageProperties Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a GetImageProperties request from Address (the
+                peer BD_ADDR) on the Referenced/Archived Objects session. Final
+                indicates whether this is the last request packet (1) or more
+                request packets follow (0); Data carries the OBEX headers/body
+                sent with the request. The test script answers with the Second
+                GetImageProperties Response command (0x3c).
+
+        Opcode 0xb4 - Second Server GetImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a GetImage request from Address (the peer
+                BD_ADDR) on the Referenced/Archived Objects session. Final
+                indicates whether this is the last request packet (1) or more
+                request packets follow (0); Data carries the OBEX headers/body
+                sent with the request. The test script answers with the Second
+                GetImage Response command (0x3d).
+
+        Opcode 0xb5 - Second Server GetLinkedThumbnail Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a GetLinkedThumbnail request from Address (the
+                peer BD_ADDR) on the Referenced/Archived Objects session. Final
+                indicates whether this is the last request packet (1) or more
+                request packets follow (0); Data carries the OBEX headers/body
+                sent with the request. The test script answers with the Second
+                GetLinkedThumbnail Response command (0x3e).
+
+        Opcode 0xb6 - Second Server GetLinkedAttachment Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a GetLinkedAttachment request from Address
+                (the peer BD_ADDR) on the Referenced/Archived Objects session.
+                Final indicates whether this is the last request packet (1) or
+                more request packets follow (0); Data carries the OBEX
+                headers/body sent with the request. The test script answers
+                with the Second GetLinkedAttachment Response command (0x3f).
+
+        Opcode 0xb7 - Second Server DeleteImage Req Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as the secondary OBEX
+                server, received a DeleteImage request from Address (the peer
+                BD_ADDR) on the Referenced/Archived Objects session. Final
+                indicates whether this is the last request packet (1) or more
+                request packets follow (0); Data carries the OBEX headers/body
+                sent with the request. The test script answers with the Second
+                DeleteImage Response command (0x40).
+
+        Opcode 0xb8 - Second Client GetCapabilities Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetCapabilities
+                request sent with the Second GetCapabilities command (0x44).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xb9 - Second Client GetImageList Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetImagesList
+                request sent with the Second GetImageList command (0x43).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xba - Second Client GetImageProperties Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetImageProperties
+                request sent with the Second GetImageProperties command (0x45).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xbb - Second Client GetImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetImage request
+                sent with the Second GetImage command (0x46). Rsp_Code is the
+                OBEX response code, e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. On a
+                CONTINUE reply the IUT automatically issues the next
+                continuation request.
+
+        Opcode 0xbc - Second Client GetLinkedThumbnail Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetLinkedThumbnail
+                request sent with the Second GetLinkedThumbnail command (0x47).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xbd - Second Client GetLinkedAttachment Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetLinkedAttachment
+                request sent with the Second GetLinkedAttachment command
+                (0x48). Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE
+                while more response packets follow and 0xa0 SUCCESS on the
+                final packet; Data carries the OBEX headers/body of this
+                response packet. On a CONTINUE reply the IUT automatically
+                issues the next continuation request.
+
+        Opcode 0xbe - Second Client GetPartialImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the GetPartialImage
+                request sent with the Second GetPartialImage command (0x49).
+                Rsp_Code is the OBEX response code, e.g. 0x90 CONTINUE while
+                more response packets follow and 0xa0 SUCCESS on the final
+                packet; Data carries the OBEX headers/body of this response
+                packet. On a CONTINUE reply the IUT automatically issues the
+                next continuation request.
+
+        Opcode 0xbf - Second Client DeleteImage Rsp Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+
+                This event indicates that the IUT, acting as an OBEX client,
+                received the peer's (Address) response, on the
+                Referenced/Archived Objects session, to the DeleteImage request
+                sent with the Second DeleteImage command (0x4a). Rsp_Code is
+                the OBEX response code, e.g. 0x90 CONTINUE while more response
+                packets follow and 0xa0 SUCCESS on the final packet; Data
+                carries the OBEX headers/body of this response packet. On a
+                CONTINUE reply the IUT automatically issues the next
+                continuation request.
+
+        Opcode 0xc0 - Second RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the RFCOMM transport for the
+                secondary (Referenced/Archived Objects) BIP OBEX session with
+                Address (the peer BD_ADDR) has been established.
+
+        Opcode 0xc1 - Second RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the RFCOMM transport for the
+                secondary (Referenced/Archived Objects) BIP OBEX session with
+                Address (the peer BD_ADDR) has been closed.
+
+        Opcode 0xc2 - Second L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the L2CAP transport for the secondary
+                (Referenced/Archived Objects) BIP OBEX session with Address
+                (the peer BD_ADDR) has been established.
+
+        Opcode 0xc3 - Second L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that the L2CAP transport for the secondary
+                (Referenced/Archived Objects) BIP OBEX session with Address
+                (the peer BD_ADDR) has been closed.
