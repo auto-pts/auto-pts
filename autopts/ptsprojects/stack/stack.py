@@ -38,6 +38,7 @@ from autopts.ptsprojects.stack.layers.mics import MICS
 from autopts.ptsprojects.stack.layers.ots import OTS
 from autopts.ptsprojects.stack.layers.pacs import PACS
 from autopts.ptsprojects.stack.layers.pbp import PBP
+from autopts.ptsprojects.stack.layers.opp import OPP
 from autopts.ptsprojects.stack.layers.rfcomm import RFCOMM
 from autopts.ptsprojects.stack.layers.sdp import SDP
 from autopts.ptsprojects.stack.layers.tbs import TBS
@@ -88,6 +89,7 @@ class Stack:
         self.ots = None
         self.pbp = None
         self.sdp = None
+        self.opp = None
         self.csis = None
         self.rfcomm = None
         # GENERATOR append 2
@@ -210,6 +212,10 @@ class Stack:
     def rfcomm_init(self):
         self.rfcomm = RFCOMM()
 
+    def opp_init(self):
+        """Initialize the OPP stack layer."""
+        self.opp = OPP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -302,6 +308,9 @@ class Stack:
 
         if self.rfcomm:
             self.rfcomm_init()
+
+        if self.opp:
+            self.opp_init()
 
         # GENERATOR append 4
 
