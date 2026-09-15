@@ -772,3 +772,549 @@ class SecurityModeLevel(Enum):
 class SecurityFlags(IntFlag):
     NONE = 0
     LE_SECURE_CONNECTIONS_ONLY = defs.BIT(0)
+
+
+class PBAPTransportType:
+    RFCOMM_CONN = 0
+    L2CAP_CONN = 1
+
+
+class PBAPRole:
+    PCE = 0  # Phone Book Client Equipment
+    PSE = 1  # Phone Book Server Equipment
+
+
+class PBAPPullType:
+    PHONEBOOK = "x-bt/phonebook"
+    VCARDLISTING = "x-bt/vcard-listing"
+    VCARDENTRY = "x-bt/vcard"
+
+
+class PBAPSupportedFeature:
+    """PBAP supported features enumeration"""
+
+    DOWNLOAD = (1 << 0)
+    BROWSING = (1 << 1)
+    DATABASE_IDENTIFIER = (1 << 2)
+    FOLDER_VERSION_COUNTERS = (1 << 3)
+    VCARD_SELECTOR = (1 << 4)
+    ENHANCED_MISSED_CALLS = (1 << 5)
+    UCI_VCARD_PROPERTY = (1 << 6)
+    UID_VCARD_PROPERTY = (1 << 7)
+    CONTACT_REFERENCING = (1 << 8)
+    DEFAULT_CONTACT_IMAGE = (1 << 9)
+
+
+class BtPbapApplParamTagId:
+    ORDER = 0x01
+    SEARCH_VALUE = 0x02
+    SEARCH_PROPERTY = 0x03
+    MAX_LIST_COUNT = 0x04
+    LIST_START_OFFSET = 0x05
+    PROPERTY_SELECTOR = 0x06
+    FORMAT = 0x07
+    PHONEBOOK_SIZE = 0x08
+    NEW_MISSED_CALLS = 0x09
+    PRIMARY_FOLDER_VERSION = 0x0a
+    SECONDARY_FOLDER_VERSION = 0x0b
+    VCARD_SELECTOR = 0x0c
+    DATABASE_IDENTIFIER = 0x0d
+    VCARD_SELECTOR_OPERATOR = 0x0e
+    RESET_NEW_MISSED_CALLS = 0x0f
+    SUPPORTED_FEATURES = 0x10
+
+
+class PBAPAppParamTag:
+    ORDER = 0x01
+    SEARCH_VALUE = 0x02
+    SEARCH_PROPERTY = 0x03
+    MAX_LIST_COUNT = 0x04
+    LIST_START_OFFSET = 0x05
+    PROPERTY_SELECTOR = 0x06
+    FORMAT = 0x07
+    PHONEBOOK_SIZE = 0x08
+    NEW_MISSED_CALLS = 0x09
+    PRIMARY_FOLDER_VERSION = 0x0A
+    SECONDARY_FOLDER_VERSION = 0x0B
+    VCARD_SELECTOR = 0x0C
+    DATABASE_IDENTIFIER = 0x0D
+    VCARD_SELECTOR_OPERATOR = 0x0E
+    RESET_NEW_MISSED_CALLS = 0x0F
+    SUPPORTED_FEATURES = 0x10
+
+
+class PBAPPropertySelector:
+    VERSION = (1 << 0)
+    FN = (1 << 1)
+    N = (1 << 2)
+    PHOTO = (1 << 3)
+    BDAY = (1 << 4)
+    ADR = (1 << 5)
+    LABEL = (1 << 6)
+    TEL = (1 << 7)
+    EMAIL = (1 << 8)
+    MAILER = (1 << 9)
+    TZ = (1 << 10)
+    GEO = (1 << 11)
+    TITLE = (1 << 12)
+    ROLE = (1 << 13)
+    LOGO = (1 << 14)
+    AGENT = (1 << 15)
+    ORG = (1 << 16)
+    NOTE = (1 << 17)
+    REV = (1 << 18)
+    SOUND = (1 << 19)
+    URL = (1 << 20)
+    UID = (1 << 21)
+    KEY = (1 << 22)
+    NICKNAME = (1 << 23)
+    CATEGORIES = (1 << 24)
+    PRODID = (1 << 25)
+    CLASS = (1 << 26)
+    SORT_STRING = (1 << 27)
+    X_IRMC_CALL_DATETIME = (1 << 28)
+    X_BT_SPEEDDIALKEY = (1 << 29)
+    X_BT_UCI = (1 << 30)
+    X_BT_UID = (1 << 31)
+    PROPRIETARY_FILTER = 0x8000000000
+
+
+class OBEXHdr:
+    COUNT = 0xC0
+    NAME = 0x01
+    TYPE = 0x42
+    LEN = 0xC3
+    TIME_ISO_8601 = 0x44
+    TIME = 0xC4
+    DES = 0x05
+    TARGET = 0x46
+    HTTP = 0x47
+    BODY = 0x48
+    END_BODY = 0x49
+    WHO = 0x4A
+    CONN_ID = 0xCB
+    APP_PARAM = 0x4C
+    AUTH_CHALLENGE = 0x4D
+    AUTH_RSP = 0x4E
+    CREATE_ID = 0xCF
+    WAN_UUID = 0x50
+    OBJECT_CLASS = 0x51
+    SESSION_PARAM = 0x52
+    SESSION_SEQ_NUM = 0x93
+    ACTION_ID = 0x94
+    DEST_NAME = 0x15
+    PERM = 0xD6
+    SRM = 0x97
+    SRMP = 0x98
+    # BIP user-defined headers (not OBEX opcodes).
+    # Img-Handle: Unicode text (0x30-0x3F range), carries the image handle string.
+    IMG_HANDLE = 0x30
+    # Img-Description: byte sequence (0x70-0x7F range), carries XML image description.
+    IMG_DESCRIPTION = 0x71
+
+
+class OBEXRspCode:
+    CONTINUE = 0x90
+    OK = 0xa0
+    SUCCESS = 0xa0
+    CREATED = 0xa1
+    ACCEPTED = 0xa2
+    NON_AUTH_INFO = 0xa3
+    NO_CONTENT = 0xa4
+    RESET_CONTENT = 0xa5
+    PARTIAL_CONTENT = 0xa6
+    MULTI_CHOICES = 0xb0
+    MOVED_PERM = 0xb1
+    MOVED_TEMP = 0xb2
+    SEE_OTHER = 0xb3
+    NOT_MODIFIED = 0xb4
+    USE_PROXY = 0xb5
+    BAD_REQ = 0xc0
+    UNAUTH = 0xc1
+    PAY_REQ = 0xc2
+    FORBIDDEN = 0xc3
+    NOT_FOUND = 0xc4
+    NOT_ALLOW = 0xc5
+    NOT_ACCEPT = 0xc6
+    PROXY_AUTH_REQ = 0xc7
+    REQ_TIMEOUT = 0xc8
+    CONFLICT = 0xc9
+    GONE = 0xca
+    LEN_REQ = 0xcb
+    PRECON_FAIL = 0xcc
+    ENTITY_TOO_LARGE = 0xcd
+    URL_TOO_LARGE = 0xce
+    UNSUPP_MEDIA_TYPE = 0xcf
+    INTER_ERROR = 0xd0
+    NOT_IMPL = 0xd1
+    BAD_GATEWAY = 0xd2
+    UNAVAIL = 0xd3
+    GATEWAY_TIMEOUT = 0xd4
+    VER_UNSUPP = 0xd5
+    DB_FULL = 0xe0
+    DB_LOCK = 0xe1
+
+
+class OBEXAuthTag:
+    AUTH_REQ_NONCE = 0x00
+    AHTH_REQ_OPTIONS = 0x01
+    AUTH_REQ_REALM = 0x02
+    AUTH_RSP_DIGEST = 0x00
+    AUTH_RSP_USER_ID = 0x01
+    AUTH_RSP_NONCE = 0x02
+
+
+class BIPTransportType:
+    RFCOMM_CONN = 0
+    L2CAP_CONN = 1
+
+
+class BIPImagingSvclass:
+    """BIP Imaging SDP service class UUIDs (16-bit).
+
+    Mirrors the BT_SDP_IMAGING_*_SVCLASS defines used by the IUT.
+    """
+    IMAGING = 0x111a           # Basic Imaging Profile
+    IMAGING_RESPONDER = 0x111b  # Imaging Responder
+    IMAGING_ARCHIVE = 0x111c    # Imaging Automatic Archive
+    IMAGING_REFOBJS = 0x111d    # Imaging Referenced Objects
+
+
+class BIPConnType:
+
+    PRIM_IMAGE_PUSH = 0
+    PRIM_IMAGE_PULL = 1
+    PRIM_ADVANCED_IMAGE_PRINTING = 2
+    PRIM_AUTO_ARCHIVE = 3
+    PRIM_REMOTE_CAMERA = 4
+    PRIM_REMOTE_DISPLAY = 5
+    SEC_REFERENCED_OBJECTS = 10
+    SEC_ARCHIVED_OBJECTS = 11
+
+
+class BIPAppParamTag:
+    """BIP Application Parameter header tag IDs (Table 5.3).
+
+    Each tag maps to a value carried in the OBEX Application Parameters
+    header. The associated payload length in bytes is defined in TAG_SIZES
+    (16 indicates a 16-byte UUID).
+    """
+    NB_RETURNED_HANDLES = 0x01        # 2 bytes, 0x0000 to 0xFFFF
+    LIST_START_OFFSET = 0x02          # 2 bytes, 0x0000 to 0xFFFF
+    LATEST_CAPTURED_IMAGES = 0x03     # 1 byte, Boolean
+    PARTIAL_FILE_LENGTH = 0x04        # 4 bytes, 0x00000000 to 0xFFFFFFFF
+    PARTIAL_FILE_START_OFFSET = 0x05  # 4 bytes, 0x00000000 to 0xFFFFFFFF
+    TOTAL_FILE_SIZE = 0x06            # 4 bytes, 0x00000000 to 0xFFFFFFFF
+    END_FLAG = 0x07                   # 1 byte, Boolean
+    REMOTE_DISPLAY = 0x08             # 1 byte, see BIPRemoteDisplay
+    SERVICE_ID = 0x09                 # 16 bytes, UUID
+    STORE_FLAG = 0x0A                 # 1 byte, Boolean
+
+    TAG_SIZES = {
+        0x01: 2,
+        0x02: 2,
+        0x03: 1,
+        0x04: 4,
+        0x05: 4,
+        0x06: 4,
+        0x07: 1,
+        0x08: 1,
+        0x09: 16,
+        0x0A: 1,
+    }
+
+
+class BIPRemoteDisplay:
+    NEXT_IMAGE = 0x01
+    PREVIOUS_IMAGE = 0x02
+    SELECT_IMAGE = 0x03
+    CURRENT_IMAGE = 0x04
+
+
+# =============================================================================
+# OBEX Header Encoding Types
+# =============================================================================
+
+OBEX_HEADER_ENCODING_UNICODE = 0x00
+OBEX_HEADER_ENCODING_BYTE_SEQ = 0x40
+OBEX_HEADER_ENCODING_1_BYTE = 0x80
+OBEX_HEADER_ENCODING_4_BYTES = 0xC0
+
+
+def obex_header_encoding(header_id: int) -> int:
+    return header_id & 0xC0
+
+
+# =============================================================================
+# OBEX TLV Build / Parse
+# =============================================================================
+
+def obex_build_tlv(tlv_dict: dict, tag_sizes: dict) -> bytearray:
+    """Build TLV-encoded bytearray from a tag->value dict.
+
+    Args:
+        tlv_dict: {tag_id: value} where value is int, str, bytes, or bytearray.
+        tag_sizes: {tag_id: size_in_bytes} that controls encoding.
+            Recognised sizes:
+              1  -> struct 'B'
+              2  -> struct '>H'
+              4  -> struct '>I'
+              8  -> struct '>Q'
+              16 -> fixed 16-byte block
+              -1 -> variable-length string (UTF-8, null-terminated)
+              -2 -> variable-length raw bytes (no null terminator)
+            Tags absent from tag_sizes are encoded as raw bytes.
+    """
+    _PACK_FMT = {1: 'B', 2: '>H', 4: '>I', 8: '>Q'}
+    result = bytearray()
+
+    for tag, value in tlv_dict.items():
+        size = tag_sizes.get(tag)
+
+        if size in _PACK_FMT:
+            data = struct.pack(_PACK_FMT[size], value)
+        elif size == 16:
+            if isinstance(value, str):
+                data = bytes.fromhex(value) if len(value) == 32 else \
+                    value.encode('utf-8')[:16].ljust(16, b'\x00')
+            elif isinstance(value, (bytes, bytearray)):
+                data = bytes(value[:16]).ljust(16, b'\x00')
+            else:
+                data = bytes(value)[:16].ljust(16, b'\x00')
+        elif size == -1:
+            if isinstance(value, str):
+                data = bytearray(value.encode('utf-8'))
+                data.extend(b'\x00')
+            elif isinstance(value, (bytes, bytearray)):
+                data = bytes(value)
+            else:
+                data = bytes(value)
+        else:
+            if isinstance(value, (bytes, bytearray)):
+                data = bytes(value)
+            elif isinstance(value, int):
+                byte_len = max(1, (value.bit_length() + 7) // 8)
+                data = value.to_bytes(byte_len, 'big')
+            else:
+                data = bytes(value)
+
+        result.append(tag)
+        result.append(len(data))
+        result.extend(data)
+
+    return result
+
+
+def obex_parse_tlv(data: bytes | bytearray, tag_sizes: dict | None = None) -> dict:
+    """Parse TLV-encoded data into a {tag: value} dict.
+
+    Args:
+        data: Raw TLV bytes.
+        tag_sizes: Optional {tag_id: size} for typed decoding (same convention
+            as obex_build_tlv). If None or tag not found, value is raw bytes.
+    """
+    _UNPACK_FMT = {1: 'B', 2: '>H', 4: '>I', 8: '>Q'}
+    if tag_sizes is None:
+        tag_sizes = {}
+
+    result = {}
+    index = 0
+    length = len(data)
+
+    while index + 2 <= length:
+        tag = data[index]
+        data_len = data[index + 1]
+        index += 2
+
+        if index + data_len > length:
+            break
+
+        raw = data[index:index + data_len]
+        index += data_len
+
+        size = tag_sizes.get(tag)
+        if size in _UNPACK_FMT and len(raw) >= size:
+            result[tag] = struct.unpack(_UNPACK_FMT[size], raw[:size])[0]
+        elif size == 16:
+            result[tag] = bytes(raw[:16]).ljust(16, b'\x00') if len(raw) < 16 else bytes(raw[:16])
+        elif size == -1:
+            try:
+                result[tag] = raw.rstrip(b'\x00').decode('utf-8')
+            except UnicodeDecodeError:
+                result[tag] = bytes(raw)
+        else:
+            result[tag] = bytes(raw)
+
+    return result
+
+
+# =============================================================================
+# OBEX Header Build / Parse  (mirrors bt_obex_add_header_* / bt_obex_get_header_* in obex.c)
+# =============================================================================
+
+def obex_add_headers(buf: bytearray,
+                     headers: dict,
+                     app_param_builder=None) -> None:
+    """Append OBEX headers to *buf*.
+
+    Args:
+        buf: Target bytearray — header bytes are appended in-place.
+        headers: {OBEXHdr.XXX: value} dict.  Value types per encoding:
+            - 4-byte int headers (CONN_ID, COUNT, LEN, TIME, CREATE_ID, PERM, …): int
+            - 1-byte int headers (ACTION_ID, SRM, SRMP, SESSION_SEQ_NUM): int
+            - Byte-sequence / Unicode headers (NAME, TYPE, BODY, …): bytes | bytearray | str
+            - TLV headers (APP_PARAM, AUTH_CHALLENGE, AUTH_RSP): dict passed to
+              *app_param_builder* (for APP_PARAM) or encoded as raw TLV.
+        app_param_builder: Optional callable(dict)->bytearray for profile-specific
+            application-parameter encoding.  If None, the APP_PARAM dict values
+            are expected to already be bytes/bytearray TLV data.
+    """
+    for header_id, value in headers.items():
+        enc = obex_header_encoding(header_id)
+
+        if enc == OBEX_HEADER_ENCODING_4_BYTES:
+            buf.append(header_id)
+            buf.extend(struct.pack('>I', value))
+
+        elif enc == OBEX_HEADER_ENCODING_1_BYTE:
+            buf.append(header_id)
+            buf.append(value & 0xFF)
+
+        elif enc in (OBEX_HEADER_ENCODING_UNICODE, OBEX_HEADER_ENCODING_BYTE_SEQ):
+            if header_id in (OBEXHdr.APP_PARAM, OBEXHdr.AUTH_CHALLENGE, OBEXHdr.AUTH_RSP):
+                if isinstance(value, dict):
+                    if header_id == OBEXHdr.APP_PARAM and app_param_builder:
+                        payload = app_param_builder(value)
+                    else:
+                        payload = _obex_build_auth_tlv(value)
+                else:
+                    payload = bytes(value)
+                total = 1 + 2 + len(payload)
+                buf.append(header_id)
+                buf.extend(struct.pack('>H', total))
+                buf.extend(payload)
+            else:
+                if isinstance(value, str):
+                    if header_id == OBEXHdr.NAME:
+                        value = bytearray(value.encode('utf-16-be'))
+                    else:
+                        value = bytearray(value.encode('utf-8'))
+
+                payload_len = len(value) if value else 0
+
+                if value and header_id not in (OBEXHdr.BODY, OBEXHdr.END_BODY,
+                                               OBEXHdr.TARGET, OBEXHdr.WHO):
+                    value = value + b'\x00'
+                    payload_len += 1
+
+                total = 1 + 2 + payload_len
+                buf.append(header_id)
+                buf.extend(struct.pack('>H', total))
+                if value:
+                    buf.extend(value)
+
+
+def obex_parse_headers(buf: bytes | bytearray,
+                       app_param_parser=None) -> dict:
+    """Parse OBEX headers from *buf* and return {header_id: value}.
+
+    Args:
+        buf: Raw header bytes (no OBEX opcode / packet-length prefix).
+        app_param_parser: Optional callable(dict)->dict that post-processes
+            the raw TLV dict for APP_PARAM into typed values.
+
+    Returns:
+        Dict mapping header IDs to parsed values.
+    """
+    headers = {}
+    index = 0
+    buf_len = len(buf)
+
+    while index < buf_len:
+        header_id = buf[index]
+        index += 1
+        enc = obex_header_encoding(header_id)
+
+        if enc == OBEX_HEADER_ENCODING_1_BYTE:
+            if index >= buf_len:
+                break
+            headers[header_id] = buf[index]
+            index += 1
+
+        elif enc == OBEX_HEADER_ENCODING_4_BYTES:
+            if index + 4 > buf_len:
+                break
+            headers[header_id] = struct.unpack('>I', buf[index:index + 4])[0]
+            index += 4
+
+        elif enc in (OBEX_HEADER_ENCODING_UNICODE, OBEX_HEADER_ENCODING_BYTE_SEQ):
+            if index + 2 > buf_len:
+                break
+            header_total_len = struct.unpack('>H', buf[index:index + 2])[0]
+            if header_total_len < 3:
+                break
+            data_len = header_total_len - 3
+            index += 2
+            if index + data_len > buf_len:
+                break
+
+            raw = bytes(buf[index:index + data_len])
+            index += data_len
+
+            if header_id in (OBEXHdr.APP_PARAM, OBEXHdr.AUTH_CHALLENGE, OBEXHdr.AUTH_RSP):
+                tlv = obex_parse_tlv(raw)
+                if header_id == OBEXHdr.APP_PARAM and app_param_parser:
+                    tlv = app_param_parser(tlv)
+                headers[header_id] = tlv
+            else:
+                headers[header_id] = raw
+        else:
+            break
+
+    return headers
+
+
+def _obex_build_auth_tlv(tlv_dict: dict) -> bytearray:
+    """Encode OBEX authentication challenge / response TLV data."""
+    TAG_1BYTE = [OBEXAuthTag.AHTH_REQ_OPTIONS]
+    TAG_16BYTE = [
+        OBEXAuthTag.AUTH_REQ_NONCE,
+        OBEXAuthTag.AUTH_RSP_DIGEST,
+        OBEXAuthTag.AUTH_RSP_NONCE,
+    ]
+    TAG_STRING = [
+        OBEXAuthTag.AUTH_REQ_REALM,
+        OBEXAuthTag.AUTH_RSP_USER_ID,
+    ]
+
+    result = bytearray()
+    for tag, value in tlv_dict.items():
+        if tag in TAG_1BYTE:
+            data = struct.pack('B', value)
+        elif tag in TAG_16BYTE:
+            if isinstance(value, str):
+                data = bytes.fromhex(value) if len(value) == 32 else \
+                    value.encode('utf-8')[:16].ljust(16, b'\x00')
+            elif isinstance(value, (bytes, bytearray)):
+                data = bytes(value[:16]).ljust(16, b'\x00') if len(value) < 16 else bytes(value[:16])
+            else:
+                data = bytes(value)[:16].ljust(16, b'\x00')
+        elif tag in TAG_STRING:
+            if isinstance(value, str):
+                data = bytearray(value.encode('utf-8'))
+                data.extend(b'\x00')
+            elif isinstance(value, (bytes, bytearray)):
+                data = bytes(value)
+            else:
+                data = bytes(value)
+        else:
+            if isinstance(value, (bytes, bytearray)):
+                data = bytes(value)
+            else:
+                data = struct.pack('B', value)
+
+        result.append(tag)
+        result.append(len(data))
+        result.extend(data)
+
+    return result
