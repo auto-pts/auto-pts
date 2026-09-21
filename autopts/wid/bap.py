@@ -30,7 +30,7 @@ from autopts.pybtp.btp import (
     pts_addr_get,
     pts_addr_type_get,
 )
-from autopts.pybtp.defs import BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2
+from autopts.pybtp.defs import BTP_BAP_CMD_BROADCAST_SOURCE_RECONFIGURE, BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2
 from autopts.pybtp.types import (
     CODEC_CONFIG_SETTINGS,
     FRAME_DURATION_STR_TO_CODE,
@@ -2759,8 +2759,7 @@ def hdl_wid_380(_: WIDParams):
     service data.
     """
     stack = get_stack()
-    btp.bap_broadcast_adv_stop(stack.bap.broadcast_id)
-    btp.bap_broadcast_source_stop(stack.bap.broadcast_id)
+    broadcast_id = stack.bap.broadcast_id
 
     coding_format = 0x06
     vid = 0x0000
@@ -2778,16 +2777,31 @@ def hdl_wid_380(_: WIDParams):
                                              frames_per_sdu)
 
     presentation_delay = 40000
-    streams_per_subgroup = 2
     subgroups = 1
 
-    if stack.is_cmd_supported('BAP', BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2):
-        broadcast_id = stack.bap.broadcast_id
+    if stack.is_cmd_supported('BAP', BTP_BAP_CMD_BROADCAST_SOURCE_RECONFIGURE):
+        # bt_bap_broadcast_source_reconfig() requires source_stop() first (to reach
+        # QOS_CONFIGURED state) AND can only vary codec/QoS, not the stream count
+        # the source was originally created with (hdl_wid_114 always uses 1 here).
+        # Advertising is intentionally left running throughout: this is a
+        # reconfiguration of an already-advertising source, not a fresh setup.
+        btp.bap_broadcast_source_stop(broadcast_id)
+        btp.bap_broadcast_source_reconfigure(broadcast_id, 1, subgroups,
+                                             coding_format, vid, cid, codec_ltvs_bytes, *qos_config,
+                                             presentation_delay)
+        return True
 
+    streams_per_subgroup = 2
+
+    btp.bap_broadcast_adv_stop(broadcast_id)
+
+    if stack.is_cmd_supported('BAP', BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2):
+        btp.bap_broadcast_source_release(broadcast_id)
         btp.bap_broadcast_source_setup_v2(broadcast_id, streams_per_subgroup, subgroups,
                                           coding_format, vid, cid, codec_ltvs_bytes, *qos_config,
                                           presentation_delay)
     else:
+        btp.bap_broadcast_source_release(broadcast_id)
         broadcast_id = btp.bap_broadcast_source_setup(streams_per_subgroup, subgroups,
                                                       coding_format, vid, cid, codec_ltvs_bytes,
                                                       *qos_config, presentation_delay)

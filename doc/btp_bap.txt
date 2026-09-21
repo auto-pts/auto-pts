@@ -392,6 +392,34 @@ Commands and responses:
                 In case of an error, the error status response will be returned.
                 In case of a success, the IUT continues processing the command asynchronously.
 
+    Opcode 0x1c - Broadcast Source Reconfigure
+
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 octets)
+                                        Streams Per Subgroup (1 octet)
+                                        Subgroups (1 octet)
+                                        Sdu Interval (3 octets)
+                                        Framing (1 octet)
+                                        Max SDU (2 octets)
+                                        Retransmission Num (1 octet)
+                                        Max Transport Latency (2 octets)
+                                        Presentation Delay (3 octets)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        LTVs length (1 octet)
+                                        LTVs (varies)
+                Response parameters:    <none>
+
+                This command is used to reconfigure the Codec Config and QoS Config
+                of an existing Broadcast Source, previously created via Broadcast
+                Source Setup/Setup v2 and stopped via Broadcast Source Stop.
+                Streams Per Subgroup and Subgroups must match the topology the
+                Broadcast Source was originally created with.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command asynchronously.
+
+
 Events:
         Opcode 0x80 - Discover and Subscribe Completed event
 

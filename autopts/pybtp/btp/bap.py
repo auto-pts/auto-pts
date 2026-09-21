@@ -85,6 +85,8 @@ BAP = {
     'broadcast_source_setup_v2': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2,
                                   CONTROLLER_INDEX),
     'set_sink_broadcast_code': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SINK_SET_BROADCAST_CODE, CONTROLLER_INDEX),
+    'broadcast_source_reconfigure': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_RECONFIGURE,
+                                     CONTROLLER_INDEX),
 }
 
 
@@ -265,6 +267,71 @@ def bap_broadcast_source_release(broadcast_id):
     data += int.to_bytes(broadcast_id, 3, 'little')
 
     iutctl.btp_socket.send(*BAP['broadcast_source_release'], data=data)
+
+    bap_command_rsp_succ()
+
+
+def bap_broadcast_source_reconfigure(
+        broadcast_id: int, streams_per_subgroup: int, subgroups: int,
+        coding_format: int, vid: int, cid: int, codec_ltvs: bytes,
+        sdu_interval: int, framing: int, max_sdu: int, retransmission_number: int,
+        max_transport_latency: int, presentation_delay: int) -> None:
+    """
+    Reconfigure an existing, already-created broadcast source's codec/QoS settings.
+
+    The broadcast source must have been created previously (e.g. via
+    bap_broadcast_source_setup_v2) and stopped (via bap_broadcast_source_stop)
+    before calling this, to be in the QOS_CONFIGURED state expected by
+    bt_bap_broadcast_source_reconfig(). This can only change codec/QoS
+    parameters; streams_per_subgroup and subgroups must match the topology
+    the source was originally created with.
+
+    Args:
+        broadcast_id (int): Existing broadcast ID, range 0x000000..0xFFFFFF.
+        streams_per_subgroup (int): Number of BISes per subgroup, must match
+            the value used when the source was created.
+        subgroups (int): Number of subgroups, must match the value used when
+            the source was created.
+        coding_format (int): Codec ID (e.g. 0x06 for LC3, 0xFF for vendor-specific).
+        vid (int): Codec vendor ID, used when coding_format is vendor-specific.
+        cid (int): Codec company ID, used when coding_format is vendor-specific.
+        codec_ltvs (bytes): Codec-specific configuration, encoded as LTV structures.
+        sdu_interval (int): SDU interval in microseconds.
+        framing (int): 0 for unframed PDUs, 1 for framed PDUs.
+        max_sdu (int): Maximum SDU size in octets.
+        retransmission_number (int): Number of retransmissions per SDU.
+        max_transport_latency (int): Maximum transport latency in milliseconds.
+        presentation_delay (int): Presentation delay in microseconds.
+
+    Returns:
+        None
+    """
+    logging.debug("")
+
+    iutctl = get_iut()
+    data = bytearray()
+    data += int.to_bytes(broadcast_id, 3, 'little')
+    data += struct.pack('B', streams_per_subgroup)
+    data += struct.pack('B', subgroups)
+
+    # QoS Config
+    data += int.to_bytes(sdu_interval, 3, 'little')
+    data += struct.pack('B', framing)
+    data += struct.pack('<H', max_sdu)
+    data += struct.pack('B', retransmission_number)
+    data += struct.pack('<H', max_transport_latency)
+    data += int.to_bytes(presentation_delay, 3, 'little')
+
+    # Codec Config
+    data += struct.pack('B', coding_format)
+    data += struct.pack('<H', vid)
+    data += struct.pack('<H', cid)
+    codec_ltvs_len = len(codec_ltvs)
+    data += struct.pack('B', codec_ltvs_len)
+    if codec_ltvs_len:
+        data += codec_ltvs
+
+    iutctl.btp_socket.send(*BAP['broadcast_source_reconfigure'], data=data)
 
     bap_command_rsp_succ()
 
