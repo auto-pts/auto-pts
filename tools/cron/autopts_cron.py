@@ -143,7 +143,13 @@ def pr_job_finish_wrapper(job_func, job_name, *args, **kwargs):
     try:
         result = job_func(*args, **kwargs)
     finally:
-        schedule.cancel_job(schedule.get_jobs(job_name)[0])
+        jobs = schedule.get_jobs(job_name)
+        if jobs:
+            # Every "schedule" job is cyclical, so the PR jobs have to
+            # be removed after completion, unless they were canceled
+            # manually from GUI or with magic tag.
+            schedule.cancel_job(jobs[0])
+
         if cron_gui:
             cron_gui_update_job_list()
 
