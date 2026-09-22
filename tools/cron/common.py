@@ -166,15 +166,7 @@ def error_to_review_msg(config):
         msg += 'Reason unknown'
         return msg
 
-    with open(error_txt_path) as f:
-        while True:
-            line = f.readline()
-
-            if not line:
-                break
-
-            msg += line
-
+    msg += 'Internal error'
     return msg
 
 
