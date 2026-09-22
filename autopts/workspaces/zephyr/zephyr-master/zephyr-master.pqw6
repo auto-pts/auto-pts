@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.14.1, 6" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313" SOURCE="FILE">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.14.2, 5" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313" SOURCE="FILE">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -7840,6 +7840,12 @@
               <ValueListItem>8(ii)</ValueListItem>
               <ValueListItem>11(ii)</ValueListItem>
             </ValueList>
+          </Row>
+          <Row>
+            <Name>TSPX_Broadcast_ID</Name>
+            <Description>Broadcast ID. Valid Range is 0 to 16777215 (0xFFFFFF). When this value is valid, PTS will search for the matching device. If it is -1 (0xFFFFFFFF), PTS will search by Bluetooth address</Description>
+            <Type>INTEGER</Type>
+            <Value>-1</Value>
           </Row>
         </Rows>
       </PIXIT>
