@@ -110,6 +110,8 @@ class L2cap:
         self.channels = []
         self.hold_credits = 0
         self.num_channels = 2
+        # Channel IDs that received a disconnect event before connect() was called.
+        self._early_disconnected = set()
 
     def chan_lookup_id(self, chan_id):
         """ lookup L2CAP channel with specified channel ID"""
@@ -151,6 +153,13 @@ class L2cap:
             if chan:
                 raise Exception(f'Channel already exists {chan}')
 
+            if chan_id in self._early_disconnected:
+                # A disconnect event arrived before connect() was called.
+                # Do not register the channel; wait_for_disconnection() will
+                # return True immediately because chan_lookup_id() returns None.
+                self._early_disconnected.discard(chan_id)
+                continue
+
             chan = L2capChan(chan_id, 0, 0, 0, 0, 0, None, None)
             self.channels.append(chan)
 
@@ -164,6 +173,10 @@ class L2cap:
                              bd_addr_type, bd_addr)
             self.channels.append(chan)
 
+        if chan_id in self._early_disconnected:
+            # Clear chan_id from early disconnected set if it exists
+            self._early_disconnected.discard(chan_id)
+
         if chan.is_connected():
             logging.error(f'Channel already connected {chan}')
             return
@@ -175,8 +188,15 @@ class L2cap:
         """ Called when specified channel is disconnected """
         chan = self.chan_lookup_id(chan_id)
         if chan is None:
-            logging.error("unknown channel")
+            # Channel not registered yet - record the early disconnect so that
+            # connect() can skip it and wait_for_disconnection() returns True.
+            logging.warning(f'Disconnect event for unregistered channel {chan_id}')
+            self._early_disconnected.add(chan_id)
             return
+
+        if chan_id in self._early_disconnected:
+            # Clear chan_id from early disconnected set if it exists
+            self._early_disconnected.discard(chan_id)
 
         if not chan.is_connected() and not chan.is_connecting():
             logging.error(f'Channel already disconnected {chan}')

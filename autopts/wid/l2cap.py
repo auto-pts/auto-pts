@@ -1201,3 +1201,20 @@ def hdl_wid_265(params: WIDParams):
         for cid in channel_ids:
             _safe_l2cap_disconnect(cid)
     return True
+
+
+def hdl_wid_278(_: WIDParams):
+    '''
+    Please send the L2CAP Connection Request 253 times.
+    '''
+    l2cap = get_stack().l2cap
+
+    for _i in range(253):
+        chans = btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, br_psm, br_initial_mtu)
+        l2cap.connect(chans)
+
+        # specification allows for maximum of 60 seconds timeout
+        if not l2cap.wait_for_disconnection(chans[0], 65):
+            return False
+
+    return True
