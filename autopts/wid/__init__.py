@@ -44,7 +44,7 @@ from .tmap import tmap_wid_hdl
 from .vcp import vcp_wid_hdl
 from .vcs import vcs_wid_hdl
 from .vocs import vocs_wid_hdl
-
+from .rap import rap_wid_hdl
 # GENERATOR append 1
 from .wid import generic_wid_hdl
 
@@ -79,6 +79,7 @@ __all__ = [
     "vcs_wid_hdl",
     "vocs_wid_hdl",
     "rfcomm_wid_hdl",
+    "rap_wid_hdl",
 # GENERATOR append 2
     "generic_wid_hdl",
 ]

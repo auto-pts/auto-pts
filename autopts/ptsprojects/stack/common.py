@@ -41,10 +41,10 @@ class WildCard:
 
 
 def timeout_cb(timeout, flag, condition):
-    logging.error(
-        f"Timeout after {timeout} seconds while waiting for event {flag} "
-        f"with condition {inspect.getsource(condition)}"
-    )
+    # logging.error(
+    #     f"Timeout after {timeout} seconds while waiting for event {flag} "
+    #     f"with condition {inspect.getsource(condition)}"
+    # )
     flag.clear()
 
 
