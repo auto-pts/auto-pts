@@ -43,6 +43,7 @@ from autopts.pybtp.btp.pbp import *  # noqa: F403 # used in many files : TODO im
 from autopts.pybtp.btp.rfcomm import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.sdp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.sm import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from autopts.pybtp.btp.spp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.tbs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.tmap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.vcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
