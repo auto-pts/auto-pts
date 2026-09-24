@@ -26,11 +26,11 @@ import git
 import xlsxwriter
 import yaml
 
+from autopts.autopts_types import AutoPTSMode
 from autopts.bot import common
 from autopts.bot.common_features import github
 from autopts.client import PtsDirectClient
 from autopts.config import AUTOPTS_ROOT_DIR
-from autopts.types import AutoPTSMode
 
 log = logging.debug
 
