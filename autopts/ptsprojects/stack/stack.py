@@ -18,6 +18,7 @@ import logging
 from autopts.ptsprojects.stack.layers.aics import AICS
 from autopts.ptsprojects.stack.layers.ascs import ASCS
 from autopts.ptsprojects.stack.layers.bap import BAP
+from autopts.ptsprojects.stack.layers.bip import BIP
 from autopts.ptsprojects.stack.layers.cap import CAP
 from autopts.ptsprojects.stack.layers.ccp import CCP
 from autopts.ptsprojects.stack.layers.core import CORE
@@ -90,6 +91,7 @@ class Stack:
         self.sdp = None
         self.csis = None
         self.rfcomm = None
+        self.bip = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -210,6 +212,17 @@ class Stack:
     def rfcomm_init(self):
         self.rfcomm = RFCOMM()
 
+    def bip_init(self):
+        if self.bip:
+            # BIP() starts an event-handler worker thread, so the previous layer
+            # has to be shut down before it is dropped. The thread is a daemon
+            # and nothing else ever joins it, so otherwise every test case leaks
+            # one - and, worse, the old handler keeps dispatching into the BIP
+            # object it was built with: an event that lands on it updates state
+            # that get_stack().bip no longer points at.
+            self.bip.cleanup()
+        self.bip = BIP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -302,6 +315,9 @@ class Stack:
 
         if self.rfcomm:
             self.rfcomm_init()
+
+        if self.bip:
+            self.bip_init()
 
         # GENERATOR append 4
 
