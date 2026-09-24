@@ -43,6 +43,7 @@ class GattCl:
         self.notifications = []
         self.write_status = None
         self.event_to_await = None
+        self.att_timeout = False
 
     def set_event_to_await(self, event):
         self.event_to_await = event
@@ -108,3 +109,36 @@ class GattCl:
 
     def wait_for_verify_values(self, timeout=30, expected_count=0):
         return wait_for_event(timeout, self.is_verified_val_rxed, expected_count)
+
+    def is_att_timeout(self) -> bool:
+        """
+        Checks if the 'att_timeout' flag is currently set.
+
+        Returns:
+            bool: True if the ATT timeout has occurred, False otherwise.
+        """
+        return self.att_timeout
+
+    def clear_att_timeout(self) -> None:
+        """
+        Clears 'att_timeout' flag.
+
+        Returns:
+            None
+        """
+        self.att_timeout = False
+
+    def wait_for_att_timeout(self, timeout: int = 40) -> bool:
+        """
+        Waits for the ATT timeout event to occur.
+
+        This function waits for the timeout event, checking its status via the `is_att_timeout` method. It will stop
+        waiting either when the event is detected or when the specified time limit is reached.
+
+        Args:
+            timeout (int, optional): The maximum amount of time to wait in seconds.
+
+        Returns:
+            bool: True if the event occurred within the time limit, or False if the wait timed out.
+        """
+        return wait_for_event(timeout, self.is_att_timeout)

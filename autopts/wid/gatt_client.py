@@ -450,7 +450,15 @@ def hdl_wid_34(_: WIDParams):
     Please confirm IUT received GATT Timeout. Click Yes if IUT received it,
     otherwise click No.
     """
-    return True
+    stack = get_stack()
+
+    stack.gatt_cl.wait_for_att_timeout()
+
+    if stack.gatt_cl.att_timeout:
+        stack.gatt_cl.clear_att_timeout()
+        return True
+
+    return False
 
 
 def hdl_wid_35(params: WIDParams):
@@ -629,7 +637,15 @@ def hdl_wid_49(_: WIDParams):
     timeout after send Read characteristic without receiving response
     in 30 seconds.
     """
-    return True
+    stack = get_stack()
+
+    stack.gatt_cl.wait_for_att_timeout()
+
+    if stack.gatt_cl.att_timeout:
+        stack.gatt_cl.clear_att_timeout()
+        return True
+
+    return False
 
 
 def hdl_wid_50(params: WIDParams):
@@ -1005,8 +1021,15 @@ def hdl_wid_71(_: WIDParams):
     timeout after send Write characteristic without receiving response
     in 30 seconds.
     """
-    # PTS is handling the wait
-    return True
+    stack = get_stack()
+
+    stack.gatt_cl.wait_for_att_timeout()
+
+    if stack.gatt_cl.att_timeout:
+        stack.gatt_cl.clear_att_timeout()
+        return True
+
+    return False
 
 
 def hdl_wid_72(params: WIDParams):
