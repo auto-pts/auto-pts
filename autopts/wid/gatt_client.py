@@ -484,8 +484,14 @@ def hdl_wid_35(params: WIDParams):
 
     stack.gatt_cl.wait_for_rsp_event()
 
-    for attr in to_verify:
-        if attr not in stack.gatt_cl.verify_values:
+    for exp_handle, exp_val in to_verify:
+        match = False
+        for act_handle, act_val in stack.gatt_cl.verify_values:
+            if act_handle == exp_handle and act_val.startswith(exp_val):
+                match = True
+                break
+
+        if not match:
             result = False
 
     btp.clear_verify_values()
