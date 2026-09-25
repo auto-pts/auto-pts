@@ -17,6 +17,7 @@ import logging
 import re
 import time
 
+from autopts.ptsprojects.common_wid import Service, get_backend, get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import MeshVals, Perm, WIDParams
@@ -26,9 +27,9 @@ log = logging.debug
 
 
 def mesh_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{mesh_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
+    """Dynamically resolves and invokes the Mesh WID handler for the active backend."""
+    handler = get_wid_handler(get_backend(), Service.MESH)
+    return handler(wid, description, test_case_name)
 
 
 def mesh_wid_hdl_rpr_2ptses(wid, description, test_case_name):

@@ -13,8 +13,16 @@
 # more details.
 #
 
-from . import bap, gap, sm
-
-__all__ = ["bap", "gap", "sm"]
-
+from . import (
+               bap,
+               gap,
+               sm,
 # GENERATOR append 1
+)
+
+__all__ = [
+    "bap",
+    "gap",
+    "sm",
+# GENERATOR append 2
+]
