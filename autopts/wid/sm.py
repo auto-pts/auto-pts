@@ -87,6 +87,12 @@ def hdl_wid_104(params: WIDParams):
 
 
 def hdl_wid_106(params: WIDParams):
+    stack = get_stack()
+    if stack.gap.io_cap == IOCap.keyboard_only:
+        bd_addr = btp.pts_addr_get()
+        bd_addr_type = btp.pts_addr_type_get()
+        passkey = stack.gap.get_passkey()
+        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     return btp.var_store_get_wrong_passkey(params.description)
 
 
