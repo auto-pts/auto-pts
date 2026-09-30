@@ -28,6 +28,8 @@ from .gattcl import *  # noqa: F403 # used in many files : TODO import directly 
 from .gmcs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .gtbs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .hap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .hfp_ag import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .hfp_hf import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .ias import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .l2cap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .mcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
