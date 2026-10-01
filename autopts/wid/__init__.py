@@ -16,6 +16,7 @@ from .aics import aics_wid_hdl
 from .ascs import ascs_wid_hdl
 from .bap import bap_wid_hdl
 from .bass import bass_wid_hdl
+from .bip import bip_wid_hdl
 from .ccp import ccp_wid_hdl
 from .csip import csip_wid_hdl
 from .csis import csis_wid_hdl
@@ -79,6 +80,7 @@ __all__ = [
     "vcs_wid_hdl",
     "vocs_wid_hdl",
     "rfcomm_wid_hdl",
+    "bip_wid_hdl",
 # GENERATOR append 2
     "generic_wid_hdl",
 ]
