@@ -1,0 +1,146 @@
+HID Device Service (ID 0x28)
+============================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Connect command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to establish a HID connection (the HID
+		Control and Interrupt L2CAP channels) to the peer HID host.
+		Address is the peer BD_ADDR.
+		A Connected Event shall be expected after issuing this command
+		once the HID connection has been established.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Disconnect command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to disconnect an existing HID connection
+		to the peer HID host.
+		Address is the peer BD_ADDR.
+		A Disconnected Event shall be expected after issuing this command
+		once the HID connection has been torn down.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Send Report command
+
+		Controller Index:	<controller id>
+		Command parameters:	Report_Type (1 octet)
+					Data_Length (2 octets)
+					Data (variable)
+		Response parameters:	<none>
+
+		This command is used to send a HID report to the connected HID
+		host over the Interrupt channel.
+		Report_Type identifies the type of the report being sent (for
+		example Input, Output or Feature).
+		Data_Length is the length in octets of the report Data that
+		follows.
+		Data is the report payload.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05 - Register command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to register the HID device, including the
+		HID SDP service record and the HID device application, so that
+		the IUT can accept incoming HID connections from a HID host.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06 - Unregister command
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to unregister the previously registered
+		HID device.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07 - Virtual Cable Unplug command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to send a HID VIRTUAL CABLE UNPLUG control
+		operation to the connected HID host, requesting that the virtual
+		cable connection between the HID device and the HID host be
+		removed.
+		Address is the peer BD_ADDR.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08 - Enter Sniff Mode command
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Min_Interval (2 octets)
+					Max_Interval (2 octets)
+					Attempt (2 octets)
+					Timeout (2 octets)
+		Response parameters:	<none>
+
+		This command is used to put the BR/EDR ACL link to the peer HID
+		host into sniff mode.
+		Address is the peer BD_ADDR.
+		Min_Interval, Max_Interval, Attempt and Timeout are expressed in
+		baseband slots of 0.625 ms and are passed to HCI_Sniff_Mode
+		unmodified.
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Connected Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address (6 octets)
+
+		This event indicates that a HID connection to the peer HID host
+		has been established.
+		Address is the peer BD_ADDR.
+
+	Opcode 0x81 - Disconnected Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address (6 octets)
+
+		This event indicates that the HID connection to the peer HID
+		host has been disconnected.
+		Address is the peer BD_ADDR.

@@ -420,6 +420,26 @@ iut_config = {
         ]
     },
 
+    "br_hid11.conf": {
+        "overlay": {
+            'CONFIG_BT_CLASSIC': 'y',
+            'CONFIG_BT_CENTRAL': 'y',
+            'CONFIG_BT_PERIPHERAL': 'y',
+            'CONFIG_BT_SMP': 'y',
+            'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
+            'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
+            'CONFIG_BT_BUF_ACL_RX_SIZE': '676',
+            'CONFIG_BT_HID_DEVICE': 'y',
+            'CONFIG_BT_L2CAP_QOS': 'y',
+            'CONFIG_BT_HID_HOST': 'y',
+            'CONFIG_BT_POWER_MODE_CONTROL': 'y',
+            'CONFIG_BT_DEFAULT_SNIFF_MODE_ENABLE': 'y',
+        },
+        "test_cases": [
+            'HID11',
+        ]
+    },
+
     "ble_pawr.conf": {
         "overlay": {
             'CONFIG_BT_PER_ADV_RSP': 'y',

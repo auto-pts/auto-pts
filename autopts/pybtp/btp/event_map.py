@@ -10,6 +10,8 @@ from .gatt import GATT_EV
 from .gatt_cl import GATTC_EV
 from .gmcs import GMCS_EV
 from .hap import HAP_EV
+from .hid_device import HID_DEVICE_EV
+from .hid_host import HID_HOST_EV
 from .ias import IAS_EV
 from .l2cap import L2CAP_EV
 from .mcp import MCP_EV
@@ -52,6 +54,8 @@ __all__ = [
     "PACS_EV",
     "PBP_EV",
     "RFCOMM_EV",
+    "HID_DEVICE_EV",
+    "HID_HOST_EV",
     "SDP_EV",
     "TBS_EV",
     "TMAP_EV",
