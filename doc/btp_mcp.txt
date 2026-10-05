@@ -369,10 +369,14 @@ Events:
                                         OTS Feature handle (2 octets)
                                         Object Name handle (2 octets)
                                         Object Type handle (2 octets)
+                                        Object Size handle (2 octets)
+                                        Object Properties handle (2 octets)
+                                        Object Created handle (2 octets)
                                         Object Modified handle (2 octets)
                                         Object ID handle (2 octets)
                                         Object Action Control Point handle (2 octets)
                                         Object List Control Point handle (2 octets)
+                                        Object Changed handle (2 octets)
 
                 This event returns handles of GMCS and OTS characteristics.
 
