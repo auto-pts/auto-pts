@@ -408,7 +408,7 @@ def mcp_search_control_point_cmd(search_type, param, bd_addr_type=None, bd_addr=
 def mcp_ev_discovery_completed(mcp, data, data_len):
     logging.debug('%r', data)
 
-    fmt = '<B6sbHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH'
+    fmt = '<B6sb' + 'H' * 36
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
@@ -417,8 +417,8 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
         segments_obj_id, current_track_obj_id, next_track_obj_id, current_group_obj_id, \
         parent_group_obj_id, playing_order, playing_orders_supported, media_state, cp, \
         opcodes_supported, scp, search_results_obj_id, content_control_id, feature, \
-        obj_name, obj_type, obj_size, obj_prop, obj_created, obj_modified, obj_id, \
-        oacp, olcp = struct.unpack_from(fmt, data)
+        obj_name, obj_type, obj_size, obj_id, obj_created, obj_modified, obj_prop, \
+        oacp, olcp, obj_changed, olf_1, olf_2, olf_3 = struct.unpack_from(fmt, data)
 
     addr = le_bytes_to_hex_str(addr)
 
@@ -428,13 +428,14 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
         "Playback Speed %r, Seeking Speed %r, Segments Obj ID %r, Current Track Obj ID %r, Next Track Obj ID %r,"
         "Current Group Obj ID %r, Parent Group Obj ID %r, Playing Order %r, Playing Orders Supported %r, Media State %r,"
         "Control Point %r, Opcodes Supported %r, Search Control Point %r, Search Results Obj ID %r, Content Control ID %r,"
-        "OTS Feature %r, Object Name %r, Object Type %r,Object Size %r, Object Properties %r, Object Created %r,"
-        "Object Modified %r, Object ID %r, Object Action Control Point %r, Object List Control Point %r",
+        "OTS Feature %r, Object Name %r, Object Type %r,Object Size %r, Object ID %r, Object Created %r,"
+        "Object Modified %r, Object Properties %r, Object Action Control Point %r, Object List Control Point %r,"
+        "Object Changed %r, Object List Filter %r, %r, %r",
         addr, addr_type, status, player_name, icon_obj_id, icon_url, track_changed, track_title, track_duration,
         track_position, playback_speed, seeking_speed, segments_obj_id, current_track_obj_id, next_track_obj_id,
         current_group_obj_id, parent_group_obj_id, playing_order, playing_orders_supported, media_state, cp,
         opcodes_supported, scp, search_results_obj_id, content_control_id, feature, obj_name, obj_type, obj_size,
-        obj_prop, obj_created, obj_modified, obj_id, oacp, olcp)
+        obj_id, obj_created, obj_modified, obj_prop, oacp, olcp, obj_changed, olf_1, olf_2, olf_3)
 
     mcp.event_received(defs.BTP_MCP_EV_DISCOVERED, (addr_type, addr, status, player_name,
                                                 icon_obj_id, icon_url, track_changed,
@@ -445,8 +446,9 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
                                                 playing_order, playing_orders_supported,
                                                 media_state, cp, opcodes_supported, scp,
                                                 search_results_obj_id, content_control_id, feature,
-                                                obj_name, obj_type, obj_size, obj_prop, obj_created,
-                                                obj_modified, obj_id, oacp, olcp))
+                                                obj_name, obj_type, obj_size, obj_id, obj_created,
+                                                obj_modified, obj_prop, oacp, olcp, obj_changed,
+                                                olf_1, olf_2, olf_3))
 
 
 def mcp_track_duration_ev(mcp, data, data_len):
