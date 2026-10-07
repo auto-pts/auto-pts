@@ -44,8 +44,7 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
     """
-    logging.debug("%s: %s %s %s %s", build_and_flash.__name__, zephyr_wd, tester_app_dir,
-                  board, conf_file)
+    logging.debug("%s %s %s %s", zephyr_wd, tester_app_dir, board, conf_file)
 
     tester_dir = os.path.join(zephyr_wd, tester_app_dir)
 
