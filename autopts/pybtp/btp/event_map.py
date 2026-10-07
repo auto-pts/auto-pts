@@ -1,6 +1,7 @@
 from .aics import AICS_EV
 from .ascs import ASCS_EV
 from .bap import BAP_EV
+from .bip import BIP_EV
 from .cap import CAP_EV
 from .ccp import CCP_EV
 from .core import CORE_EV
@@ -58,5 +59,6 @@ __all__ = [
     "VCP_EV",
     "VCS_EV",
     "VOCS_EV",
+    "BIP_EV",
 # GENERATOR append 2
 ]
