@@ -772,3 +772,85 @@ class SecurityModeLevel(Enum):
 class SecurityFlags(IntFlag):
     NONE = 0
     LE_SECURE_CONNECTIONS_ONLY = defs.BIT(0)
+
+
+class OBEXHdr:
+    COUNT = 0xC0
+    NAME = 0x01
+    TYPE = 0x42
+    LENGTH = 0xC3
+    TIME_ISO = 0x44
+    TIME_4BYTE = 0xC4
+    DESCRIPTION = 0x05
+    TARGET = 0x46
+    HTTP = 0x47
+    BODY = 0x48
+    END_OF_BODY = 0x49
+    WHO = 0x4A
+    CONN_ID = 0xCB
+    APP_PARAM = 0x4C
+    AUTH_CHALLENGE = 0x4D
+    AUTH_RESPONSE = 0x4E
+    CREATOR_ID = 0xCF
+    WAN_UUID = 0x50
+    OBJECT_CLASS = 0x51
+    SESSION_PARAM = 0x52
+    SESSION_SEQ_NUM = 0x93
+    ACTION_ID = 0x94
+    DEST_NAME = 0x15
+    PERMISSION = 0xD6
+    SRM = 0x97
+    SRMP = 0x98
+
+
+class OBEXRspCode:
+    CONTINUE = 0x90
+    SUCCESS = 0xA0
+    CREATED = 0xA1
+    ACCEPTED = 0xA2
+    NON_AUTH = 0xA3
+    NO_CONTENT = 0xA4
+    RESET_CONTENT = 0xA5
+    PARTIAL_CONTENT = 0xA6
+    MULTI_CHOICE = 0xB0
+    MOVED_PERM = 0xB1
+    MOVED_TEMP = 0xB2
+    SEE_OTHER = 0xB3
+    NOT_MODIFIED = 0xB4
+    USE_PROXY = 0xB5
+    BAD_REQ = 0xC0
+    UNAUTH = 0xC1
+    PAYMENT_REQD = 0xC2
+    FORBIDDEN = 0xC3
+    NOT_FOUND = 0xC4
+    METHOD_NA = 0xC5
+    NOT_ACCEPTABLE = 0xC6
+    PROXY_AUTH_REQD = 0xC7
+    REQ_TIMEOUT = 0xC8
+    CONFLICT = 0xC9
+    GONE = 0xCA
+    LENGTH_REQD = 0xCB
+    PRECOND_FAILED = 0xCC
+    REQ_ENTITY_LARGE = 0xCD
+    REQ_URL_LARGE = 0xCE
+    UNSUPP_MEDIA = 0xCF
+    INT_SERVER_ERR = 0xD0
+    NOT_IMPLEMENTED = 0xD1
+    BAD_GATEWAY = 0xD2
+    SERVICE_UNAVBL = 0xD3
+    GATEWAY_TIMEOUT = 0xD4
+    HTTP_VER_NOT_SUPPORTED = 0xD5
+    DATABASE_FULL = 0xE0
+    DATABASE_LOCKED = 0xE1
+
+
+class OBEXDigestChallenge:
+    NONCE = 0x00
+    OPTIONS = 0x01
+    REALM = 0x02
+
+
+class OBEXDigestResponse:
+    REQUEST_DIGEST = 0x00
+    USER_ID = 0x01
+    NONCE = 0x02
