@@ -14,7 +14,7 @@
 #
 
 """Test case that manages Zephyr IUT"""
-
+from autopts.config import IUTMode
 from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestCaseLT3, TestFunc, TestFuncCleanUp
 from autopts.pybtp.btp import get_iut
 
@@ -45,7 +45,7 @@ class ZTestCase(TestCaseLT1):
             iut.wait_iut_ready_event(False)
             iut.get_supported_svcs()
 
-            if iut.iut_mode == "native":
+            if iut.iut_mode == IUTMode.NATIVE:
                 iut.remove_flash_bin()
 
         if hasattr(iut, 'select_iut'):

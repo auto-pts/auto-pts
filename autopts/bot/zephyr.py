@@ -31,7 +31,7 @@ import serial
 from autopts import bot
 from autopts import client as autoptsclient
 from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException, check_call
-from autopts.config import FILE_PATHS
+from autopts.config import FILE_PATHS, IUTMode
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_to_com
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
@@ -188,11 +188,11 @@ class ZephyrBotClient(BotClient):
 
         log(f"TTY path: {args.tty_file}")
 
-        if args.iut_mode != 'tty':
+        if args.iut_mode != IUTMode.TTY:
             iut = self.get_iut()
             if not iut.kernel_image:
                 iut.kernel_image = os.path.join(args.project_path, args.tester_app_dir, "build/zephyr/zephyr")
-                if args.iut_mode == 'qemu':
+                if args.iut_mode == IUTMode.QEMU:
                     iut.kernel_image += '.elf'
                 else:
                     iut.kernel_image += '.exe'
@@ -203,7 +203,7 @@ class ZephyrBotClient(BotClient):
 
             return
 
-        if args.iut_mode == 'tty':
+        if args.iut_mode == IUTMode.TTY:
             build_and_flash = get_build_and_flash(args.board_name)
             board_type = get_board_type(args.board_name)
 
