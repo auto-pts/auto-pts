@@ -313,6 +313,7 @@ class UUID:
     PACS = '1850'
     CAS = '1853'
     TMAP = '1855'
+    RAS = '185B'
     ASE_CP = '2BC6'
     CEP = '2900'
     CUD = '2901'
