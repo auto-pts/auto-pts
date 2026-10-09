@@ -31,16 +31,10 @@ from autopts.ptsprojects.stack import (
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams, le_bytes_to_hex_str, le_bytes_to_uuid
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 indication_subbed_already = False
-
-
-def gatt_wid_hdl(wid, description, test_case_name):
-    log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 def gatt_server_fetch_db():
