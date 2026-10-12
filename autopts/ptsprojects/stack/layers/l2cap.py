@@ -39,6 +39,15 @@ class L2CapChannelStatusCode(IntEnum):
     UNACCEPTABLE_PARAMETERS = 0x000b
     INVALID_PARAMETERS = 0x000c
 
+    @classmethod
+    def _missing_(cls, value: object):
+        if isinstance(value, int):
+            obj = int.__new__(cls, value)
+            obj._value_ = value
+            obj._name_ = f"UNKNOWN_L2CAP_CHAN_STATUS_0x{value:04X}"
+            return obj
+        return None
+
 
 class L2capChan:
     """ L2CAP Channel """
