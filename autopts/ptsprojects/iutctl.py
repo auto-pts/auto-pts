@@ -26,7 +26,7 @@ from contextvars import ContextVar
 
 import serial
 
-from autopts.config import FILE_PATHS
+from autopts.config import FILE_PATHS, IUTMode
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import btp, defs
@@ -134,11 +134,11 @@ class IutCtl:
                 self._rtt_logger = RTTLogger(args.rtt_log_syncto) if args.rtt_log else None
         self._btmon = BTMON() if args.btmon else None
 
-        if self.iut_mode == "tty":
+        if self.iut_mode == IUTMode.TTY:
             self._start_mode = self._start_tty_mode
             self._stop_mode = self._stop_tty_mode
 
-        elif self.iut_mode == "qemu":
+        elif self.iut_mode == IUTMode.QEMU:
             from autopts.ptsprojects.utils.btattach import Btattach
             from autopts.ptsprojects.utils.btproxy import Btproxy
             from autopts.ptsprojects.utils.qemu import QEMU
@@ -150,7 +150,7 @@ class IutCtl:
 
             if not self._btattach_at_every_test_case:
                 self.btattach_start()
-        elif self.iut_mode == "native":
+        elif self.iut_mode == IUTMode.NATIVE:
             from autopts.ptsprojects.utils.btattach import Btattach
             from autopts.ptsprojects.utils.native import NativeIUT
             self._native = NativeIUT()
@@ -374,7 +374,7 @@ class IutCtl:
 
         if reset:
             # Some test cases require the IUT to be reset during the test.
-            if self.iut_mode == "tty":
+            if self.iut_mode == IUTMode.TTY:
                 # For HW, the IUT ready event is triggered at board.reset().
                 # There is no need to reopen the BTP socket.
                 self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
@@ -402,7 +402,7 @@ class IutCtl:
                                                  self.test_case.log_dir)
                 self._uart_logger.start()
 
-            if not self.iut_mode == "native":
+            if not self.iut_mode == IUTMode.NATIVE:
                 # For native mode btmon has been already started
                 self.rtt_logger_start()
                 self.btmon_start()
