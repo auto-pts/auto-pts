@@ -22,6 +22,8 @@ from .csis import csis_wid_hdl
 from .gmcs import gmcs_wid_hdl
 from .gtbs import gtbs_wid_hdl
 from .has import has_wid_hdl
+from .hfp_ag import hfp_ag_wid_hdl
+from .hfp_hf import hfp_hf_wid_hdl
 from .ias import ias_wid_hdl
 from .l2cap import l2cap_wid_hdl
 from .mcp import mcp_wid_hdl
@@ -59,6 +61,8 @@ __all__ = [
     "gmcs_wid_hdl",
     "gtbs_wid_hdl",
     "has_wid_hdl",
+    "hfp_hf_wid_hdl",
+    "hfp_ag_wid_hdl",
     "ias_wid_hdl",
     "l2cap_wid_hdl",
     "mcp_wid_hdl",
