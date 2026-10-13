@@ -1,0 +1,870 @@
+FTP Service (ID 42)
+===================
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x02 - FTP Client RFCOMM Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to create an RFCOMM connection to the
+                FTP server.
+
+                FTP Client RFCOMM Connected Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - FTP Client RFCOMM Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an RFCOMM connection to the
+                FTP server.
+
+                FTP Client RFCOMM Disconnected Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x04 - FTP Client L2CAP Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to create an L2CAP connection to the
+                FTP server.
+
+                FTP Client L2CAP Connected Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x05 - FTP Client L2CAP Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an L2CAP connection to the
+                FTP server.
+
+                FTP Client L2CAP Disconnected Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x06 - FTP Client Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to establish an OBEX connection to the
+                FTP server over an existing transport connection.
+                Buf contains optional OBEX headers for the CONNECT request.
+
+                FTP Client Connect Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x07 - FTP Client Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an OBEX connection to the
+                FTP server.
+
+                FTP Client Disconnect Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x08 - FTP Client Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to abort an ongoing OBEX operation on the
+                FTP connection.
+
+                FTP Client Abort Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x09 - FTP Client Set Folder command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Flags (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to navigate the folder hierarchy on the
+                FTP server.
+                Flags control the navigation operation (e.g. go up, go down).
+                Buf contains the folder name or is empty for special operations.
+
+                FTP Client Set Folder Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0a - FTP Client Pull Folder Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve the folder listing from the
+                FTP server using an OBEX Get request.
+                Final indicates if this is the final packet.
+                Buf contains optional folder name header for the request.
+
+                FTP Client Pull Folder Listing Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0b - FTP Client Push File command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to push a file to the FTP server using
+                an OBEX Put request.
+                Final indicates if this is the final packet.
+                Buf contains the file name header and/or file data.
+
+                FTP Client Push File Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0c - FTP Client Pull File command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to pull a file from the FTP server using
+                an OBEX Get request.
+                Final indicates if this is the final packet.
+                Buf contains the file name header.
+
+                FTP Client Pull File Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0d - FTP Client Delete command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to delete a file or folder on the FTP
+                server using an OBEX Put request with no body.
+                Final indicates if this is the final packet.
+                Buf contains the name header of the object to delete.
+
+                FTP Client Delete Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0e - FTP Client Rename command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to rename a file or folder on the FTP
+                server using an OBEX Copy request.
+                Final indicates if this is the final packet.
+                Buf contains the source and destination name headers.
+
+                FTP Client Rename Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0f - FTP Client Copy command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to copy a file or folder on the FTP
+                server using an OBEX Copy request.
+                Final indicates if this is the final packet.
+                Buf contains the source and destination name headers.
+
+                FTP Client Copy Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x10 - FTP Client Set Permission command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to set permissions of a file or folder on
+                the FTP server using an OBEX Put request.
+                Final indicates if this is the final packet.
+                Buf contains the name header and permission parameters.
+
+                FTP Client Set Permission Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x11 - FTP Server RFCOMM Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an RFCOMM connection from
+                the FTP client.
+
+                FTP Server RFCOMM Disconnected Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x12 - FTP Server L2CAP Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an L2CAP connection from
+                the FTP client.
+
+                FTP Server L2CAP Disconnected Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x13 - FTP Server Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Connect response to the
+                FTP client.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains optional OBEX headers for the CONNECT response.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x14 - FTP Server Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Disconnect response to
+                the FTP client.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x15 - FTP Server Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Abort response to the
+                FTP client.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x16 - FTP Server Set Folder command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX SetPath response to the
+                FTP client.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x17 - FTP Server Pull Folder Listing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Get response with folder
+                listing data to the FTP client.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the folder listing data.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x18 - FTP Server Push File command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Put response to the FTP
+                client to acknowledge a file push.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains optional OBEX headers for the response.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x19 - FTP Server Pull File command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Get response with file
+                data to the FTP client.
+                Rsp_Code is the OBEX response code to send.
+                Buf contains the file data and optional OBEX headers.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1a - FTP Server Delete command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Put response to the FTP
+                client to confirm deletion of a file or folder.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1b - FTP Server Rename command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Copy response to the FTP
+                client to confirm rename of a file or folder.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1c - FTP Server Copy command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Copy response to the FTP
+                client to confirm copy of a file or folder.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1d - FTP Server Set Permission command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to send an OBEX Put response to the FTP
+                client to confirm setting permissions of a file or folder.
+                Rsp_Code is the OBEX response code to send.
+
+                In case of an error, the error response will be returned.
+
+Events:
+
+        Opcode 0x80 - FTP Client RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection to the FTP
+                server has been established.
+
+        Opcode 0x81 - FTP Client RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection to the FTP
+                server has been disconnected.
+
+        Opcode 0x82 - FTP Client L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection to the FTP
+                server has been established.
+
+        Opcode 0x83 - FTP Client L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection to the FTP
+                server has been disconnected.
+
+        Opcode 0x84 - FTP Client Connect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX
+                Connect response from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Version is the OBEX version reported by the server.
+                MOPL is the Maximum OBEX Packet Length negotiated.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x85 - FTP Client Disconnect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX
+                Disconnect response from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x86 - FTP Client Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX
+                Abort response from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x87 - FTP Client Set Folder Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX
+                SetPath response from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x88 - FTP Client Pull Folder Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Get
+                response with folder listing data from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the folder listing data.
+
+        Opcode 0x89 - FTP Client Push File Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Put
+                response from the FTP server acknowledging the file push.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x8a - FTP Client Pull File Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Get
+                response with file data from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains the file data and optional OBEX headers.
+
+        Opcode 0x8b - FTP Client Delete Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Put
+                response confirming deletion from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x8c - FTP Client Rename Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Copy
+                response confirming rename from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x8d - FTP Client Copy Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Copy
+                response confirming copy from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x8e - FTP Client Set Permission Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Rsp_Code (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP client received an OBEX Put
+                response confirming permission change from the FTP server.
+                Rsp_Code is the OBEX response code received.
+                Buf contains optional OBEX headers from the response.
+
+        Opcode 0x8f - FTP Server RFCOMM Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection from the FTP
+                client has been established.
+
+        Opcode 0x90 - FTP Server RFCOMM Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an RFCOMM connection from the FTP
+                client has been disconnected.
+
+        Opcode 0x91 - FTP Server L2CAP Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection from the FTP
+                client has been established.
+
+        Opcode 0x92 - FTP Server L2CAP Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an L2CAP connection from the FTP
+                client has been disconnected.
+
+        Opcode 0x93 - FTP Server Connect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX
+                Connect request from the FTP client.
+                Version is the OBEX version reported by the client.
+                MOPL is the Maximum OBEX Packet Length proposed by the client.
+                Buf contains optional OBEX headers from the request.
+
+        Opcode 0x94 - FTP Server Disconnect Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX
+                Disconnect request from the FTP client.
+                Buf contains optional OBEX headers from the request.
+
+        Opcode 0x95 - FTP Server Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX
+                Abort request from the FTP client.
+                Buf contains optional OBEX headers from the request.
+
+        Opcode 0x96 - FTP Server Set Folder Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Flags (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX
+                SetPath request from the FTP client.
+                Flags indicate the navigation operation (e.g. go up, go down).
+                Buf contains the folder name from the request.
+
+        Opcode 0x97 - FTP Server Pull Folder Listing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Get
+                request for folder listing from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains optional folder name header for the request.
+
+        Opcode 0x98 - FTP Server Push File Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Put
+                request with file data from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains the file name header and/or file data.
+
+        Opcode 0x99 - FTP Server Pull File Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Get
+                request for a file from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains the file name header.
+
+        Opcode 0x9a - FTP Server Delete Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Put
+                request to delete a file or folder from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains the name header of the object to delete.
+
+        Opcode 0x9b - FTP Server Rename Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Copy
+                request to rename a file or folder from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains the source and destination name headers.
+
+        Opcode 0x9c - FTP Server Copy Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Copy
+                request to copy a file or folder from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains the source and destination name headers.
+
+        Opcode 0x9d - FTP Server Set Permission Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Final (1 octet)
+                                        Buf_Len (2 octets)
+                                        Buf (Buf_Len octets)
+
+                This event indicates that the FTP server received an OBEX Put
+                request to set permissions of a file or folder from the FTP client.
+                Final indicates if this is the final packet.
+                Buf contains the name header and permission parameters.
+
+
