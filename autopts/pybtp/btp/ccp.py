@@ -450,8 +450,17 @@ def ccp_await_discovered(timeout=6000):
 
 
 def ccp_ev_discovered(ccp, data, data_len):
-    status, tbs_count, gtbs_found = struct.unpack('<IB?', data)
-    logging.debug("status: %u tbs count: %u gbts: %s", status, tbs_count, gtbs_found)
+    logging.debug('%r', data)
+
+    fmt = '<B6sib?'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, status, tbs_count, gtbs_found = struct.unpack_from(fmt, data)
+    addr = le_bytes_to_hex_str(addr)
+
+    logging.debug("CCP Discovery Event: Addr %r, Addr_type %r, status %r, tbs_count %r, gtbs_found %r",
+                  addr, addr_type, status, tbs_count, gtbs_found)
 
     event_dict = {
         'count': 0,
@@ -465,30 +474,28 @@ def ccp_ev_discovered(ccp, data, data_len):
 def ccp_ev_chrc_handles(ccp, data, data_len):
     logging.debug('%r', data)
 
-    fmt = '<HHHHHHHHHHHHHHHH'
+    fmt = '<B6sHHHHHHHHHHHHHHHH'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    provider_name, bearer_uci, bearer_technology, uri_list, signal_strength, signal_interval,\
-        current_calls, ccid, status_flags, bearer_uri, call_state, control_point,\
-        optional_opcodes, termination_reasons, incoming_call,\
-        friendly_name = struct.unpack_from(fmt, data)
+    addr_type, addr, provider_name, bearer_uci, bearer_technology, uri_list, signal_strength, signal_interval,\
+        current_calls, ccid, status_flags, bearer_uri, call_state, control_point, optional_opcodes,\
+         termination_reasons, incoming_call, friendly_name = struct.unpack_from(fmt, data)
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(
-        "CCP Characteristics Handles: Bearer Provider Name %r, Bearer UCI Handle %r, Bearer Technology %r,"
-        "URI List Handle %r, Signal Strength %r, Signal Interval Handle %r, Current Calls %r,CCID Handle %r,"
-        "Status Flags %r, Bearer URI %r, Call State %r, Call Control Point %r, Optional Opcodes Handle %r,"
-        "Termination Reasons %r, Incoming Call %r,Friendly Name %r",
-        provider_name, bearer_uci, bearer_technology, uri_list, signal_strength, signal_interval, current_calls, ccid,
-        status_flags, bearer_uri, call_state, control_point, optional_opcodes, termination_reasons, incoming_call,
-        friendly_name)
+        "CCP Characteristics Handles: Addr %r, Addr Type %r, Bearer Provider Name %r, Bearer UCI Handle %r,"
+        "Bearer Technology %r, URI List Handle %r, Signal Strength %r, Signal Interval Handle %r, Current Calls %r,"
+        "CCID Handle %r, Status Flags %r, Bearer URI %r, Call State %r, Call Control Point %r,"
+        "Optional Opcodes Handle %r, Termination Reasons %r, Incoming Call %r,Friendly Name %r",
+        addr, addr_type, provider_name, bearer_uci, bearer_technology, uri_list, signal_strength, signal_interval,
+        current_calls, ccid, status_flags, bearer_uri, call_state, control_point, optional_opcodes,
+        termination_reasons, incoming_call, friendly_name)
 
-    ccp.event_received_2(defs.BTP_CCP_EV_CHRC_HANDLES, (provider_name, bearer_uci, bearer_technology,
-                                                    uri_list, signal_strength, signal_interval,
-                                                    current_calls, ccid, status_flags, bearer_uri,
-                                                    call_state, control_point, optional_opcodes,
-                                                    termination_reasons, incoming_call,
-                                                    friendly_name))
+    ccp.event_received_2(defs.BTP_CCP_EV_CHRC_HANDLES,
+                         (addr_type, addr, provider_name, bearer_uci, bearer_technology, uri_list, signal_strength,
+                          signal_interval, current_calls, ccid, status_flags, bearer_uri, call_state, control_point,
+                          optional_opcodes, termination_reasons, incoming_call, friendly_name))
 
 
 def ccp_ev_chrc_val(ccp, data, data_len):
