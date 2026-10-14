@@ -18,6 +18,8 @@ from . import (
                ascs,
                bap,
                bass,
+               bip,
+               # GENERATOR append 1
                cap,
                cas,
                ccp,
@@ -49,7 +51,6 @@ from . import (
                vcp,
                vcs,
                vocs,
-# GENERATOR append 1
 )
 
 __all__ = [
@@ -88,6 +89,7 @@ __all__ = [
     "vcs",
     "vocs",
     "rfcomm",
+    "bip",
 # GENERATOR append 2
 ]
 
