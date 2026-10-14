@@ -636,6 +636,8 @@ def get_result_color(status):
 
 
 class TestCaseRunStats:
+    __test__ = False  # not a pytest test class
+
     def __init__(self, projects, test_cases, retry_count, db=None,
                  xml_results_file=None):
         self.pts_ver = ''
