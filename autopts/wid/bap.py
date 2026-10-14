@@ -17,7 +17,7 @@ import re
 import struct
 from argparse import Namespace
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum, StrEnum, auto
 from time import sleep
 from typing import Final
 
@@ -81,7 +81,7 @@ class AudioConfigId(Enum):
     AC_14 = auto()
 
 
-class BroadcastSetName(str, Enum):
+class BroadcastSetName(StrEnum):
     """Broadcast set names defined by BAP."""
 
     SET_8_1_1 = "8_1_1"

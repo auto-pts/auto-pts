@@ -28,7 +28,6 @@ from collections import defaultdict
 from pathlib import Path
 from time import sleep
 
-import hid
 import psutil
 
 from autopts.config import FILE_PATHS
@@ -420,6 +419,8 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
 
 
 def hid_gpio_hub_set_usb_power(vid, pid, port, on):
+    import hid  # optional dependency (hidapi); only needed for HID GPIO hubs
+
     path = None
     cmd = b"\x05xxxxxxxx"
     index = int(port)

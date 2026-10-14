@@ -12,17 +12,8 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-import sys
+from enum import StrEnum
 from typing import Protocol
-
-if sys.version_info >= (3, 11):
-    from enum import StrEnum
-else:
-    from enum import Enum
-
-    class StrEnum(str, Enum):
-        def __str__(self):
-            return self.value
 
 
 class AutoPTSMode(StrEnum):
