@@ -613,10 +613,12 @@ class BotClient(Client):
 
         report_data['tc_results'] = collections.OrderedDict(sorted(report_data['tc_results'].items()))
 
-        report_data['errata'] = report.get_errata([
-            os.path.join(AUTOPTS_ROOT_DIR, 'errata/common.yaml'),
-            os.path.join(AUTOPTS_ROOT_DIR, f'errata/{self.autopts_project_name}.yaml')
-        ])
+        report_data["known_issues"] = report.get_known_issues(
+            [
+                os.path.join(AUTOPTS_ROOT_DIR, "known_issues/common.yaml"),
+                os.path.join(AUTOPTS_ROOT_DIR, f"known_issues/{self.autopts_project_name}.yaml"),
+            ]
+        )
 
         if self.args.autopts_mode == AutoPTSMode.GUI_CLIENT_ONLY:
             report_data['pts_logs_folder'] = ''
@@ -627,21 +629,25 @@ class BotClient(Client):
                                         self.file_paths['TMP_DIR'],
                                         self.file_paths['PTS_XMLS_DIR'])
 
-        report.make_report_xlsx(self.file_paths['REPORT_XLSX_FILE'],
-                                report_data['tc_results'],
-                                report_data['status_count'],
-                                report_data['regressions'],
-                                report_data['progresses'],
-                                report_data['descriptions'],
-                                getattr(report_data, 'pts_xml_folder', None),
-                                report_data['errata'])
+        report.make_report_xlsx(
+            self.file_paths["REPORT_XLSX_FILE"],
+            report_data["tc_results"],
+            report_data["status_count"],
+            report_data["regressions"],
+            report_data["progresses"],
+            report_data["descriptions"],
+            getattr(report_data, "pts_xml_folder", None),
+            report_data["known_issues"],
+        )
 
-        report.make_report_txt(self.file_paths['REPORT_TXT_FILE'],
-                               report_data['tc_results'],
-                               report_data['regressions'],
-                               report_data['progresses'],
-                               report_data['repo_status'],
-                               report_data['errata'])
+        report.make_report_txt(
+            self.file_paths["REPORT_TXT_FILE"],
+            report_data["tc_results"],
+            report_data["regressions"],
+            report_data["progresses"],
+            report_data["repo_status"],
+            report_data["known_issues"],
+        )
 
         if 'githubdrive' in self.bot_config or 'gdrive' in self.bot_config:
             self.make_report_folder(report_data)

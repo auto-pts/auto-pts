@@ -180,7 +180,7 @@ class MyTestCase(unittest.TestCase):
 
         database_file = DATABASE_FILE
         test_case_db = TestCaseTable('zephyr', database_file)
-        errata = report.get_errata('zephyr')
+        known_issues = report.get_known_issues("zephyr")
         start_time = 1693378197  # result of time.time()
         duration = 30  # seconds
         end_time = start_time + duration
@@ -219,8 +219,7 @@ class MyTestCase(unittest.TestCase):
             'subdir': 'host/',
         }
 
-        report.make_report_txt(FILE_PATHS['REPORT_TXT_FILE'], results,
-                               regressions, progresses, '', errata)
+        report.make_report_txt(FILE_PATHS["REPORT_TXT_FILE"], results, regressions, progresses, "", known_issues)
         assert os.path.exists(FILE_PATHS['REPORT_TXT_FILE'])
 
         first_report_txt = os.path.join(
@@ -263,12 +262,12 @@ class MyTestCase(unittest.TestCase):
         Path(pts_logs).mkdir(parents=True, exist_ok=True)
         Path(xmls).mkdir(parents=True, exist_ok=True)
 
-        report.make_report_xlsx(FILE_PATHS['REPORT_XLSX_FILE'], results, summary,
-                                regressions, progresses, descriptions, xmls, errata)
+        report.make_report_xlsx(
+            FILE_PATHS["REPORT_XLSX_FILE"], results, summary, regressions, progresses, descriptions, xmls, known_issues
+        )
         assert os.path.exists(FILE_PATHS['REPORT_XLSX_FILE'])
 
-        report.make_report_txt(FILE_PATHS['REPORT_TXT_FILE'], results,
-                               regressions, progresses, '', errata)
+        report.make_report_txt(FILE_PATHS["REPORT_TXT_FILE"], results, regressions, progresses, "", known_issues)
         assert os.path.exists(FILE_PATHS['REPORT_TXT_FILE'])
 
         report.make_report_diff('', FILE_PATHS['REPORT_DIFF_TXT_FILE'],

@@ -35,16 +35,16 @@ from autopts.types import AutoPTSMode
 log = logging.debug
 
 
-def get_errata(errata_files):
-    errata = {}
+def get_known_issues(known_issues_files):
+    known_issues = {}
 
-    for file in errata_files:
+    for file in known_issues_files:
         if os.path.exists(file):
             with open(file) as stream:
-                loaded_errata = yaml.safe_load(stream)
-                if loaded_errata:
-                    errata.update(loaded_errata)
-    return errata
+                loaded_known_issues = yaml.safe_load(stream)
+                if loaded_known_issues:
+                    known_issues.update(loaded_known_issues)
+    return known_issues
 
 
 def get_autopts_version():
@@ -87,14 +87,16 @@ def find_matching_xml_filename(test_case: str, xml_list: list[os.DirEntry] | Non
     return None
 
 
-def make_report_xlsx(report_xlsx_path: str,
-                     results_dict: dict,
-                     status_dict: dict,
-                     regressions_list: list,
-                     progresses_list: list,
-                     descriptions: dict,
-                     xmls: str | None,
-                     errata: dict):
+def make_report_xlsx(
+    report_xlsx_path: str,
+    results_dict: dict,
+    status_dict: dict,
+    regressions_list: list,
+    progresses_list: list,
+    descriptions: dict,
+    xmls: str | None,
+    known_issues: dict,
+):
     """
     Creates xlsx file containing test cases results and summary pie chart.
 
@@ -144,11 +146,11 @@ def make_report_xlsx(report_xlsx_path: str,
         if parsed_result == 'PASS' and int(result_data["run_count"]) > 1:
             parsed_result = f"{parsed_result} ({result_data['run_count']})"
 
-        if test_case in errata:
+        if test_case in known_issues:
             if additional_info:
-                additional_info += f" - ERRATA {errata[test_case]}"
+                additional_info += f" - known_issues {known_issues[test_case]}"
             else:
-                additional_info = f"ERRATA {errata[test_case]}"
+                additional_info = f"known_issues {known_issues[test_case]}"
 
         worksheet.write(current_row, start_col, test_case)
         worksheet.write(current_row, start_col + 1, parsed_result)
@@ -213,8 +215,7 @@ def make_report_xlsx(report_xlsx_path: str,
 # ****************************************************************************
 # .txt result file
 # ****************************************************************************
-def make_report_txt(report_txt_path, results_dict, regressions_list,
-                    progresses_list, repo_status, errata):
+def make_report_txt(report_txt_path, results_dict, regressions_list, progresses_list, repo_status, known_issues):
     """Creates txt file containing test cases results
     :param results_dict: dictionary with test cases results
     :param regressions_list: list of regressions found
@@ -239,8 +240,8 @@ def make_report_txt(report_txt_path, results_dict, regressions_list,
             elif tc in regressions_list:
                 res = f'{res} - REGRESSION'
 
-            if tc in errata:
-                res = f'{res} - ERRATA {errata[tc]}'
+            if tc in known_issues:
+                res = f"{res} - known_issues {known_issues[tc]}"
 
             tg = tc.split('/')[0]
             f.write(f"{tg.ljust(8, ' ')}{tc.ljust(32, ' ')}{res}\n")
