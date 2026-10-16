@@ -148,9 +148,9 @@ def make_report_xlsx(
 
         if test_case in known_issues:
             if additional_info:
-                additional_info += f" - known_issues {known_issues[test_case]}"
+                additional_info += f" - Known issue: {known_issues[test_case]}"
             else:
-                additional_info = f"known_issues {known_issues[test_case]}"
+                additional_info = f"Known issue: {known_issues[test_case]}"
 
         worksheet.write(current_row, start_col, test_case)
         worksheet.write(current_row, start_col + 1, parsed_result)
