@@ -1,4 +1,5 @@
-#
+#!/usr/bin/env ipy
+
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation.

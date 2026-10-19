@@ -1,4 +1,5 @@
-#
+#!/usr/bin/env python3
+
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2022, Codecoup.
