@@ -411,34 +411,33 @@ def hdl_wid_20206(params: WIDParams):
     """
     Please verify that for each supported characteristic, attribute
     handle/UUID pair(s) is returned to the upper tester.
+    Set Identity Resolving Key: Attribute Handle = 0x0161
     """
     stack = get_stack()
 
-    # Fix: Check if the event queue is empty
-    # Workaround for PTS Request ID 173881
-    discovered_events = stack.csip.event_queues[defs.BTP_CSIP_EV_DISCOVERED]
-    if not discovered_events:
-        addr_type = btp.pts_addr_type_get()
-        addr = btp.pts_addr_get()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
 
-        btp.csip_discover(addr_type, addr)
-        ev = stack.csip.wait_discovery_completed_ev(addr_type, addr, 30, False)
+    btp.csip_discover(addr_type, addr)
+
+    # Extract the handle from the WID description
+    desc_params_handles = [int(h, 16) for h in re.findall(r"Attribute Handle\s*=\s*0x([0-9a-fA-F]+)", params.description)]
+    if not desc_params_handles:
+        logging.error("parsing error")
+        return False
+
+    # Wait for wait_discovery_completed_ev in a loop as each wait_discovery_completed_ev covers a single CSIS instance and the
+    # remote may have multiple CSIS that were discovered
+    while True:
+        ev = stack.csip.wait_discovery_completed_ev(addr_type, addr, 30)
         if ev is None:
             logging.error("No CSIP discovery events received")
             return False
 
-    chars = stack.csip.event_queues[defs.BTP_CSIP_EV_DISCOVERED][0][3:]
-    chrc_list = [f'{chrc:04X}' for chrc in chars]
+        # Extract the handles from the event and compare with the handles from PTS
+        chrc_list = list(ev[3:])
 
-    pattern = re.compile(r"0x([0-9a-fA-F]+)")
-    desc_params = pattern.findall(params.description)
-    if not desc_params:
-        logging.error("parsing error")
-        return False
+        if all(h in chrc_list for h in desc_params_handles):
+            return True
 
-    desc_params_list = desc_params[2::4]
-
-    if desc_params_list == chrc_list:
-        return True
-
-    return False
+        # else wait for another discovery event
