@@ -16,12 +16,12 @@
 """L2CAP test cases"""
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.mynewt.l2cap_wid import l2cap_wid_hdl
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import L2CapChannelStatusCode, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
-from autopts.wid import l2cap_wid_hdl
 
 le_psm = 128
 psm_unsupported = 241
