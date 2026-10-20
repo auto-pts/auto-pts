@@ -241,7 +241,7 @@ def make_report_txt(report_txt_path, results_dict, regressions_list, progresses_
                 res = f'{res} - REGRESSION'
 
             if tc in known_issues:
-                res = f"{res} - known_issues {known_issues[tc]}"
+                res = f"{res} - Known issue: {known_issues[tc]}"
 
             tg = tc.split('/')[0]
             f.write(f"{tg.ljust(8, ' ')}{tc.ljust(32, ' ')}{res}\n")
