@@ -29,6 +29,8 @@ from autopts.ptsprojects.stack.layers.gattcl import GattCl
 from autopts.ptsprojects.stack.layers.gmcs import GMCS
 from autopts.ptsprojects.stack.layers.gtbs import GTBS
 from autopts.ptsprojects.stack.layers.hap import HAP
+from autopts.ptsprojects.stack.layers.hid_device import HIDDevice
+from autopts.ptsprojects.stack.layers.hid_host import HIDHost
 from autopts.ptsprojects.stack.layers.ias import IAS
 from autopts.ptsprojects.stack.layers.l2cap import L2cap
 from autopts.ptsprojects.stack.layers.mcp import MCP
@@ -90,6 +92,8 @@ class Stack:
         self.sdp = None
         self.csis = None
         self.rfcomm = None
+        self.hid_device = None
+        self.hid_host = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -210,6 +214,12 @@ class Stack:
     def rfcomm_init(self):
         self.rfcomm = RFCOMM()
 
+    def hid_device_init(self):
+        self.hid_device = HIDDevice()
+
+    def hid_host_init(self):
+        self.hid_host = HIDHost()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -302,6 +312,12 @@ class Stack:
 
         if self.rfcomm:
             self.rfcomm_init()
+
+        if self.hid_device:
+            self.hid_device_init()
+
+        if self.hid_host:
+            self.hid_host_init()
 
         # GENERATOR append 4
 

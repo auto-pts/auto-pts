@@ -121,4 +121,6 @@ ID  Name
  0x1e PBP Service
  0x1f SDP Service
  0x20 RFCOMM Service
+ 0x28 HID Device Service
+ 0x29 HID Host Service
  # GENERATOR append 1
