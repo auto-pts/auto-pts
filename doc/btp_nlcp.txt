@@ -1,0 +1,133 @@
+Mesh NLCP Service (ID 0x21)
+===========================
+
+Commands for the NLC Profiles Test Suites: ALSNLCP, BLCNLCP, BSSNLCP, DICNLCP,
+ENMNLCP, HVINLCP and OCSNLCP.
+The service resets the Node, reads the IUT identity and the NLC Profile data,
+and performs the profile functions (Scene Selection, Dimming Control).
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x02 - Execute Node Reset command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                This command is used to reset the Node to the unprovisioned
+                state, to prepare the IUT for the next Test Case. If the Node is
+                not provisioned, there is nothing to reset.
+
+                In both cases, the IUT ready event (Core Service, opcode 0x80)
+                is transmitted after the response and marks the completion. The
+                Tester shall not send other commands between the response and
+                the IUT ready event.
+
+                Error status:
+                        Not Ready = The IUT has not restored its state yet. The
+                                    Tester is expected to retry.
+                        Fail      = The Node is still provisioned after the
+                                    reset.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - Read Identity Report command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    UUID (16 octets)
+
+                This command is used to read the provisioning identity of the
+                IUT. The Tester uses it to update PIXITs (e.g. TSPX_device_uuid)
+                before the Test Case starts.
+
+                Error status:
+                        Not Ready = The identity is not available yet. The IUT
+                                    ready event may be sent earlier, so the
+                                    Tester is expected to retry.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x04 - Read NLC Profile Element Address command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Mesh NLC Profile Identifier (2 octets)
+                Response parameters:    Element Address (2 octets)
+
+                This command is used to read the unicast address of the element,
+                which hosts the given Mesh NLC Profile, as listed in the Mesh
+                Profile Records of the Composition Data Page 2 of the IUT.
+
+                Mesh NLC Profile Identifier is the identifier of the NLC
+                Profile (e.g. 0x1600 for the Ambient Light Sensor NLC Profile).
+
+                If the IUT supports several instances of the Mesh NLC Profile,
+                the instance is selected by the IUT.
+
+                Error status:
+                        Fail = The Node is not provisioned, or the Mesh NLC
+                               Profile is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x05 - Read Scene Number command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    Scene Number (2 octets)
+
+                This command is used to read the Scene Number N for the Test
+                Case (BSSNLCP/SSD/SPEC/PUB/BV-01-C).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x06 - Execute Scene Selection command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Scene Number (2 octets)
+                Response parameters:    <none>
+
+                This command is used to request the IUT to perform the Scene
+                Selection function for the scene with the given Scene Number
+                (BSSNLCP). The response is sent once the scene is recalled.
+
+                Error status:
+                        Fail = The Node is not provisioned, the Scene Number is
+                               not valid, or the function cannot be performed.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x07 - Execute Dimming Control command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                This command is used to request the IUT to perform the Dimming
+                Control function (DICNLCP).
+
+                Error status:
+                        Fail = The Node is not provisioned, or the function
+                               cannot be performed.
+
+                In case of an error, the error response will be returned.
+
+Events:
+        <none>
