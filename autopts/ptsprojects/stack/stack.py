@@ -35,6 +35,7 @@ from autopts.ptsprojects.stack.layers.mcp import MCP
 from autopts.ptsprojects.stack.layers.mesh import Mesh
 from autopts.ptsprojects.stack.layers.micp import MICP
 from autopts.ptsprojects.stack.layers.mics import MICS
+from autopts.ptsprojects.stack.layers.nlcp import NLCP
 from autopts.ptsprojects.stack.layers.ots import OTS
 from autopts.ptsprojects.stack.layers.pacs import PACS
 from autopts.ptsprojects.stack.layers.pbp import PBP
@@ -90,6 +91,7 @@ class Stack:
         self.sdp = None
         self.csis = None
         self.rfcomm = None
+        self.nlcp = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -210,6 +212,9 @@ class Stack:
     def rfcomm_init(self):
         self.rfcomm = RFCOMM()
 
+    def nlcp_init(self):
+        self.nlcp = NLCP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -302,6 +307,9 @@ class Stack:
 
         if self.rfcomm:
             self.rfcomm_init()
+
+        if self.nlcp:
+            self.nlcp_init()
 
         # GENERATOR append 4
 
