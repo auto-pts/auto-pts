@@ -1,0 +1,493 @@
+OPP Service (ID 0x21)
+====================
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x10 - Discover command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Discover the OPP server on the already connected peer via SDP.
+                The result is reported via the Discovered Event (0x80).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x11 - Client Transport Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Channel (1 octet)
+                Response parameters:    <none>
+
+                Connect the OPP client RFCOMM transport to the peer.
+                Channel is the RFCOMM server channel obtained from SDP
+                discovery. The Client Transport Connected Event (0x81) or
+                Client Transport Disconnected Event (0x82) shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x12 - Client Transport Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Disconnect the OPP client RFCOMM transport.
+                The Client Transport Disconnected Event (0x82) shall be
+                expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x13 - Client Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     MOPL (2 octets)
+                Response parameters:    <none>
+
+                Send an OBEX CONNECT request from the OPP client.
+                MOPL is the maximum OBEX packet length proposed by the client.
+                The Client Connected Event (0x83) shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x14 - Client Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Send an OBEX DISCONNECT request from the OPP client.
+                The Client Disconnected Event (0x84) shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x15 - Client Push command
+
+                Controller Index:       <controller id>
+                Command parameters:     Total_Length (4 octets)
+                                        Is_Final (1 octet)
+                                        Name_Len (1 octet)
+                                        Type_Len (1 octet)
+                                        Body_Len (2 octets)
+                                        Name (Name_Len octets)
+                                        Type (Type_Len octets)
+                                        Body (Body_Len octets)
+                Response parameters:    <none>
+
+                Send an OBEX PUT request from the OPP client.
+                Total_Length is the total object size in bytes (OBEX Length
+                header). Is_Final is 1 for the final End-of-Body packet,
+                0 for non-final Body packets. Name is UTF-16BE encoded with
+                null terminator. Type is the MIME type string with null
+                terminator. For multi-packet transfers call this command once
+                per packet. With Is_Final 1 the IUT sends Body as the
+                End-of-Body header, which the final packet has to carry, so
+                the final call needs a non-zero Body_Len.
+
+                A Client Push Event (0x85) is reported for every packet, not
+                only for the final one. Per IrOBEX 1.2 section 3 the client
+                waits for the response to a packet before it sends the next
+                one, and the IUT does not use SRM, so issue the next Client
+                Push command, for the same object or a new one, only after
+                the 0x85 of the previous packet. A command that reaches the
+                IUT before that response fails with the error response.
+
+                OPP spec Table 5.2 makes the Name and Length headers of the
+                pushed object mandatory. GOEP section 5.5.1 (Table 5.8) puts
+                Name in the first PUT request, and the IUT requires Length
+                there as well, following the IrOBEX 1.2 section 3.3.3.1
+                recommendation that the headers describing the object precede
+                its Body. The first call of a push therefore needs a non-zero
+                Name_Len and Total_Length; the IUT returns the error response
+                for a first call that omits either. The IUT adds a header for
+                every non-zero Name_Len, Type_Len and Total_Length, so the
+                later calls of the same push pass 0 for all three.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x16 - Client Pull Business Card command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Send an OBEX GET request to pull the server default business
+                card. A Client Pull Business Card Event (0x86) is reported
+                for every GET response packet. While the server answers 0x90
+                (CONTINUE), the IUT sends the next GET request itself, so this
+                command is sent once per pull; do not send it again before a
+                0x86 whose Rsp_Code is not 0x90 has ended the pull.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x17 - Client Abort command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Send an OBEX ABORT request from the OPP client.
+                The Client Abort Event (0x87) shall be expected after
+                issuing this command when the server answers with 0xA0
+                (SUCCESS). On any other answer the IUT closes the transport
+                (IrOBEX 1.2 section 3.3.5), so only the Client Transport
+                Disconnected Event (0x82) follows.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x18 - Client Push 2 MB command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Autonomously push a 2 MB BMP file to the server using
+                multiple OBEX PUT packets. The IUT sends each Body chunk as
+                soon as the server replies CONTINUE (0x90), and sends the
+                final End-of-Body chunk when the last byte is queued.
+                The Client Push Event (0x85) shall be expected once the
+                transfer ends, with the response that ends it, or with 0xD0
+                if the IUT fails to send a packet. If the transport is
+                disconnected during the transfer, only the Client Transport
+                Disconnected Event (0x82) is reported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x20 - Server Register command
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Register an OPP Push Server RFCOMM transport and SDP record.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x21 - Server Connect Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     MOPL (2 octets)
+                                        Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                Send an OBEX CONNECT response from the OPP server.
+                MOPL is the maximum OBEX packet length accepted by the server.
+                Rsp_Code is the OBEX response code (e.g. 0xA0 = Success).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x22 - Server Disconnect Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                Send an OBEX DISCONNECT response from the OPP server.
+                Rsp_Code is the OBEX response code.
+
+                IrOBEX 1.2 section 3.3.2 does not let a disconnect be
+                refused, so the IUT only accepts 0xA0 (SUCCESS) and 0xD3
+                (SERVICE UNAVAILABLE) and answers any other code with the
+                error response instead of sending it.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x23 - Server Push Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                Send an OBEX PUT response from the OPP server.
+                Use Rsp_Code 0x90 (CONTINUE) to request the next body chunk,
+                or 0xA0 (SUCCESS) when the full object has been received.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x24 - Server Pull Business Card Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Rsp_Code (1 octet)
+                                        Is_Final (1 octet)
+                                        Body_Len (2 octets)
+                                        Body (Body_Len octets)
+                Response parameters:    <none>
+
+                Send an OBEX GET response for a business card pull request.
+                Is_Final is 1 for the End-of-Body chunk, 0 otherwise.
+
+                A 0xA0 (SUCCESS) response concludes the pull and has to carry
+                the End-of-Body chunk, so Is_Final must be 1; otherwise the
+                IUT returns the error response. A Body_Len of 0 is allowed
+                and sends a zero-length End-of-Body chunk.
+
+                The IUT answers a GET that names an object with 0xC3
+                (FORBIDDEN), and one that asks for a format other than vCard
+                with 0xC4 (NOT FOUND), on its own: a Pull Business Card event
+                is not generated for such a request, so this command is not
+                needed to reject it.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x25 - Server Abort Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                Send an OBEX ABORT response from the OPP server.
+                Rsp_Code is the OBEX response code.
+
+                IrOBEX 1.2 section 3.3.5 answers an abort with success only,
+                so the IUT only accepts 0xA0 (SUCCESS) and answers any other
+                code with the error response instead of sending it.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x26 - Server Prepare Push Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Rsp_Code (1 octet)
+                Response parameters:    <none>
+
+                Pre-configure the response code for the next PUT request that
+                the Server Push Event (0x94) reports. Once that packet is
+                received the stored code is consumed and the default
+                auto-reply resumes. Rsp_Code is the OBEX response code to
+                return for the PUT.
+
+                In case of an error, the error response will be returned.
+
+Events:
+
+        Opcode 0x80 - Discovered Event
+
+                Controller Index:       <controller id>
+                Event parameters:       RFCOMM_Channel (1 octet)
+                                        Formats_Count (1 octet)
+                                        Formats (Formats_Count octets)
+
+                This event is reported after BTP_OPP_DISCOVER (0x10)
+                completes. RFCOMM_Channel is the channel from the Protocol
+                Descriptor List; 0 if not found. Formats contains
+                bt_opp_format values from the SupportedFormatsList attribute.
+
+        Opcode 0x81 - Client Transport Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       <none>
+
+                This event indicates the OPP client RFCOMM transport has been
+                established successfully.
+
+        Opcode 0x82 - Client Transport Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       <none>
+
+                This event indicates the OPP client RFCOMM transport has been
+                disconnected.
+
+        Opcode 0x83 - Client Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Rsp_Code (1 octet)
+                                        Version (1 octet)
+                                        MOPL (2 octets)
+
+                This event reports the OBEX CONNECT response received by the
+                OPP client. Rsp_Code is the server response code: 0xA0
+                (SUCCESS) means the OBEX session is established, any other
+                code means the server rejected the CONNECT and no session
+                exists. Version is the OBEX version reported by the server.
+                MOPL is the maximum OBEX packet length of the server, capped
+                at the transport MTU.
+
+        Opcode 0x84 - Client Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Rsp_Code (1 octet)
+
+                This event reports the OBEX DISCONNECT response received by
+                the OPP client. Rsp_Code is the OBEX response code. 0xA0
+                (SUCCESS) ends the OBEX session; for any other code the IUT
+                closes the transport, which the Client Transport Disconnected
+                Event (0x82) reports.
+
+        Opcode 0x85 - Client Push Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Rsp_Code (1 octet)
+
+                This event reports the response to one client push (PUT)
+                request packet. Rsp_Code is the OBEX response code from the
+                server: 0x90 (CONTINUE) asks for the next packet; any other
+                code ends the push.
+
+                During a Client Push 2 MB command (0x18) the IUT handles the
+                0x90 (CONTINUE) responses itself and reports a single event,
+                with the response that ends the transfer. If the IUT fails to
+                build or send a packet of that transfer, Rsp_Code is 0xD0
+                (INTERNAL SERVER ERROR), generated by the IUT rather than
+                received from the server.
+
+        Opcode 0x86 - Client Pull Business Card Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Rsp_Code (1 octet)
+                                        Data_Len (2 octets)
+                                        Data (Data_Len octets)
+
+                This event reports one GET response packet of a client pull
+                business card operation. Rsp_Code is the OBEX response code
+                from the server; 0x90 (CONTINUE) means that more packets
+                follow. Data is the value of the End-of-Body header of that
+                packet, or of its Body header if it has no End-of-Body, and
+                is empty if the packet has neither.
+
+                The pull ends with the first event whose Rsp_Code is not 0x90.
+                Data carries one body header per packet, so the business card
+                is the concatenation of Data of all events of the pull as long
+                as no response packet carries more than one Body or
+                End-of-Body header, and is complete only if that last
+                Rsp_Code is 0xA0 (SUCCESS). If the IUT fails to send the next
+                GET request, no further event is reported for the pull.
+
+        Opcode 0x87 - Client Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Rsp_Code (1 octet)
+
+                This event reports a client abort that the server answered
+                with 0xA0 (SUCCESS), the only Rsp_Code it carries. On any
+                other answer the IUT closes the transport and reports the
+                Client Transport Disconnected Event (0x82) instead.
+
+        Opcode 0x90 - Server Transport Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       <none>
+
+                This event indicates the OPP server RFCOMM transport has
+                accepted an incoming connection.
+
+        Opcode 0x91 - Server Transport Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       <none>
+
+                This event indicates the OPP server RFCOMM transport has been
+                disconnected.
+
+        Opcode 0x92 - Server Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Version (1 octet)
+                                        MOPL (2 octets)
+
+                This event indicates the OPP server received an OBEX CONNECT
+                request from the client. The OBEX session is established
+                when the request is accepted with the Server Connect Response
+                command (0x21) and Rsp_Code 0xA0 (SUCCESS). Version is the
+                OBEX version requested by the client. MOPL is the maximum
+                OBEX packet length proposed by the client, capped at the
+                transport MTU.
+
+        Opcode 0x93 - Server Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       <none>
+
+                This event indicates the OPP server received an OBEX
+                DISCONNECT request from the client. The OBEX session ends
+                when the request is answered with the Server Disconnect
+                Response command (0x22) and Rsp_Code 0xA0 (SUCCESS).
+
+        Opcode 0x94 - Server Push Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Total_Length (4 octets)
+                                        Is_Final (1 octet)
+                                        Name_Len (1 octet)
+                                        Type_Len (1 octet)
+                                        Body_Len (2 octets)
+                                        Name (Name_Len octets)
+                                        Type (Type_Len octets)
+                                        Body (Body_Len octets)
+
+                This event reports an incoming OBEX PUT request on the server.
+                Only the first packet of a push operation, its final packet
+                and any packet that arrives while a response code stored with
+                the Server Prepare Push Response command (0x26) is pending are
+                reported; the IUT answers the other intermediate packets with
+                0x90 (CONTINUE) without an event. A packet counts as the
+                first one of a push when no packet has been reported yet or
+                the last reported packet was final. A push that is aborted,
+                or rejected with a stored response code, before its final
+                packet leaves a non-final packet as the last reported one, so
+                the first packet of the next push is then reported only if it
+                is final or a stored response code is pending.
+
+                Total_Length, Name and Type are taken from the Length, Name
+                and Type headers of the reported packet; Total_Length,
+                Name_Len and Type_Len are 0 when the packet does not carry
+                the header, which is normally the case for the final packet
+                of a multi-packet push. Is_Final is the Final bit of the PUT
+                request. Body is the End-of-Body data of a final packet and
+                the Body data of any other packet. Name is UTF-16BE encoded
+                with null terminator. Type is the MIME type string with null
+                terminator.
+
+                The IUT answers some PUT requests on its own and does not
+                report them. A request is answered with 0xC0 (BAD REQUEST)
+                when its Name header is empty, not valid UTF-16BE or holds a
+                path character (':', '/' or '\'), or when it carries Body or
+                End-of-Body data while no request of the operation, this one
+                included, has carried a Name header. The final request of an
+                operation that carried no Body or End-of-Body header (a
+                delete request) is answered with 0xC3 (FORBIDDEN). A request
+                answered this way does not consume a response code stored
+                with the Server Prepare Push Response command (0x26); the
+                stored code is used for the next PUT request reported with
+                this event.
+
+        Opcode 0x95 - Server Pull Business Card Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Is_Final (1 octet)
+
+                This event indicates the server received an OBEX GET request
+                for the default business card. Is_Final is the final bit of
+                the received GET opcode: a request with it set to 0 is part
+                of the request phase only and has to be answered with 0x90
+                (CONTINUE) and an empty body, because the object may only be
+                sent once the whole request has been received.
+
+        Opcode 0x96 - Server Abort Event
+
+                Controller Index:       <controller id>
+                Event parameters:       <none>
+
+                This event indicates the server received an OBEX ABORT
+                request from the client.
