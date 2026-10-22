@@ -51,7 +51,6 @@ from autopts.pybtp.types import (
     PaSyncState,
     WIDParams,
 )
-from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
     CODEC_CONFIG_SETTINGS,
@@ -79,13 +78,7 @@ COM_BST_CODEC_NOT_SUPPORTED_TESTS: list[str] = ["CAP/COM/BST/BV-05-C"]
 COM_BST_RECEPTION_STOP_TESTS: list[str] = ["CAP/COM/BST/BV-03-C", "CAP/COM/BST/BV-04-C"]
 
 
-def cap_wid_hdl(wid, description, test_case_name):
-    log(f'{cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
-
 def hdl_wid_100(params: WIDParams):
     """
     Please synchronize with Broadcast ISO request
