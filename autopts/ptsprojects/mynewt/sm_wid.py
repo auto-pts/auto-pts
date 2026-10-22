@@ -20,14 +20,8 @@ from autopts.ptsprojects.mynewt.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def sm_wid_hdl(wid, description, test_case_name):
-    log(f'{sm_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.sm'])
 
 
 # wid handlers section begin
