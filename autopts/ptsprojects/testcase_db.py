@@ -4,6 +4,8 @@ DATABASE_FILE = 'TestCase.db'
 
 
 class TestCaseTable:
+    __test__ = False  # not a pytest test class
+
     def __init__(self, name, database_file=DATABASE_FILE):
         self.database_file = database_file
         self._open()
