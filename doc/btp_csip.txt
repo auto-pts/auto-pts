@@ -84,7 +84,7 @@ Events:
                                         Set Lock Handle (1 octet)
                                         Rank Handle (1 octet)
 
-                This event returns handles of CSIP characteristsics.
+                This event returns value handles of CSIP characteristics.
 
         Opcode 0x81 - Sirk event
 
