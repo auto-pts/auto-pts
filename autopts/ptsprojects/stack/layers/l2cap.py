@@ -29,6 +29,7 @@ class L2capChanState(Enum):
 
 
 class L2CapChannelStatusCode(IntEnum):
+    """L2CAP Credit-Based Connection Response result codes. """
     SUCCESS = 0x0000
     LE_PSM_NOT_SUPPORTED = 0x0002
     INSUFFICIENT_RESOURCES = 0x0004
@@ -40,6 +41,9 @@ class L2CapChannelStatusCode(IntEnum):
     SOURCE_CID_ALREADY_ALLOCATED = 0x000a
     UNACCEPTABLE_PARAMETERS = 0x000b
     INVALID_PARAMETERS = 0x000c
+    NO_FURTHER_INFORMATION_AVAILABLE = 0x000d
+    AUTHENTICATION_PENDING = 0x000e
+    AUTHORIZATION_PENDING = 0x000f
 
     @classmethod
     def _missing_(cls, value: object) -> L2CapChannelStatusCode | None:
