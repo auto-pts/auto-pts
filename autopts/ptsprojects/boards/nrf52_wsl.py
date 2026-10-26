@@ -60,5 +60,5 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
     check_call(cmd, cwd=tester_dir, shell=shell)
-    check_call(['west', 'flash', '--skip-rebuild', '--recover',
+    check_call(['west', 'flash', '--no-rebuild', '--recover',
                 '--snr', debugger_snr], cwd=tester_dir)

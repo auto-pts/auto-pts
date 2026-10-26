@@ -51,4 +51,4 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
         cmd.extend(("--", f"-DEXTRA_CONF_FILE='{conf_file}'"))
 
     check_call(env_cmd + cmd, cwd=tester_dir)
-    check_call(env_cmd + ['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
+    check_call(env_cmd + ['west', 'flash', '--no-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
