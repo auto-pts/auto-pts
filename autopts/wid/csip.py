@@ -409,9 +409,31 @@ def hdl_wid_20128(_: WIDParams):
 
 def hdl_wid_20206(params: WIDParams):
     """
-    Please verify that for each supported characteristic, attribute
-    handle/UUID pair(s) is returned to the upper tester.
+    Please verify that for each supported characteristic, attribute handle/UUID pair(s) is returned to the upper tester.
     Set Identity Resolving Key: Attribute Handle = 0x0161
+    Characteristic Properties = 0x12
+    Handle = 0x0162
+    UUID = 0x2B84
+
+    Coordinated Set Size: Attribute Handle = 0x0167
+    Characteristic Properties = 0x12
+    Handle = 0x0168
+    UUID = 0x2B85
+
+    Set Member Lock: Attribute Handle = 0x0164
+    Characteristic Properties = 0x1A
+    Handle = 0x0165
+    UUID = 0x2B86
+
+    Set Member Rank: Attribute Handle = 0x016A
+    Characteristic Properties = 0x02
+    Handle = 0x016B
+    UUID = 0x2B87
+
+    Coordinated Set Name: Attribute Handle = 0x016C
+    Characteristic Properties = 0x1A
+    Handle = 0x016D
+    UUID = 0x2C1A
     """
     stack = get_stack()
 
@@ -421,7 +443,9 @@ def hdl_wid_20206(params: WIDParams):
     btp.csip_discover(addr_type, addr)
 
     # Extract the handle from the WID description
-    desc_params_handles = [int(h, 16) for h in re.findall(r"Attribute Handle\s*=\s*0x([0-9a-fA-F]+)", params.description)]
+    desc_params_handles = [
+        int(h, 16) for h in re.findall(r"^Handle\s*=\s*0x([0-9a-fA-F]+)", params.description, flags=re.MULTILINE)
+    ]
     if not desc_params_handles:
         logging.error("parsing error")
         return False
@@ -437,7 +461,12 @@ def hdl_wid_20206(params: WIDParams):
         # Extract the handles from the event and compare with the handles from PTS
         chrc_list = list(ev[3:])
 
-        if all(h in chrc_list for h in desc_params_handles):
+        missing = [handle for handle in desc_params_handles if handle not in chrc_list]
+        if not missing:
+            # all handles from the description was found in the event
             return True
 
-        # else wait for another discovery event
+        logging.info(
+            f"Handles {[hex(h) for h in missing]} from PTS not found in event ({[hex(h) for h in chrc_list]}), "
+            f"waiting for another event"
+        )
