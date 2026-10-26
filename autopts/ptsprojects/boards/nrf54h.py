@@ -61,8 +61,8 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
 
     check_call(env_cmd + cmd, cwd=tester_dir)
     try:
-        check_call(env_cmd + ['west', 'flash', '--skip-rebuild',
+        check_call(env_cmd + ['west', 'flash', '--no-rebuild',
                               '-i', debugger_snr], cwd=tester_dir)
     except CalledProcessError:
-        check_call(env_cmd + ['west', 'flash', '--skip-rebuild', '--recover',
+        check_call(env_cmd + ['west', 'flash', '--no-rebuild', '--recover',
                               '-i', debugger_snr], cwd=tester_dir)

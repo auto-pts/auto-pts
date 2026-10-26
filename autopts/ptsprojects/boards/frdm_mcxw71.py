@@ -49,5 +49,5 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
         cmd.extend(('--', f'-DOVERLAY_CONFIG=\'{conf_file}\''))
     logging.info(f'cmd:{cmd}, tester_dir:{tester_dir}')
     check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild',
+    check_call(['west', 'flash', '--no-rebuild',
                 '-i', debugger_snr], cwd=tester_dir)
