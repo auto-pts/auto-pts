@@ -21,7 +21,7 @@ from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.cap_wid import cap_wid_hdl
-from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave, ZTestCaseSlave2
 from autopts.pybtp import btp
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
@@ -47,40 +47,42 @@ def set_pixits(ptses):
 
     ptses -- list of PyPTS instances"""
 
-    pts = ptses[0]
+    def _set_cap_pixits(pts):
+        pts.set_pixit("CAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+        pts.set_pixit("CAP", "TSPX_Public_bd_addr_LT2", "000000000000")
+        pts.set_pixit("CAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+        pts.set_pixit("CAP", "TSPX_time_guard", "180000")
+        pts.set_pixit("CAP", "TSPX_use_implicit_send", "TRUE")
+        pts.set_pixit("CAP", "TSPX_tester_database_file",
+                      r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_BASS_db.xml")
+        pts.set_pixit("CAP", "TSPX_mtu_size", "64")
+        pts.set_pixit("CAP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
+        pts.set_pixit("CAP", "TSPX_delete_link_key", "FALSE")
+        pts.set_pixit("CAP", "TSPX_pin_code", "0000")
+        pts.set_pixit("CAP", "TSPX_use_dynamic_pin", "FALSE")
+        pts.set_pixit("CAP", "TSPX_delete_ltk", "TRUE")
+        pts.set_pixit("CAP", "TSPX_security_enabled", "TRUE")
+        pts.set_pixit("CAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
+        pts.set_pixit("CAP", "TSPX_TARGET_ASE_CHARACTERISTIC", "SINK_ASE")
+        pts.set_pixit("CAP", "TSPX_TARGET_LATENCY", "TARGET_BALANCED_LATENCY_RELIABILITY")
+        pts.set_pixit("CAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
+        pts.set_pixit("CAP", "TSPX_Codec_ID", "0600000000")
+        pts.set_pixit("CAP", "TSPX_METADATA_SELECTION", "USE_IXIT_VALUE_FOR_METADATA")
+        pts.set_pixit("CAP", "TSPX_METADATA_SINK", "03020200")
+        pts.set_pixit("CAP", "TSPX_METADATA_SOURCE", "03020200")
+        pts.set_pixit("CAP", "TSPX_Broadcast_Code", "0102680553F1415AA265BBAFC6EA03B8")
+        pts.set_pixit("CAP", "TSPX_Sync_Timeout", "20000")
+        pts.set_pixit("CAP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
+        pts.set_pixit("CAP", "TSPX_STREAMING_DATA_CONFIRMATION_METHOD", "By Playing")
+        pts.set_pixit("CAP", "TSPX_Connection_Interval", "80")
+        pts.set_pixit("CAP", "TSPX_Extended_Adv_Interval_min", "1200")
+        pts.set_pixit("CAP", "TSPX_Extended_Adv_Interval_max", "1200")
+        pts.set_pixit("CAP", "TSPX_Periodic_Adv_Interval_min", "600")
+        pts.set_pixit("CAP", "TSPX_Periodic_Adv_Interval_max", "600")
+        pts.set_pixit("CAP", "TSPX_BST_CODEC_CONFIG", "16_2_1")
 
-    pts.set_pixit("CAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("CAP", "TSPX_Public_bd_addr_LT2", "000000000000")
-    pts.set_pixit("CAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("CAP", "TSPX_time_guard", "180000")
-    pts.set_pixit("CAP", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("CAP", "TSPX_tester_database_file",
-                  r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_BASS_db.xml")
-    pts.set_pixit("CAP", "TSPX_mtu_size", "64")
-    pts.set_pixit("CAP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("CAP", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("CAP", "TSPX_pin_code", "0000")
-    pts.set_pixit("CAP", "TSPX_use_dynamic_pin", "FALSE")
-    pts.set_pixit("CAP", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("CAP", "TSPX_security_enabled", "TRUE")
-    pts.set_pixit("CAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
-    pts.set_pixit("CAP", "TSPX_TARGET_ASE_CHARACTERISTIC", "SINK_ASE")
-    pts.set_pixit("CAP", "TSPX_TARGET_LATENCY", "TARGET_BALANCED_LATENCY_RELIABILITY")
-    pts.set_pixit("CAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
-    pts.set_pixit("CAP", "TSPX_Codec_ID", "0600000000")
-    pts.set_pixit("CAP", "TSPX_METADATA_SELECTION", "USE_IXIT_VALUE_FOR_METADATA")
-    pts.set_pixit("CAP", "TSPX_METADATA_SINK", "03020200")
-    pts.set_pixit("CAP", "TSPX_METADATA_SOURCE", "03020200")
-    pts.set_pixit("CAP", "TSPX_Broadcast_Code", "0102680553F1415AA265BBAFC6EA03B8")
-    pts.set_pixit("CAP", "TSPX_Sync_Timeout", "20000")
-    pts.set_pixit("CAP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
-    pts.set_pixit("CAP", "TSPX_STREAMING_DATA_CONFIRMATION_METHOD", "By Playing")
-    pts.set_pixit("CAP", "TSPX_Connection_Interval", "80")
-    pts.set_pixit("CAP", "TSPX_Extended_Adv_Interval_min", "1200")
-    pts.set_pixit("CAP", "TSPX_Extended_Adv_Interval_max", "1200")
-    pts.set_pixit("CAP", "TSPX_Periodic_Adv_Interval_min", "600")
-    pts.set_pixit("CAP", "TSPX_Periodic_Adv_Interval_max", "600")
-    pts.set_pixit("CAP", "TSPX_BST_CODEC_CONFIG", "16_2_1")
+    for pts in ptses:
+        _set_cap_pixits(pts)
 
 
 SINK_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
@@ -1085,6 +1087,56 @@ def test_cases(ptses):
             generic_wid_hdl=cap_wid_hdl,
             lt2="CAP/INI/UTB/BV-04-C_LT2",
         ),
+        ZTestCase(
+            "CAP",
+            "CAP/COM/BST/BV-01-C",
+            cmds=pre_conditions
+            + [
+                # The IUT connects to LT1 and LT2 one after the other
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/COM/BST/BV-01-C", 20100), SynchPoint("CAP/COM/BST/BV-01-C_LT2", 20100)],
+                ),
+                # LT3 (Broadcast Source) must not proceed with the BIG before the Add Source was handled for LT1
+                # and LT2, otherwise it ends the test case and stops advertising before the IUT can add the source.
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [
+                        SynchPoint("CAP/COM/BST/BV-01-C", 345),
+                        SynchPoint("CAP/COM/BST/BV-01-C_LT2", 345),
+                        SynchPoint("CAP/COM/BST/BV-01-C_LT3", 100),
+                    ],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/COM/BST/BV-01-C_LT2",
+            lt3="CAP/COM/BST/BV-01-C_LT3",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/COM/BST/BV-02-C",
+            cmds=pre_conditions
+            + [
+                # The IUT connects to LT1 and LT2 one after the other
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/COM/BST/BV-02-C", 20100), SynchPoint("CAP/COM/BST/BV-02-C_LT2", 20100)],
+                ),
+                # LT3 (Broadcast Source) must not proceed with the BIG before the Add Source was handled for LT1
+                # and LT2, otherwise it ends the test case and stops advertising before the IUT can add the source.
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [
+                        SynchPoint("CAP/COM/BST/BV-02-C", 345),
+                        SynchPoint("CAP/COM/BST/BV-02-C_LT2", 345),
+                        SynchPoint("CAP/COM/BST/BV-02-C_LT3", 100),
+                    ],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/COM/BST/BV-02-C_LT2",
+            lt3="CAP/COM/BST/BV-02-C_LT3",
+        ),
     ]
 
     test_case_name_list = pts.get_test_case_list('CAP')
@@ -1145,6 +1197,23 @@ def test_cases(ptses):
         ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-04-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/COM/BST/BV-01-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/COM/BST/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
     ]
 
-    return tc_list + test_cases_lt2
+    if len(ptses) < 3:
+        return tc_list + test_cases_lt2
+
+    pts3 = ptses[2]
+
+    # LT3 is only a Broadcast Source, it does not need the IUT address
+    pre_conditions_lt3 = [
+        TestFunc(btp.set_lt3_addr, pts3.q_bd_addr, Addr.le_public),
+    ]
+
+    test_cases_lt3 = [
+        ZTestCaseSlave2("CAP", "CAP/COM/BST/BV-01-C_LT3", cmds=pre_conditions_lt3, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave2("CAP", "CAP/COM/BST/BV-02-C_LT3", cmds=pre_conditions_lt3, generic_wid_hdl=cap_wid_hdl),
+    ]
+
+    return tc_list + test_cases_lt2 + test_cases_lt3
