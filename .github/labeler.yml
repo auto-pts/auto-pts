@@ -1,0 +1,103 @@
+# Configuration for actions/labeler, see .github/workflows/pr-labeler.yml
+
+# IUT stacks
+
+bluez:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/ptsprojects/bluez/**'
+    - 'autopts/workspaces/bluez/**'
+
+mynewt:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/ptsprojects/mynewt/**'
+    - 'autopts/workspaces/nimble-*/**'
+
+zephyr:
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/ptsprojects/zephyr/**'
+    - 'autopts/workspaces/zephyr/**'
+    # nRF Connect SDK workspace used with zephyr ptsproject
+    - 'autopts/workspaces/nrf-*/**'
+
+# Framework areas
+
+'area: wid':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/wid/**'
+    - 'autopts/ptsprojects/*/*_wid.py'
+
+'area: btp':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/pybtp/**'
+    - 'doc/btp_*.txt'
+
+'area: core':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/client.py'
+    - 'autopts/config.py'
+    - 'autopts/types.py'
+    - 'autopts/utils.py'
+    - 'autopts/ptsprojects/testcase*.py'
+    - 'autopts/ptsprojects/iutctl.py'
+    - 'autopts/ptsprojects/stack/**'
+    - 'cliparser.py'
+
+'area: known-issues':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'known_issues/**'
+
+'area: workspaces':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/workspaces/**'
+
+'area: bot':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/bot/**'
+    - 'doc/bot/**'
+
+'area: tools':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'tools/**'
+
+# Markdown anywhere, or files in doc/ except BTP specs (see 'area: btp')
+'area: docs':
+- any:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+  - changed-files:
+    - all-globs-to-any-file:
+      - 'doc/**'
+      - '!doc/btp_*.txt'
+
+'area: ci':
+- changed-files:
+  - any-glob-to-any-file:
+    - '.github/**'
+    - 'pyproject.toml'
+    - 'requirements_ci.txt'
+    - '.pre-commit-config.yaml'
+    - 'test/**'
+
+'area: boards':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autopts/ptsprojects/boards/**'
+
+'area: server':
+- changed-files:
+  - any-glob-to-any-file:
+    - 'autoptsserver.py'
+    - 'autopts/ptscontrol.py'
+    - 'autopts/ptsguiproxy.py'
+    - 'autopts/winutils.py'

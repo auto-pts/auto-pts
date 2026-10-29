@@ -1,0 +1,43 @@
+# Maintenance of open pull requests labels.
+# This runs periodically from master instead of pull_request_target, so
+# no pull request code or configuration is used with elevated privileges.
+
+name: Pull request maintenance
+
+on:
+  schedule:
+    - cron: '2,17,32,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  maintenance:
+    if: github.repository == 'auto-pts/auto-pts'
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github
+          persist-credentials: false
+
+      - name: Find pull requests to update
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_maintenance.py
+
+      - name: Assign labels based on paths
+        if: ${{ steps.check.outputs.pr-numbers != '' }}
+        uses: actions/labeler@v7
+        with:
+          pr-number: ${{ steps.check.outputs.pr-numbers }}
+          sync-labels: true
+          configuration-path: .github/labeler.yml
