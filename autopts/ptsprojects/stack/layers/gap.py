@@ -176,6 +176,7 @@ class Gap:
         self.periodic_adv_report_rxed = False
 
         self.periodic_sync_established_rxed = False
+        self.periodic_sync_established_time = None
         self.periodic_transfer_received = False
         self.periodic_biginfo = []
         self.big_sync_established = False
