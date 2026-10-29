@@ -1,0 +1,37 @@
+name: PR Size Labeler
+
+on:
+  # pull_request_target is needed to have write access for labeling PRs
+  # from forks. The action does not check out PR code, so this is safe.
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  size-label:
+    runs-on: ubuntu-latest
+    name: Label PR by size
+
+    steps:
+    - name: Apply size label
+      uses: codelytv/pr-size-labeler@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        xs_label: 'size/XS'
+        xs_max_size: '10'
+        s_label: 'size/S'
+        s_max_size: '100'
+        m_label: 'size/M'
+        m_max_size: '500'
+        l_label: 'size/L'
+        l_max_size: '1000'
+        xl_label: 'size/XL'
+        fail_if_xl: 'false'
+        message_if_xl: >
+          This PR has 1000 or more changed lines.
+          Please consider splitting it into smaller PRs to ease review.
+        files_to_ignore: '*.pqw6 *.bqw *.pts'
