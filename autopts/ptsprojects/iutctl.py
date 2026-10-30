@@ -249,10 +249,12 @@ class IutCtl:
         log(f"Starting socat process: {socat_cmd}")
 
         # socat dies after socket is closed, so no need to kill it
-        self._socat_process = subprocess.Popen(shlex.split(socat_cmd),
-                                               shell=False,
-                                               stdout=subprocess.DEVNULL,
-                                               stderr=subprocess.DEVNULL)
+        socat_log_path = os.path.join(test_case.log_dir, f"socat-{self.iut_target_name}.log")
+        with open(socat_log_path, "ab") as socat_log:
+            self._socat_process = subprocess.Popen(shlex.split(socat_cmd),
+                                                   shell=False,
+                                                   stdout=subprocess.DEVNULL,
+                                                   stderr=socat_log)
 
         self.btp_socket.accept()
 
