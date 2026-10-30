@@ -30,7 +30,8 @@ from autopts.config import FILE_PATHS, IUTMode
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import btp, defs
-from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocket, BTPWorker, LoggerWorker
+from autopts.pybtp.transport import SocketServerTransport
 from autopts.pybtp.types import BTPInitError
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
@@ -218,8 +219,9 @@ class IutCtl:
         # Flush serial to ignore it.
         self.flush_serial(self.rtscts)
 
-        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv = BTPSocket(SocketServerTransport(self.btp_address), test_case.log_dir,
+                                    f"autopts-iutctl-{self.iut_target_name}.log")
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
         flow_control = "crtscts" if self.rtscts else ""
 
@@ -238,7 +240,7 @@ class IutCtl:
 
             socat_cmd = (
                 f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
-                f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
+                f"{self.socket_srv.transport.sock.getsockname()[1]},retry=100,interval=1 "
                 f"{self.tty_file},raw,b{self.tty_baudrate},{flow_control}"
             )
         else:
@@ -262,8 +264,9 @@ class IutCtl:
             self.board.reset()
 
     def _start_qemu_mode(self, test_case):
-        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv = BTPSocket(SocketServerTransport(self.btp_address), test_case.log_dir,
+                                    f"autopts-iutctl-{self.iut_target_name}.log")
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
 
         if self._btattach and self._btattach_at_every_test_case:
@@ -293,8 +296,9 @@ class IutCtl:
         self.btp_socket.accept()
 
     def _start_native_mode(self, test_case):
-        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv = BTPSocket(SocketServerTransport(self.btp_address), test_case.log_dir,
+                                    f"autopts-iutctl-{self.iut_target_name}.log")
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
 
         if self._btattach and self._btattach_at_every_test_case:
