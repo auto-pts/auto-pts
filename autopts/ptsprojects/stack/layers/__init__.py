@@ -17,6 +17,7 @@
 from .aics import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .ascs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .bap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .bip import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .cap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .ccp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .core import *  # noqa: F403 # used in many files : TODO import directly in files not with *
