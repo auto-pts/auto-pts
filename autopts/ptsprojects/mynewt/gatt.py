@@ -16,14 +16,16 @@
 """GATT test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
-from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
+
+gatt_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.GATT)
+gattc_wid_hdl = get_wid_handler(Backend.MYNEWT, Service.GATTC)
 
 
 class Value:
@@ -194,7 +196,6 @@ def test_cases_server(ptses):
 
     test_case_name_list = pts.get_test_case_list('GATT')
     tc_list = []
-
     for tc_name in test_case_name_list:
         if not tc_name.startswith('GATT/SR'):
             continue
@@ -258,7 +259,6 @@ def test_cases_client(pts):
 
     test_case_name_list = pts.get_test_case_list('GATT')
     tc_list = []
-
     for tc_name in test_case_name_list:
         if not tc_name.startswith('GATT/CL'):
             continue

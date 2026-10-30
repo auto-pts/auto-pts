@@ -135,7 +135,7 @@ the project.
 ### `autopts/ptsprojects/stack/layers/profile.py`
 
 The `class Stack` is a good place for global variables that have to be shared
-between MMI/WID handlers, because the Stack instance is reinitialized before 
+between MMI/WID handlers, because the Stack instance is reinitialized before
 start of each test case. So create a class like `class Profile` and make it a part
 of the Stack.
 
@@ -167,6 +167,11 @@ before and after running test cases of the profile. A short version of the funct
 could look like this:
 
 ```python
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
+
+profile_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.PROFILE)
+
+
 def test_cases(ptses):
     """Returns a list of PROFILE test cases
     ptses -- list of PyPTS instances"""
@@ -183,7 +188,7 @@ def test_cases(ptses):
     test_case_name_list = pts.get_test_case_list('PROFILE')
     tc_list = []
 
-    # Use the same preconditions and MMI/WID handler for all test cases of the profile 
+    # Use the same preconditions and MMI/WID handler for all test cases of the profile
     for tc_name in test_case_name_list:
         instance = ZTestCase('PROFILE', tc_name, cmds=pre_conditions,
                              generic_wid_hdl=profile_wid_hdl)
@@ -201,28 +206,21 @@ of BTP commands, so those can be customized here too.
 
 The `profile_wid_hdl` parameter of the TestCase class is a generic handler that
 will find a right handler for an MMI (WID) request received from Lower Tester
-(PTS instance). In most test cases a project will use handlers only from
+(PTS instance). It is created with `get_wid_handler()`, which needs a `PROFILE`
+entry in the `Service` enum in `autopts/ptsprojects/common_wid.py` (the generator
+adds it). In most test cases a project will use handlers only from
 `autopts/wid`, but sometimes a custom, project-specific WID is required.
-It is convenient to create a separate file in your project for this, e.g:
-`autopts/ptsprojects/zephyr/profile_wid.py`:
+Put those in a separate file in your project, e.g.
+`autopts/ptsprojects/zephyr/profile_wid.py`. If the file exists, the generic
+handler looks there first and falls back to `autopts/wid/profile.py`:
 
 ```python
 # profile_wid.py file
 import logging
 
-from autopts.wid import generic_wid_hdl
 from autopts.pybtp.types import WIDParams
 
 log = logging.debug
-
-
-def profile_wid_hdl(wid, description, test_case_name):
-    log(f'{profile_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-
-    # Try to find the WID handler in this file, if not found then proceed to
-    # the generic autopts/wid/profile.py.
-    return generic_wid_hdl(wid, description, test_case_name,
-                           [__name__, 'autopts.wid.profile'])
 
 
 def hdl_wid_104(_: WIDParams):
@@ -321,6 +319,9 @@ to avoid BTP commands collision or interrupting a busy IUT. This can be handled 
 Synch Points mechanism.
 
 ```python
+    # bap.py, module level:
+    # from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
+
     # In test_cases(ptses) function:
 
     # Use custom preconditions
@@ -333,7 +334,7 @@ Synch Points mechanism.
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/BA/BASS/BV-04-C", 20100),
                                 SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 100)]),
-                      
+
                      # Barrier no. 2:
                      # LT2 will not execute the WID 384 until LT1 receives
                      # the WID 345 request. LT1 will not execute WID 345
@@ -341,13 +342,13 @@ Synch Points mechanism.
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 384),
                                 SynchPoint("BAP/BA/BASS/BV-04-C", 345)])],
-                  generic_wid_hdl=bap_wid_hdl,
+                  generic_wid_hdl=get_wid_handler(Backend.ZEPHYR, Service.BAP),
                   lt2="BAP/BA/BASS/BV-04-C_LT2"),
     ]
 
     test_cases_lt2 = [
         ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-04-C_LT2",
                        cmds=pre_conditions_lt2,
-                       generic_wid_hdl=bap_wid_hdl),
+                       generic_wid_hdl=get_wid_handler(Backend.ZEPHYR, Service.BAP)),
     ]
 ```
