@@ -48,10 +48,12 @@ class BTPSocket:
 
     def __init__(self, transport: BTPTransport, log_dir=None, log_file="autopts-iutctl.log"):
         self.transport = transport
+        self._rx_buf = bytearray()
         self.log_file = open(os.path.join(log_dir, log_file), "a")
         self.btp_service_id_dict = self.get_svc_id()
 
     def open(self):
+        self._rx_buf.clear()
         self.transport.open()
 
     def accept(self, timeout=10.0):
@@ -99,27 +101,35 @@ class BTPSocket:
         err_status = status_values[int(status)]
         f.write(f'{current_time[:-3]}    < {self.parse_data(data, err_status)} {hex_data}\n')
 
-    def _recv_exact(self, size, timeout):
-        data = bytearray()
-        while len(data) < size:
-            chunk = self.transport.recv(size - len(data), timeout)
+    def _fill_rx_buf(self, size, timeout):
+        while len(self._rx_buf) < size:
+            chunk = self.transport.recv(size - len(self._rx_buf), timeout)
             logging.debug("Read %d bytes", len(chunk))
-            data += chunk
-        return data
+            self._rx_buf += chunk
 
     def read(self, timeout=20.0):
         """Read BTP data from socket
 
         timeout - read timeout in seconds"""
-        hdr = self._recv_exact(HDR_LEN, timeout)
+        try:
+            self._fill_rx_buf(HDR_LEN, timeout)
+            hdr = self._rx_buf[:HDR_LEN]
+            tuple_hdr = dec_hdr(hdr)
+            frame_len = HDR_LEN + tuple_hdr.data_len
+
+            self._fill_rx_buf(frame_len, timeout)
+        except TimeoutError:
+            # BTP has no frame delimiter, so resync on silence
+            if self._rx_buf:
+                logging.warning("Dropped incomplete BTP frame: %s", self._rx_buf.hex(' '))
+                self._rx_buf.clear()
+            raise
+
+        data = self._rx_buf[HDR_LEN:frame_len]
+        del self._rx_buf[:frame_len]
 
         hex_hdr = ' '.join(hdr.hex()[i:i + 2] for i in range(0, len(hdr.hex()), 2))
-        tuple_hdr = dec_hdr(hdr)
-        toread_data_len = tuple_hdr.data_len
-
         logging.debug("Received: hdr: %s %r", repr_hdr(tuple_hdr), hdr)
-
-        data = self._recv_exact(toread_data_len, timeout)
 
         data_string = binascii.hexlify(data).decode('utf-8')
         data_string = ' '.join(f'{data_string[i:i + 2]}' for i in range(0, len(data_string), 2))
