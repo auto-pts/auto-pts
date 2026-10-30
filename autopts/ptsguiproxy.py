@@ -3,8 +3,8 @@ import queue
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+from autopts.autopts_types import PTSProxy
 from autopts.ptsprojects.ptstypes import MMI_STYLE_STRING
-from autopts.types import PTSProxy
 
 log = logging.debug
 

@@ -31,11 +31,11 @@ from pathlib import Path
 
 from autopts import client as autoptsclient
 from autopts.bot.common_features import github, google_drive, mail, report
-from autopts.client import Client, CliParser, TestCaseRunStats, init_logging, run_recovery
-from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths, SERIAL_BAUDRATE
+from autopts.client import Client, CliParser, TestCaseRunStats, run_recovery
+from autopts.config import AUTOPTS_ROOT_DIR, generate_file_paths, ConfigDefinition
 from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.types import AutoPTSMode
+from autopts.autopts_types import AutoPTSMode
 
 log = logging.debug
 
@@ -69,13 +69,6 @@ class BotCliParser(CliParser):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.add_argument('--simple', action='store_true',
-                          help='Skip build and flash in bot mode.', default=False)
-
-    def add_positional_args(self):
-        self.add_argument("config_path", nargs='?', default='config.py',
-                          help="Path to config.py to use for testing.")
-
 
 class BotConfigArgs(Namespace):
     """
@@ -85,72 +78,23 @@ class BotConfigArgs(Namespace):
 
     def __init__(self, args, **kwargs):
         super().__init__(**kwargs)
-        self.autopts_mode = args.get('autopts_mode', AutoPTSMode.AUTO_TCP_IP)
-        self.iut_mode = args.get('iut_mode', None)
-        self.workspace = args['workspace']
-        self.project_path = args['project_path']
-        self.tester_app_dir = args.get('tester_app_dir', Path('tests', 'bluetooth', 'tester'))
-        self.srv_port = args.get('srv_port', [65000])
-        self.cli_port = args.get('cli_port', [65001])
-        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
-        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
-        self.server_count = args.get('server_count', len(self.cli_port))
-        self.tty_file = args.get('tty_file', None)
-        self.board_name = args.get('board', None)
-        self.tty_alias = args.get('tty_alias', None)
-        self.net_tty_file = args.get('net_tty_file', None)
-        self.tty_baudrate = int(args.get('tty_baudrate', SERIAL_BAUDRATE))
-        self.debugger_snr = args.get('debugger_snr', None)
-        self.kernel_image = args.get('kernel_image', None)
-        self.database_file = args.get('database_file', DATABASE_FILE)
-        self.store = args.get('store', False)
-        self.rtt_log = args.get('rtt_log', False)
-        self.btmon = args.get('btmon', False)
-        self.device_core = args.get('device_core', 'NRF52840_XXAA')
-        self.qemu_bin = args.get('qemu_bin', None)
-        self.qemu_options = args.get('qemu_options', '-cpu cortex-m3 -machine lm3s6965evb')
-        self.btattach_bin = args.get('btattach_bin', None)
-        self.btattach_at_every_test_case = args.get('btattach_at_every_test_case', False)
-        self.btproxy_bin = args.get('btproxy_bin', None)
-        self.btmgmt_bin = args.get('btmgmt_bin', None)
-        self.hid_vid = args.get('hid_vid', None)
-        self.hid_pid = args.get('hid_pid', None)
-        self.hid_serial = args.get('hid_serial', None)
-        self.kernel_cpu = args.get('kernel_cpu', None)
-        self.setcap_cmd = args.get('setcap_cmd', None)
-        self.hci = args.get('hci', None)
-        self.test_cases = args.get('test_cases', [])
-        self.excluded = args.get('excluded', [])
 
-        self.bd_addr = args.get('bd_addr', '')
-        self.pts_addr = args.get('pts_addr', '')
-        self.enable_max_logs = args.get('enable_max_logs', False)
-        self.retry = args.get('retry', 0)
-        self.no_retry_on_regression = args.get('no_retry_on_regression')
-        self.repeat_until_fail = args.get('repeat_until_fail', False)
-        self.stress_test = args.get('stress_test', False)
-        self.ykush = args.get('ykush', None)
-        self.ykush_replug_delay = args.get('ykush_replug_delay', 3)
-        self.active_hub_server = args.get('active_hub_server', None)
-        self.recovery = args.get('recovery', False)
-        self.superguard = float(args.get('superguard', 0))
-        self.cron_optim = args.get('cron_optim', False)
-        self.project_repos = args.get('repos', None)
-        self.test_case_limit = args.get('test_case_limit', 0)
-        self.simple_mode = args.get('simple_mode', False)
-        self.server_args = args.get('server_args', None)
-        self.pylink_reset = args.get('pylink_reset', False)
-        self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
-        self.use_backup = args.get('use_backup', False)
-        self.no_build = args.get('no_build', False)
-        self.dongle_init_retry = args.get('dongle_init_retry', 5)
-        self.build_env_cmd = args.get('build_env_cmd', None)
-        self.copy_workspace = args.get('copy_workspace', True)
-        self.wid_usage = args.get('wid_usage', False)
-        self.pts_addr_map = args.get('pts_addr_map', {})
-        self.restricted_pts_addrs = args.get('restricted_pts_addrs', [])
-        self.iut_targets = args.get('iut_targets', None)
-        self.iut_target_selection = args.get('iut_target_selection', None)
+        for name, parameter in ConfigDefinition.parameters.items():
+            if isinstance(parameter.config_key, list):
+                key = next((k for k in parameter.config_key if k in args), None)
+            else:
+                key = parameter.config_key
+
+            key = key or name
+
+            if key in args:
+                value = args[key]
+            elif parameter.default_factory:
+                value = parameter.default_factory()
+            else:
+                value = parameter.default
+
+            setattr(self, name, value)
 
         if self.iut_targets:
             for iut_target in self.iut_targets:
