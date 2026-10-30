@@ -19,6 +19,7 @@ from .bass import bass_wid_hdl
 from .ccp import ccp_wid_hdl
 from .csip import csip_wid_hdl
 from .csis import csis_wid_hdl
+from .ftp import ftp_wid_hdl
 from .gmcs import gmcs_wid_hdl
 from .gtbs import gtbs_wid_hdl
 from .has import has_wid_hdl
@@ -56,6 +57,7 @@ __all__ = [
     "ccp_wid_hdl",
     "csip_wid_hdl",
     "csis_wid_hdl",
+    "ftp_wid_hdl",
     "gmcs_wid_hdl",
     "gtbs_wid_hdl",
     "has_wid_hdl",

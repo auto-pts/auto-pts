@@ -5,6 +5,7 @@ from .cap import CAP_EV
 from .ccp import CCP_EV
 from .core import CORE_EV
 from .csip import CSIP_EV
+from .ftp import FTP_EV
 from .gap import GAP_EV
 from .gatt import GATT_EV
 from .gatt_cl import GATTC_EV
@@ -37,6 +38,7 @@ __all__ = [
     "CCP_EV",
     "CORE_EV",
     "CSIP_EV",
+    "FTP_EV",
     "GAP_EV",
     "GATT_EV",
     "GATTC_EV",

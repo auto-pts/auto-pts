@@ -607,6 +607,10 @@ def core_reg_svc_rfcomm():
     core_reg_svc_univ("rfcomm_reg", "RFCOMM")
 
 
+def core_reg_svc_ftp():
+    core_reg_svc_univ("ftp_reg", "FTP")
+
+
 # GENERATOR append 1
 
 
@@ -706,6 +710,7 @@ def event_handler(hdr, data):
         CCP_EV,
         CORE_EV,
         CSIP_EV,
+        FTP_EV,
         GAP_EV,
         GATT_EV,
         GATTC_EV,
@@ -763,6 +768,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
         defs.BTP_SERVICE_ID_SDP: (SDP_EV, stack.sdp),
         defs.BTP_SERVICE_ID_RFCOMM: (RFCOMM_EV, stack.rfcomm),
+        defs.BTP_SERVICE_ID_FTP: (FTP_EV, stack.ftp),
         # GENERATOR append 3
     }
 
