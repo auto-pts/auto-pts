@@ -52,7 +52,7 @@ Over 630 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 
 For auto-pts client under Linux:
 
-1. `socat` that is used to transfer BTP data stream from UART's tty file.
+1. `socat` that is used to transfer BTP data stream from UART in native mode.
 
         sudo apt-get install python-setuptools socat
 
@@ -101,8 +101,6 @@ For auto-pts client:
 1. Install required modules with:
 
         python.exe -m pip install --user -r autoptsclient_requirements.txt
-
-2. Download socat.exe from https://sourceforge.net/projects/unix-utils/files/socat/1.7.3.2/ and add to PATH socat.exe directory.
 
 The rest of the auto-pts client setup is platform/mode specific:
 
