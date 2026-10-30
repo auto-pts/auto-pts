@@ -18,16 +18,14 @@ import logging
 import os
 import queue
 import re
-import socket
-import sys
 import threading
-from abc import abstractmethod
 from datetime import datetime
 
 import serial
 
 from autopts.pybtp import defs
 from autopts.pybtp.parser import HDR_LEN, dec_data, dec_hdr, enc_frame, repr_hdr
+from autopts.pybtp.transport import BTPTransport
 from autopts.pybtp.types import BTPError
 from autopts.utils import get_global_end, raise_on_global_end
 
@@ -48,20 +46,16 @@ def set_event_handler(event_handler):
 
 class BTPSocket:
 
-    def __init__(self, log_dir=None, log_file="autopts-iutctl.log"):
-        self.conn = None
-        self.addr = None
-        self.btp_service_id_dict = None
+    def __init__(self, transport: BTPTransport, log_dir=None, log_file="autopts-iutctl.log"):
+        self.transport = transport
         self.log_file = open(os.path.join(log_dir, log_file), "a")
         self.btp_service_id_dict = self.get_svc_id()
 
-    @abstractmethod
-    def open(self, address):
-        pass
+    def open(self):
+        self.transport.open()
 
-    @abstractmethod
     def accept(self, timeout=10.0):
-        pass
+        self.transport.accept(timeout)
 
     @staticmethod
     def get_svc_id():
@@ -105,24 +99,19 @@ class BTPSocket:
         err_status = status_values[int(status)]
         f.write(f'{current_time[:-3]}    < {self.parse_data(data, err_status)} {hex_data}\n')
 
+    def _recv_exact(self, size, timeout):
+        data = bytearray()
+        while len(data) < size:
+            chunk = self.transport.recv(size - len(data), timeout)
+            logging.debug("Read %d bytes", len(chunk))
+            data += chunk
+        return data
+
     def read(self, timeout=20.0):
         """Read BTP data from socket
 
         timeout - read timeout in seconds"""
-        toread_hdr_len = HDR_LEN
-        hdr = bytearray(toread_hdr_len)
-        hdr_memview = memoryview(hdr)
-        self.conn.settimeout(timeout)
-
-        # Gather frame header
-        while toread_hdr_len:
-            nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
-            if nbytes == 0 and toread_hdr_len != 0:
-                # The connection is closed and the BTPSocket should be reinited
-                raise OSError
-            logging.debug("Read %d bytes", nbytes)
-            hdr_memview = hdr_memview[nbytes:]
-            toread_hdr_len -= nbytes
+        hdr = self._recv_exact(HDR_LEN, timeout)
 
         hex_hdr = ' '.join(hdr.hex()[i:i + 2] for i in range(0, len(hdr.hex()), 2))
         tuple_hdr = dec_hdr(hdr)
@@ -130,17 +119,7 @@ class BTPSocket:
 
         logging.debug("Received: hdr: %s %r", repr_hdr(tuple_hdr), hdr)
 
-        data = bytearray(toread_data_len)
-        data_memview = memoryview(data)
-
-        # Gather optional frame data
-        while toread_data_len:
-            nbytes = self.conn.recv_into(data_memview, toread_data_len)
-            logging.debug("Read %d bytes data", nbytes)
-            if nbytes == 0 and toread_data_len != 0:
-                raise OSError
-            data_memview = data_memview[nbytes:]
-            toread_data_len -= nbytes
+        data = self._recv_exact(toread_data_len, timeout)
 
         data_string = binascii.hexlify(data).decode('utf-8')
         data_string = ' '.join(f'{data_string[i:i + 2]}' for i in range(0, len(data_string), 2))
@@ -153,7 +132,6 @@ class BTPSocket:
             self.write_to_log(0, tuple_hdr, raw_data)
         log(f"Received data: { {data_string} }, {data}")
 
-        self.conn.settimeout(None)
         return tuple_hdr, dec_data(data)
 
     def send(self, svc_id, op, ctrl_index, data):
@@ -169,7 +147,7 @@ class BTPSocket:
         tuple_data = (svc_id, op, ctrl_index, len(data) if isinstance(data, (str, bytearray)) else data)
         # 0 for logging response, 1 for command
         self.write_to_log(1, tuple_data, hex_data)
-        self.conn.send(frame)
+        self.transport.send(frame)
 
     def parse_data(self, data, extra=None):
         def get_btp_cmd_name(prefix, op_code):
@@ -207,77 +185,13 @@ class BTPSocket:
 
         return parsed_data
 
-    @abstractmethod
-    def close(self):
-        self.log_file.close()
-        self.log_file = None
-        pass
-
-
-class BTPSocketSrv(BTPSocket):
-
-    def __init__(self, log_dir=None, log_file="autopts-iutctl.log"):
-        super().__init__(log_dir, log_file)
-        self.sock = None
-
-    def open(self, addres=BTP_ADDRESS, port=0):
-        """Open BTP socket for IUT"""
-        if os.path.exists(addres):
-            os.remove(addres)
-
-        if sys.platform == "win32":
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.bind((socket.gethostname(), port))
-        else:
-            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.sock.bind(addres)
-
-        # queue only one connection
-        self.sock.listen(1)
-
-    def accept(self, timeout=10.0):
-
-        """Accept incomming Zephyr connection
-
-        timeout - accept timeout in seconds"""
-
-        self.sock.settimeout(timeout)
-        self.conn, self.addr = self.sock.accept()
-        self.sock.settimeout(None)
-
-    def close(self):
-        super().close()
-        try:
-            if self.conn is not None:
-                self.conn.shutdown(socket.SHUT_RDWR)
-                self.conn.close()
-                self.sock.close()
-        except BaseException as e:
-            logging.exception(e)
-        self.sock = None
-        self.conn = None
-        self.addr = None
-
-
-class BTPSocketCli(BTPSocket):
-
-    def open(self, addr):
-        self.addr = addr
-
-    def accept(self, timeout=10.0):
-        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn.connect(self.addr)
-
     def close(self):
         try:
-            if self.conn:
-                self.conn.shutdown(socket.SHUT_RDWR)
-                self.conn.close()
+            self.transport.close()
         except OSError as e:
             logging.exception(e)
-        finally:
-            self.conn = None
-            self.addr = None
+        self.log_file.close()
+        self.log_file = None
 
 
 class BTPWorker:

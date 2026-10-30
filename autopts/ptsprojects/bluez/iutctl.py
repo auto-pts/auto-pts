@@ -22,7 +22,8 @@ import subprocess
 import autopts.ptsprojects.bluez.vendor as vendor
 from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import defs
-from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocket, BTPWorker
+from autopts.pybtp.transport import SocketServerTransport
 from autopts.pybtp.types import BTPError, BTPInitError
 
 log = logging.debug
@@ -67,8 +68,8 @@ class IUTCtl:
         """Starts the IUT"""
 
         log("%s.%s", self.__class__, self.start.__name__)
-        self.socket_srv = BTPSocketSrv(test_case.log_dir)
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv = BTPSocket(SocketServerTransport(self.btp_address), test_case.log_dir)
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv)
 
         iut_cmd = get_iut_cmd(self.btpclient_path)
