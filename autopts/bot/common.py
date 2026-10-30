@@ -121,6 +121,7 @@ class BotConfigArgs(Namespace):
         self.hci = args.get('hci', None)
         self.test_cases = args.get('test_cases', [])
         self.excluded = args.get('excluded', [])
+        self.valgrind = args.get('valgrind', False)
 
         self.bd_addr = args.get('bd_addr', '')
         self.pts_addr = args.get('pts_addr', '')
