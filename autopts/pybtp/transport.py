@@ -19,6 +19,8 @@ import socket
 import sys
 from abc import ABC, abstractmethod
 
+import serial
+
 
 class BTPTransport(ABC):
     """Byte stream between AutoPTS and the IUT."""
@@ -122,3 +124,44 @@ class SocketClientTransport(_SocketTransport):
 
     def accept(self, timeout: float | None = 10.0) -> None:
         self.conn = socket.create_connection((self.host, self.port), timeout)
+
+
+class SerialTransport(BTPTransport):
+    """Serial port of the IUT."""
+
+    def __init__(self, port: str, baudrate: int, rtscts: bool = False) -> None:
+        self.port = port
+        self.baudrate = baudrate
+        self.rtscts = rtscts
+        self.ser: serial.Serial | None = None
+
+    def open(self) -> None:
+        self.ser = serial.Serial(port=self.port, baudrate=self.baudrate,
+                                 rtscts=self.rtscts, timeout=1, write_timeout=5)
+        # Drop what the IUT sent before, e.g. a partial IUT ready event
+        self.ser.read(99999)
+
+    def accept(self, timeout: float | None = 10.0) -> None:
+        pass
+
+    def recv(self, size: int, timeout: float | None) -> bytes:
+        try:
+            if self.ser.timeout != timeout:
+                self.ser.timeout = timeout
+            data = self.ser.read(min(size, max(1, self.ser.in_waiting)))
+        except serial.SerialException as e:
+            raise ConnectionError(e) from e
+        if not data:
+            raise TimeoutError
+        return data
+
+    def send(self, data: bytes) -> None:
+        try:
+            self.ser.write(data)
+        except serial.SerialException as e:
+            raise ConnectionError(e) from e
+
+    def close(self) -> None:
+        if self.ser is not None:
+            self.ser.close()
+            self.ser = None
