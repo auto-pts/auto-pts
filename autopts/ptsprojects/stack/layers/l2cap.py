@@ -13,6 +13,8 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+from __future__ import annotations
+
 import logging
 from enum import Enum, IntEnum, auto
 
@@ -27,6 +29,7 @@ class L2capChanState(Enum):
 
 
 class L2CapChannelStatusCode(IntEnum):
+    """L2CAP Credit-Based Connection Response result codes. """
     SUCCESS = 0x0000
     LE_PSM_NOT_SUPPORTED = 0x0002
     INSUFFICIENT_RESOURCES = 0x0004
@@ -38,6 +41,24 @@ class L2CapChannelStatusCode(IntEnum):
     SOURCE_CID_ALREADY_ALLOCATED = 0x000a
     UNACCEPTABLE_PARAMETERS = 0x000b
     INVALID_PARAMETERS = 0x000c
+    NO_FURTHER_INFORMATION_AVAILABLE = 0x000d
+    AUTHENTICATION_PENDING = 0x000e
+    AUTHORIZATION_PENDING = 0x000f
+
+    @classmethod
+    def _missing_(cls, value: object) -> L2CapChannelStatusCode | None:
+        """Return a pseudo-member for an unrecognized integer status code.
+        Args:
+            value: Candidate status value; non-integer values remain unsupported.
+        Returns:
+            An unknown status pseudo-member for integers; otherwise None.
+        """
+        if isinstance(value, int):
+            obj = int.__new__(cls, value)
+            obj._value_ = value
+            obj._name_ = f"UNKNOWN_L2CAP_CHAN_STATUS_0x{value:04X}"
+            return obj
+        return None
 
 
 class L2capChan:
