@@ -66,15 +66,7 @@ class BuildAndFlashException(Exception):
 
 
 class BotCliParser(CliParser):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.add_argument('--simple', action='store_true',
-                          help='Skip build and flash in bot mode.', default=False)
-
-    def add_positional_args(self):
-        self.add_argument("config_path", nargs='?', default='config.py',
-                          help="Path to config.py to use for testing.")
+    excluded_parameters = ()
 
 
 class BotConfigArgs(Namespace):
