@@ -35,7 +35,7 @@ from autopts.client import Client, CliParser, TestCaseRunStats, init_logging, ru
 from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths, SERIAL_BAUDRATE
 from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.types import AutoPTSMode
+from autopts.autopts_types import AutoPTSMode
 
 log = logging.debug
 

@@ -43,6 +43,7 @@ from xmlrpc.server import SimpleXMLRPCServer
 
 from termcolor import colored
 
+from autopts.autopts_types import AutoPTSMode, PTSProxy
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects import ptstypes, stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
@@ -52,7 +53,6 @@ from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp
 from autopts.pybtp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, BTPFatalError, BTPInitError, MissingWIDError, SynchError
-from autopts.types import AutoPTSMode, PTSProxy
 from autopts.utils import (
     CounterWithFlag,
     InterruptableThread,
