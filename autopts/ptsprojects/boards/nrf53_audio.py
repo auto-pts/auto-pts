@@ -23,9 +23,8 @@ supported_projects = ['zephyr']
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
 
 
-def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs,
+def build_and_flash_core(build_dir, board, debugger_snr, configs,
                          recover=False, env_cmd=None):
-    build_dir = os.path.join(zephyr_wd, build_dir)
     check_call('rm -rf build/'.split(), cwd=build_dir)
 
     if env_cmd:
@@ -40,14 +39,17 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs,
     cmd.extend(overlay.split())
     check_call(env_cmd + cmd, cwd=build_dir)
 
-    build_name = str(build_dir).split('/')[-1]
-    check_call(f"rm ./build_{build_name}.zip || exit 0".split(), cwd=zephyr_wd)
-    check_call(f"zip -r {zephyr_wd}/build_{build_name}.zip build -i '*.hex' '*.config'".split(), cwd=build_dir)
-
     cmd = ['west', 'flash', '--no-rebuild', '-i', debugger_snr]
     if recover:
         cmd.append('--recover')
     check_call(env_cmd + cmd, cwd=build_dir)
+
+
+def save_build(zephyr_wd, build_dir, conf_file):
+    build_name = str(build_dir).split('/')[-1]
+    conf_name = str(conf_file).split('/')[-1].replace('.conf', '').replace(';', '_')
+    check_call(f"rm ./build_{build_name}_{conf_name}.zip || exit 0".split(), cwd=zephyr_wd)
+    check_call(f"zip -r {zephyr_wd}/build_{build_name}_{conf_name}.zip build -i '*.hex' '*.config'".split(), cwd=build_dir)
 
 
 def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=None, project_repos=None,
@@ -70,13 +72,14 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         app_core_configs = [f'EXTRA_CONF_FILE=\'{conf_file}\'']
 
-    build_and_flash_core(zephyr_wd,
-                         source_dir if source_dir else tester_app_dir,
+    app_build_dir = os.path.join(zephyr_wd, source_dir if source_dir else tester_app_dir)
+    build_and_flash_core(app_build_dir,
                          board,
                          debugger_snr,
                          app_core_configs,
                          True,
                          env_cmd=env_cmd)
+    save_build(zephyr_wd, app_build_dir, conf_file)
 
     config_dir_net = os.getenv("AUTOPTS_SOURCE_DIR_NET")
     if config_dir_net is None:
@@ -85,9 +88,10 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
         conf_path = os.path.join(zephyr_wd, config_dir_net, 'hci_ipc.conf')
         net_core_configs = [f'EXTRA_CONF_FILE=\'{conf_path}\'']
 
-    build_and_flash_core(zephyr_wd,
-                         os.path.join('samples', 'bluetooth', 'hci_ipc'),
+    net_build_dir = os.path.join(zephyr_wd, 'samples', 'bluetooth', 'hci_ipc')
+    build_and_flash_core(net_build_dir,
                          'nrf5340_audio_dk/nrf5340/cpunet',
                          debugger_snr,
                          net_core_configs,
                          env_cmd=env_cmd)
+    save_build(zephyr_wd, net_build_dir, conf_file)
