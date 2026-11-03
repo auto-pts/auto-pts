@@ -16,6 +16,7 @@
 """Configuration variables"""
 
 import os.path
+from enum import StrEnum
 
 SERVER_PORT = 65000
 CLIENT_PORT = 65001
@@ -67,3 +68,28 @@ def generate_file_paths(file_paths=None, autopts_root_dir=AUTOPTS_ROOT_DIR):
 
 
 generate_file_paths({}, AUTOPTS_ROOT_DIR)
+
+
+class IUTMode(StrEnum):
+    """How AutoPTS runs and communicates with the IUT.
+
+    Set with the iut_mode parameter, or inferred from other
+    parameters if not set.
+    """
+
+    TTY = 'tty'
+    """IUT on a board, BTP over its serial port (tty_file)."""
+
+    QEMU = 'qemu'
+    """IUT emulated with QEMU (qemu_bin), BTP over a UNIX socket."""
+
+    NATIVE = 'native'
+    """IUT built as a native executable (kernel_image) using a local
+    HCI controller (hci or hid_*), BTP over a UNIX socket."""
+
+    BTPCLIENT_PATH = 'btpclient_path'
+    """IUT is a BTP client executable (btpclient_path), e.g. BlueZ
+    btpclient, BTP over a UNIX socket."""
+
+    BTPCLIENT_TCP = 'btpclient_tcp'
+    """External BTP client at btp_tcp_ip:btp_tcp_port, BTP over TCP."""

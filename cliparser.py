@@ -27,13 +27,13 @@ from itertools import zip_longest
 from pathlib import Path
 
 from autopts.autopts_types import AutoPTSMode
-from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
+from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT, IUTMode
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.utils import active_hub_server_replug_usb, get_tc_from_wid, load_wid_report, raise_on_global_end, ykush_replug_usb
 
 log = logging.debug
-IUT_MODES = ['tty', 'qemu', 'native', 'btpclient_path']
+IUT_MODES = [IUTMode.TTY, IUTMode.QEMU, IUTMode.NATIVE, IUTMode.BTPCLIENT_PATH]
 
 
 class SmartDefaultsMixin:
@@ -66,6 +66,14 @@ class SmartDefaultsMixin:
 class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
     def __init__(self, iut_modes=None, board_names=None, add_help=True, *args, **kwargs):
         super().__init__(description='PTS automation client', add_help=add_help)
+
+        self.check_methods = {
+            IUTMode.TTY: self.check_args_tty,
+            IUTMode.NATIVE: self.check_args_native,
+            IUTMode.QEMU: self.check_args_qemu,
+            IUTMode.BTPCLIENT_PATH: self.check_args_btpclient_path,
+            IUTMode.BTPCLIENT_TCP: self.check_args_btp_tcp_client,
+        }
 
         if iut_modes is None:
             iut_modes = IUT_MODES
@@ -572,7 +580,7 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
     def check_args_btp_tcp_client(self, args):
         if not 49152 <= args.btp_tcp_port <= 65535:
             return (
-                f'btp_tcp_client mode: Invalid server port number={args.btp_tcp_port}, expected '
+                f'btpclient_tcp mode: Invalid server port number={args.btp_tcp_port}, expected '
                 'range <49152,65535>'
             )
         return ''
@@ -581,21 +589,21 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
         # Specify IUT mode explicitly, or it will be inferred
         # from the parameters.
         if args.iut_mode:
-            return args.iut_mode
+            return IUTMode(args.iut_mode)
 
         if args.qemu_bin:
-            return 'qemu'
+            return IUTMode.QEMU
 
         if args.kernel_image or args.hid_serial or args.hci is not None:
-            return 'native'
+            return IUTMode.NATIVE
 
         if args.btpclient_path:
-            return 'btpclient_path'
+            return IUTMode.BTPCLIENT_PATH
 
         if args.btp_tcp_port:
-            return 'btp_tcp_client'
+            return IUTMode.BTPCLIENT_TCP
 
-        return 'tty'
+        return IUTMode.TTY
 
     def parse(self, arg_ns=None):
         """Parsing and sanity check command line arguments
@@ -645,15 +653,15 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
             else:
                 _args.usb_replug_available = False
 
-            if sys.platform == "win32" and _args.iut_mode in ['qemu', 'native']:
+            if sys.platform == "win32" and _args.iut_mode in [IUTMode.QEMU, IUTMode.NATIVE]:
                 errmsg = f'The {_args.iut_mode} mode is not supported under Windows!'
                 return args, errmsg
 
-            if _args.iut_mode == 'tty' or (_args.iut_mode == 'native'
-                                           and _args.tty_file or _args.tty_alias or _args.debugger_snr):
+            if _args.iut_mode == IUTMode.TTY or (_args.iut_mode == IUTMode.NATIVE
+                                                 and _args.tty_file or _args.tty_alias or _args.debugger_snr):
                 self.find_tty(_args)
 
-            check_method = getattr(self, f'check_args_{_args.iut_mode}')
+            check_method = self.check_methods[_args.iut_mode]
             errmsg = check_method(_args)
 
         if args.wid_run:
