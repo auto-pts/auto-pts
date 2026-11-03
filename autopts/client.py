@@ -1838,9 +1838,11 @@ def run_recovery(args, ptses):
             iut.select_iut(iut_id)
         iut.stop()
 
-        if args.usb_replug_available:
+        # USB replug parameters are set per IUT
+        iut_args = args.iut_targets_args[args.iut_map[iut_id]]
+        if iut_args.usb_replug_available:
             iut.btattach_stop()
-            replug_usb(args, iut)
+            replug_usb(iut_args, iut)
             iut.btattach_start()
 
     if hasattr(iut, 'select_iut'):
