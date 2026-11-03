@@ -15,7 +15,6 @@
 
 import logging
 import os
-import re
 import signal
 import socket
 import subprocess
@@ -25,7 +24,6 @@ import time
 
 import pylink
 
-from autopts.config import BTMON_PORT
 from autopts.utils import get_global_end
 
 log = logging.debug
@@ -164,6 +162,7 @@ class BTMON:
         self.rtt_reader = RTT()
         self.btmon_process = None
         self.socat_process = None
+        self.pty_link = None
         self.log_filename = None
         self.plain_log_filename = None
         self.log_filecwd = None
@@ -187,6 +186,17 @@ class BTMON:
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
+    def _wsl_kill_btmon(self):
+        if self.pty_link:
+            # [/] keeps pkill from matching the bash running it
+            self._wsl_call(f"pkill -f '[/]{self.pty_link[1:]}'")
+
+    @staticmethod
+    def _get_free_port():
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(('localhost', 0))
+            return sock.getsockname()[1]
+
     def is_running(self):
         return not self.rtt_reader.stop_thread.is_set()
 
@@ -203,32 +213,36 @@ class BTMON:
         if sys.platform == 'win32':
             # Remember to install btmon and socat in your Ubuntu WSL2 instance,
             # as they are not available after fresh install.
-            self._wsl_call('killall btmon')
-            self._wsl_call('killall socat')
 
-            cmd = f'socat -dd pty,raw,echo=0 TCP-LISTEN:{BTMON_PORT},reuseaddr'
+            # The pty link name is in the command lines of both socat and
+            # btmon, so the processes of this IUT can be killed by it.
+            self.pty_link = f'/tmp/autopts-btmon-{debugger_snr}'
+            self._wsl_kill_btmon()
+
+            port = self._get_free_port()
+            cmd = f'socat -dd pty,raw,echo=0,link={self.pty_link} TCP-LISTEN:{port},reuseaddr'
             self.socat_process = self._wsl_popen(cmd, self.log_filecwd)
             if not self.socat_process or self.socat_process.poll():
                 log('Socat failed to start')
                 self.stop()
                 return
 
-            pty = None
+            # The pty link exists once socat listens
+            listening = False
             err = ""
             for line in self.socat_process.stderr:
-                match = re.findall(r'/dev/pts/\d+', line.decode())
-                if match:
-                    pty = match[0]
+                if 'listening on' in line.decode():
+                    listening = True
                     break
                 else:
                     err += line.decode()
 
-            if not pty:
+            if not listening:
                 log(f'Socat failed to start, err: {err}')
                 self.stop()
                 return
 
-            cmd = ['btmon', '-C', str(130), '-d', pty, '-w', self.log_filename]
+            cmd = ['btmon', '-C', str(130), '-d', self.pty_link, '-w', self.log_filename]
             self.btmon_process = self._wsl_popen(subprocess.list2cmdline(cmd), self.log_filecwd)
             if not self.btmon_process or self.btmon_process.poll():
                 log('BTMON failed to start')
@@ -236,7 +250,7 @@ class BTMON:
                 return
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            server_address = ('localhost', BTMON_PORT)
+            server_address = ('localhost', port)
             sock.connect(server_address)
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
@@ -267,6 +281,10 @@ class BTMON:
             self.socat_process.terminate()
             self.socat_process.wait()
             self.socat_process = None
+
+        if sys.platform == 'win32':
+            # Terminating bash.exe may leave socat and btmon running in WSL
+            self._wsl_kill_btmon()
 
         # copy btmon output to readable log file
         cmd = f"btmon -r {self.log_filename} -P > {self.plain_log_filename}"
