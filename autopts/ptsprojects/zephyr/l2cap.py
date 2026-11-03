@@ -16,13 +16,14 @@
 """L2CAP test cases"""
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import Backend, Service, get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import Addr, IOCap, L2CAPConnectionResponse
-from autopts.wid import l2cap_wid_hdl
 
+l2cap_wid_hdl = get_wid_handler(Backend.ZEPHYR, Service.L2CAP)
 le_psm = 128
 psm_unsupported = 241
 le_initial_mtu = 120

@@ -17,14 +17,8 @@ import logging
 
 from autopts.ptsprojects.stack import L2CapChannelStatusCode, get_stack
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def l2cap_wid_hdl(wid, description, test_case_name):
-    log(f'{l2cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.l2cap'])
 
 
 # wid handlers section begin
