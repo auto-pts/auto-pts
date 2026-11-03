@@ -26,10 +26,10 @@ import time
 from itertools import zip_longest
 from pathlib import Path
 
+from autopts.autopts_types import AutoPTSMode
 from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.types import AutoPTSMode
 from autopts.utils import active_hub_server_replug_usb, get_tc_from_wid, load_wid_report, raise_on_global_end, ykush_replug_usb
 
 log = logging.debug

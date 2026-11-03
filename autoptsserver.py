@@ -52,7 +52,7 @@ import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.types import PTSProxy
+from autopts.autopts_types import PTSProxy
 from autopts.utils import (
     CounterWithFlag,
     active_hub_server_replug_usb,
