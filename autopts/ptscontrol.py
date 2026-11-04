@@ -52,7 +52,7 @@ import win32com.server.util
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.utils import PTS_WORKSPACE_FILE_EXT, ResultWithFlag, count_script_instances, get_own_workspaces
-from autopts.winutils import get_pid_by_window_title, kill_all_processes
+from autopts.winutils import close_window, get_pid_by_window_title, kill_all_processes
 
 logging = root_logging.getLogger('server')
 log = logging.debug
@@ -64,6 +64,11 @@ logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
                      ptstypes.PTS_LOGTYPE_FINAL_VERDICT]
 
 PTS_START_LOCK = threading.RLock()
+
+# A hanging test case is cancelled at the call timeout, so PTS ends it and
+# provides its logs. PTS gets this many seconds more to end it, before its
+# own call timeout.
+TEST_CASE_CANCEL_TIME = 30
 
 
 def pts_lock_wrapper(lock):
@@ -372,6 +377,12 @@ class PyPTS:
         self._device = None
         self.lite_start = lite_start
         self._last_recovery_time = datetime.now()
+        # PTS call timeout in milliseconds, 0 = no timeout
+        self._call_timeout = 0
+        # Guards the cancel timer against the end of the test case
+        self._cancel_lock = threading.Lock()
+        self._test_case_running = False
+        self._test_case_cancelled = False
 
     def _init_attributes(self):
         """Initializes class attributes"""
@@ -830,9 +841,19 @@ class PyPTS:
             if not address:
                 raise Exception("Bluetooth address not available")
 
-            self._pts.RunTestCase(project_name, test_case_name)
+            cancel_timer = self._start_cancel_timer(address)
+            try:
+                self._pts.RunTestCase(project_name, test_case_name)
+            finally:
+                with self._cancel_lock:
+                    self._test_case_running = False
+                if cancel_timer:
+                    cancel_timer.cancel()
 
             err = self._pts_logger.get_test_case_status(timeout=30)
+
+            if self._test_case_cancelled:
+                err = ptstypes.PTSCONTROL_E_STRING[ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT]
 
             self._revert_temp_changes()
         except Exception as e:
@@ -852,6 +873,44 @@ class PyPTS:
             project_name, test_case_name, err)
 
         return err
+
+    def _start_cancel_timer(self, address):
+        with self._cancel_lock:
+            self._test_case_running = True
+            self._test_case_cancelled = False
+
+        if not self._call_timeout:
+            return None
+
+        timer = threading.Timer(self._call_timeout / 1000, self._cancel_test_case, args=(address,))
+        timer.name = f'CancelTestCaseTimer{timer.name}'
+        timer.start()
+        return timer
+
+    def _cancel_test_case(self, address):
+        """Cancels the running test case like a user closing the PTS window.
+
+        PTS provides the logs of a test case only when RunTestCase() returns,
+        so they are lost if the test case hangs until the PTS call timeout.
+        Not all test cases can be cancelled this way.
+        """
+        title = f"PTS - {address.replace(':', '').upper()}"
+
+        with self._cancel_lock:
+            # Closing the window without a test case would close PTS
+            if not self._test_case_running:
+                return
+
+            log(f"Test case still running, closing the window: {title}")
+
+            # Respond 'Cancel' to a pending WID, so PTS is not blocked by
+            # OnImplicitSend and can handle the close.
+            self._pts_sender.close()
+
+            if close_window(title):
+                self._test_case_cancelled = True
+            else:
+                log(f"Failed to find PTS window with title: {title}")
 
     def stop_test_case(self, project_name, test_case_name):
         log("%s %s %s", self.stop_test_case.__name__, project_name,
@@ -984,12 +1043,19 @@ class PyPTS:
 
     def set_call_timeout(self, timeout):
         """Sets a timeout period in milliseconds for the RunTestCase() calls
-        to PTS."""
+        to PTS.
 
+        After the timeout the test case is cancelled, and PTS gets
+        TEST_CASE_CANCEL_TIME more to end it.
+        """
+
+        self._call_timeout = timeout
+        if timeout:
+            timeout += TEST_CASE_CANCEL_TIME * 1000
         self._pts.SetPTSCallTimeout(timeout)
 
-        if timeout:
-            self.add_recov(self.set_call_timeout, timeout)
+        if self._call_timeout:
+            self.add_recov(self.set_call_timeout, self._call_timeout)
         else:  # timeout 0 = no timeout
             self.del_recov(self.set_call_timeout)
 
