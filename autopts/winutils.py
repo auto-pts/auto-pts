@@ -32,6 +32,7 @@
 """Windows utilities"""
 import logging
 
+import win32con
 import win32gui
 import win32process
 import wmi
@@ -53,6 +54,24 @@ def get_pid_by_window_title(title):
         return hwnd_list[0]
     else:
         return None
+
+
+def find_window(title):
+    """Returns the handle of a window with the title starting with title,
+    or None."""
+    def callback(hwnd, hwnd_list):
+        if win32gui.GetWindowText(hwnd).startswith(title):
+            hwnd_list.append(hwnd)
+
+    hwnd_list = []
+    win32gui.EnumWindows(callback, hwnd_list)
+    return hwnd_list[0] if hwnd_list else None
+
+
+def close_window(hwnd):
+    """Closes the window, as if the user clicked its X button."""
+    logging.debug(f'Closing window: {win32gui.GetWindowText(hwnd)}')
+    win32gui.PostMessage(hwnd, win32con.WM_SYSCOMMAND, win32con.SC_CLOSE, 0)
 
 
 def _terminate_process_safely(process, name):

@@ -34,6 +34,7 @@ Cause of tight coupling with PTS, this module is Windows specific
 """
 
 import ctypes
+import glob
 import logging as root_logging
 import os
 import shutil
@@ -52,7 +53,7 @@ import win32com.server.util
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.utils import PTS_WORKSPACE_FILE_EXT, ResultWithFlag, count_script_instances, get_own_workspaces
-from autopts.winutils import get_pid_by_window_title, kill_all_processes
+from autopts.winutils import close_window, find_window, get_pid_by_window_title, kill_all_processes
 
 logging = root_logging.getLogger('server')
 log = logging.debug
@@ -64,6 +65,19 @@ logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
                      ptstypes.PTS_LOGTYPE_FINAL_VERDICT]
 
 PTS_START_LOCK = threading.RLock()
+
+# A hanging test case is canceled at the call timeout, so PTS ends it and
+# provides its logs. PTS gets this many seconds more to end it, before its
+# own call timeout.
+TEST_CASE_CANCEL_TIME = 30
+
+# PTS ends a test case itself at TSPX_time_guard, so the test case is
+# canceled no earlier than this many seconds after it
+TIME_GUARD_MARGIN = 30
+
+# After a canceled test case PTS writes its XML log, which may take a while on
+# a slow machine, so wait up to this many seconds for it before killing PTS
+TEST_CASE_XML_TIMEOUT = 60
 
 
 def pts_lock_wrapper(lock):
@@ -372,6 +386,14 @@ class PyPTS:
         self._device = None
         self.lite_start = lite_start
         self._last_recovery_time = datetime.now()
+        # PTS call timeout in milliseconds, 0 = no timeout
+        self._call_timeout = 0
+        # TSPX_time_guard of each project in milliseconds
+        self._time_guards = {}
+        # Guards the cancel timer against the end of the test case
+        self._cancel_lock = threading.Lock()
+        self._test_case_running = False
+        self._test_case_canceled = False
 
     def _init_attributes(self):
         """Initializes class attributes"""
@@ -391,6 +413,9 @@ class PyPTS:
         self.__bd_addr = None
 
         self._pts_projects = {}
+
+        # Call timeout set in this PTS instance in milliseconds
+        self._pts_call_timeout = 0
 
     def cleanup_caches(self):
         self._recov.clear()
@@ -804,6 +829,7 @@ class PyPTS:
             test_case_name)
 
         err = None
+        start_time = None
 
         try:
             self._pts_logger.reopen()
@@ -830,9 +856,21 @@ class PyPTS:
             if not address:
                 raise Exception("Bluetooth address not available")
 
-            self._pts.RunTestCase(project_name, test_case_name)
+            start_time = time.time()
+            cancel_timer = self._start_cancel_timer(address, project_name)
+            try:
+                self._pts.RunTestCase(project_name, test_case_name)
+            finally:
+                with self._cancel_lock:
+                    self._test_case_running = False
+                if cancel_timer:
+                    cancel_timer.cancel()
 
             err = self._pts_logger.get_test_case_status(timeout=30)
+
+            if self._test_case_canceled:
+                err = ptstypes.PTSCONTROL_E_STRING[ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT]
+                self._wait_for_test_case_xml(project_name, test_case_name, start_time)
 
             self._revert_temp_changes()
         except Exception as e:
@@ -840,6 +878,9 @@ class PyPTS:
             if isinstance(e, pythoncom.com_error):
                 err = parse_ptscontrol_error(e)
                 # If successfully parsed, it was PTS exception
+
+            if self._test_case_canceled and start_time is not None:
+                self._wait_for_test_case_xml(project_name, test_case_name, start_time)
 
             self.stop_test_case(project_name, test_case_name)
             self.recover_pts()
@@ -852,6 +893,81 @@ class PyPTS:
             project_name, test_case_name, err)
 
         return err
+
+    def _start_cancel_timer(self, address, project_name):
+        with self._cancel_lock:
+            self._test_case_running = True
+            self._test_case_canceled = False
+
+        if not self._call_timeout:
+            return None
+
+        cancel_time = self._call_timeout
+        if project_name in self._time_guards:
+            cancel_time = max(cancel_time, self._time_guards[project_name] + TIME_GUARD_MARGIN * 1000)
+        self._set_pts_call_timeout(cancel_time + TEST_CASE_CANCEL_TIME * 1000)
+
+        timer = threading.Timer(cancel_time / 1000, self._cancel_test_case, args=(address,))
+        timer.name = f'CancelTestCaseTimer{timer.name}'
+        timer.start()
+        return timer
+
+    def _cancel_test_case(self, address):
+        """Cancels the running test case like a user closing the PTS window.
+
+        PTS provides the logs of a test case only when RunTestCase() returns,
+        so they are lost if the test case hangs until the PTS call timeout.
+        Not all test cases can be canceled this way.
+        """
+        title = f"PTS - {address.replace(':', '').upper()}"
+
+        with self._cancel_lock:
+            # Closing the window without a test case would close PTS
+            if not self._test_case_running:
+                return
+
+            hwnd = find_window(title)
+            if not hwnd:
+                log(f"Failed to find PTS window with title: {title}")
+                return
+
+            log(f"Test case still running, closing the window: {title}")
+
+            # Respond 'Cancel' to a pending WID, so PTS is not blocked by
+            # OnImplicitSend and can handle the close.
+            self._pts_sender.close()
+
+            close_window(hwnd)
+            self._test_case_canceled = True
+
+    def _wait_for_test_case_xml(self, project_name, test_case_name, start_time):
+        """Waits until PTS writes the XML log of the canceled test case,
+        so the log is not lost when PTS gets killed by the recovery.
+
+        start_time: time.time() at the test case start, older logs are ignored
+        """
+        if not self._workspace_path:
+            return
+
+        tc_name = test_case_name.replace('/', '_').replace('-', '_')
+        pattern = os.path.join(glob.escape(os.path.dirname(self._workspace_path)),
+                               glob.escape(project_name), '**', f'{glob.escape(tc_name)}_C_*.xml')
+
+        deadline = time.time() + TEST_CASE_XML_TIMEOUT
+        while True:
+            for path in glob.iglob(pattern, recursive=True):
+                try:
+                    if os.path.getmtime(path) >= start_time:
+                        log(f"Found XML log: {path}")
+                        return
+                except OSError:
+                    pass
+
+            if time.time() > deadline:
+                log(f"No XML log of {test_case_name} after {TEST_CASE_XML_TIMEOUT} s")
+                return
+
+            time.sleep(1)
 
     def stop_test_case(self, project_name, test_case_name):
         log("%s %s %s", self.stop_test_case.__name__, project_name,
@@ -929,6 +1045,7 @@ class PyPTS:
             param_name, param_value)
 
         try:
+            self._store_time_guard(project_name, param_name, param_value)
             self._pts.UpdatePixitParam(project_name, param_name, param_value)
             self.add_recov(self.set_pixit, project_name, param_name,
                            param_value)
@@ -942,6 +1059,15 @@ class PyPTS:
                 raise BadPixitException(f'{project_name} {param_name} {param_value}:\n{err}') from e
 
             raise Exception(e) from e
+
+    def _store_time_guard(self, project_name, param_name, value):
+        if param_name != 'TSPX_time_guard':
+            return
+
+        try:
+            self._time_guards[project_name] = int(value)
+        except ValueError:
+            log(f"Invalid {param_name} of {project_name}: {value}")
 
     def update_pixit_param(self, project_name, param_name, new_param_value):
         """Updates PIXIT
@@ -960,6 +1086,7 @@ class PyPTS:
             param_name, new_param_value)
 
         try:
+            self._store_time_guard(project_name, param_name, new_param_value)
             self._pts.UpdatePixitParam(
                 project_name, param_name, new_param_value)
             self._add_temp_change(self.update_pixit_param, project_name,
@@ -982,14 +1109,27 @@ class PyPTS:
         self._pts_logger.enable_maximum_logging(enable)
         self.add_recov(self.enable_maximum_logging, enable)
 
+    def _set_pts_call_timeout(self, timeout):
+        if timeout != self._pts_call_timeout:
+            self._pts.SetPTSCallTimeout(timeout)
+            self._pts_call_timeout = timeout
+
     def set_call_timeout(self, timeout):
         """Sets a timeout period in milliseconds for the RunTestCase() calls
-        to PTS."""
+        to PTS.
 
-        self._pts.SetPTSCallTimeout(timeout)
+        After the timeout, or TIME_GUARD_MARGIN after TSPX_time_guard if
+        later, the test case is canceled, and PTS gets TEST_CASE_CANCEL_TIME
+        more to end it.
+        """
 
+        self._call_timeout = timeout
         if timeout:
-            self.add_recov(self.set_call_timeout, timeout)
+            timeout += TEST_CASE_CANCEL_TIME * 1000
+        self._set_pts_call_timeout(timeout)
+
+        if self._call_timeout:
+            self.add_recov(self.set_call_timeout, self._call_timeout)
         else:  # timeout 0 = no timeout
             self.del_recov(self.set_call_timeout)
 
