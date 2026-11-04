@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.14.2, 5" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313" SOURCE="FILE">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.15.0, 3" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="399853" SOURCE="FILE">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -497,7 +497,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -906,49 +906,49 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_1</Name>
-            <Description>Sink ASE - Enabling, Source ASE - Enabling (C.1)</Description>
+            <Description>Sink ASE – Enabling, Source ASE – Enabling (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_2</Name>
-            <Description>Sink ASE - Enabling, Source ASE - QoS Configured (C.1)</Description>
+            <Description>Sink ASE – Enabling, Source ASE – QoS Configured (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_3</Name>
-            <Description>Sink ASE - Enabling, Source ASE - Not Bound (C.2)</Description>
+            <Description>Sink ASE – Enabling, Source ASE – Not Bound (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_4</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - Enabling (C.1)</Description>
+            <Description>Sink ASE – QoS Configured, Source ASE – Enabling (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_5</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - QoS Configured (C.3)</Description>
+            <Description>Sink ASE – QoS Configured, Source ASE – QoS Configured (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_6</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - Not Bound (C.4)</Description>
+            <Description>Sink ASE – QoS Configured, Source ASE – Not Bound (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_7</Name>
-            <Description>Sink ASE - Not bound, Source ASE - Enabling (C.5)</Description>
+            <Description>Sink ASE – Not bound, Source ASE – Enabling (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9a_8</Name>
-            <Description>Sink ASE - Not bound, Source ASE - QoS Configured (C.6)</Description>
+            <Description>Sink ASE – Not bound, Source ASE – QoS Configured (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2274,49 +2274,49 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_1</Name>
-            <Description>Sink ASE - Enabling, Source ASE - Enabling (C.1)</Description>
+            <Description>Sink ASE – Enabling, Source ASE – Enabling (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_2</Name>
-            <Description>Sink ASE - Enabling, Source ASE - QoS Configured (C.1)</Description>
+            <Description>Sink ASE – Enabling, Source ASE – QoS Configured (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_3</Name>
-            <Description>Sink ASE - Enabling, Source ASE - Not Bound (C.5)</Description>
+            <Description>Sink ASE – Enabling, Source ASE – Not Bound (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_4</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - Enabling (C.1)</Description>
+            <Description>Sink ASE – QoS Configured, Source ASE – Enabling (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_5</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - QoS Configured (C.3)</Description>
+            <Description>Sink ASE – QoS Configured, Source ASE – QoS Configured (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_6</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - Not Bound (C.6)</Description>
+            <Description>Sink ASE – QoS Configured, Source ASE – Not Bound (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_7</Name>
-            <Description>Sink ASE - Not bound, Source ASE - Enabling (C.2)</Description>
+            <Description>Sink ASE – Not bound, Source ASE – Enabling (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_8</Name>
-            <Description>Sink ASE -Not bound, Source ASE - QoS Configured (C.4)</Description>
+            <Description>Sink ASE –Not bound, Source ASE – QoS Configured (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5159,18 +5159,6 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_BAP_92_5</Name>
-            <Description>No longer used (N/A)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_BAP_92_6</Name>
-            <Description>No longer used (N/A)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_BAP_92_7</Name>
             <Description>Synchronized Receiver (C.3)</Description>
             <Value>TRUE</Value>
@@ -6528,7 +6516,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -7874,9 +7862,15 @@
           </Row>
           <Row>
             <Name>TSPC_CAS_3_1</Name>
-            <Description>Included CSIS Instance (O)</Description>
+            <Description>Included CSIS Instance (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAS_4_1</Name>
+            <Description>SDP record present for CAS (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAS_5_1</Name>
@@ -7889,12 +7883,6 @@
             <Description>GATT Server over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CAS_4_1</Name>
-            <Description>SDP record present for CAS (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
@@ -8968,12 +8956,6 @@
         <Name>CSIP</Name>
         <Rows>
           <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_CSIP_1_1</Name>
             <Description>Set Member (C.1)</Description>
             <Value>TRUE</Value>
@@ -9489,6 +9471,12 @@
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
         </Rows>
       </PICS>
       <PIXIT>
@@ -9608,12 +9596,6 @@
       <PICS>
         <Name>CSIS</Name>
         <Rows>
-          <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
           <Row>
             <Name>TSPC_CSIS_0_1</Name>
             <Description>CSIS v1.0 (C.1, C.2)</Description>
@@ -9782,6 +9764,12 @@
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
         </Rows>
       </PICS>
       <PIXIT>
@@ -9888,14 +9876,7 @@
     <PROJECT_INFORMATION NAME="DFUM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>DFUM</Name>
-        <Version />
         <Rows>
-          <Row>
-            <Name>TSPC_DFUM_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
           <Row>
             <Name>TSPC_DFUM_0_1</Name>
             <Description>DFUM v1.0 (M)</Description>
@@ -10868,6 +10849,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_6_4</Name>
+            <Description>LE Coded PHY (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_6_5</Name>
+            <Description>High Data Throughput (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_7_1</Name>
             <Description>Standby State (M)</Description>
             <Value>TRUE</Value>
@@ -10887,7 +10880,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_7_3a</Name>
-            <Description>Isochronous Broadcaster (C.2)</Description>
+            <Description>Isochronous Broadcaster on the GFSK PHYs (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11067,7 +11060,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_8b_1</Name>
-            <Description>LE Encryption (O)</Description>
+            <Description>LE Encryption with Diversifiers (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11216,6 +11209,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_12_4</Name>
+            <Description>LE Coded PHY (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_12_5</Name>
+            <Description>High Data Throughput (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_13_1</Name>
             <Description>Standby State (M)</Description>
             <Value>TRUE</Value>
@@ -11235,7 +11240,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_13_3a</Name>
-            <Description>Synchronized Receiver (C.2)</Description>
+            <Description>Synchronized Receiver on the GFSK PHYs (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11379,7 +11384,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_14b_1</Name>
-            <Description>LE Encryption (O)</Description>
+            <Description>LE Encryption with Diversifiers (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11525,6 +11530,18 @@
             <Name>TSPC_GAP_18_3</Name>
             <Description>LE 2M PHY (O)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_18_4</Name>
+            <Description>LE Coded PHY (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_18_5</Name>
+            <Description>High Data Throughput (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -11757,7 +11774,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_21_3a</Name>
-            <Description>LE Encryption (C.4)</Description>
+            <Description>LE Encryption with Diversifiers (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11812,6 +11829,12 @@
           <Row>
             <Name>TSPC_GAP_21_12</Name>
             <Description>Minimum Number Of Used Channels procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_21_13</Name>
+            <Description>LE Flushable ACL Data (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11902,6 +11925,18 @@
           <Row>
             <Name>TSPC_GAP_23_9</Name>
             <Description>Periodic Advertising Connection (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_23_10</Name>
+            <Description>Connected Isochronous Stream - Parameter Update (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_23_11</Name>
+            <Description>Connected Isochronous Stream - Transport Latency Change (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12070,6 +12105,18 @@
           <Row>
             <Name>TSPC_GAP_25_18</Name>
             <Description>Channel Sounding Security Level 4 (C.13, C.14)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_25_19</Name>
+            <Description>LE security mode 4 level 1 (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_25_20</Name>
+            <Description>LE security mode 4 level 2 (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12404,6 +12451,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_28_4</Name>
+            <Description>LE Coded PHY (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_28_5</Name>
+            <Description>High Data Throughput (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_29_1</Name>
             <Description>Standby State (M)</Description>
             <Value>TRUE</Value>
@@ -12585,7 +12644,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_31_3a</Name>
-            <Description>LE Encryption (C.4)</Description>
+            <Description>LE Encryption with Diversifiers (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12640,6 +12699,12 @@
           <Row>
             <Name>TSPC_GAP_31_12</Name>
             <Description>Minimum Number Of Used Channels procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_31_13</Name>
+            <Description>LE Flushable ACL Data (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12736,6 +12801,30 @@
           <Row>
             <Name>TSPC_GAP_33_11</Name>
             <Description>Scanning for Periodic Advertising with Responses (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33_12</Name>
+            <Description>Connected Isochronous Group Configuration Definition procedure (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33_13</Name>
+            <Description>Connected Isochronous Group Configuration Removal procedure (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33_14</Name>
+            <Description>Connected Isochronous Stream - Parameter Update (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33_15</Name>
+            <Description>Connected Isochronous Stream - Transport Latency Change (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12904,6 +12993,18 @@
           <Row>
             <Name>TSPC_GAP_35_19</Name>
             <Description>Channel Sounding Security Level 4 (C.11, C.12)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_35_20</Name>
+            <Description>LE security mode 4 level 1 (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_35_21</Name>
+            <Description>LE security mode 4 level 2 (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -13696,17 +13797,33 @@
           </Row>
           <Row>
             <Name>TSPX_transient_application_key</Name>
-            <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
+            <Description>Transient Application Key as Little Endian. This IXIT is only used for TAK test case (16 bytes)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
-            <Helper>TRUE</Helper>
+            <Value>00112233445566778899AABBCCDDEEFF</Value>
           </Row>
           <Row>
-            <Name>TSPX_higher_layer_profile_uuid</Name>
-            <Description>Higher Layer Profile defined UUID for TAK</Description>
+            <Name>TSPX_higher_layer_profile_attribute_handle</Name>
+            <Description>Higher Layer Profile attribute handle for TAK</Description>
             <Type>OCTETSTRING</Type>
-            <Value>2A19</Value>
-            <Helper>TRUE</Helper>
+            <Value>0007</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_higher_layer_profile_service_psm</Name>
+            <Description>Higher Layer Profile service PSM for TAK</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0029</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_higher_layer_profile_attribute_handle_not_permitted</Name>
+            <Description>Higher Layer Profile attribute handle not permitted for TAK</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0007</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_higher_layer_profile_service_psm_not_permitted</Name>
+            <Description>Higher Layer Profile service PSM not permitted for TAK</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0031</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -13891,7 +14008,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_17</Name>
-            <Description>Single Notification (see Note) (C.7)</Description>
+            <Description>Single Notification (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -14095,7 +14212,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_17</Name>
-            <Description>Single Notification (see Note) (O)</Description>
+            <Description>Single Notification (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -14498,6 +14615,12 @@
           <Row>
             <Name>TSPC_GATT_10_13</Name>
             <Description>Change Database during connection (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_14</Name>
+            <Description>Read by Group Type Request (C.13)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -16435,7 +16558,7 @@
           </Row>
           <Row>
             <Name>TSPC_GMAP_41_1</Name>
-            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.1)</Description>
+            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -16878,14 +17001,8 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GMAP_111_1</Name>
-            <Description>Game (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GMAP_81_1</Name>
-            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.1)</Description>
+            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -16995,6 +17112,18 @@
             <Name>TSPC_GMAP_94_2</Name>
             <Description>Security mode 4, level 2 (C.1)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GMAP_94_3</Name>
+            <Description>Peripheral (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GMAP_94_4</Name>
+            <Description>Central (C.2)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -17169,6 +17298,24 @@
             <Name>TSPC_GMAP_110_2</Name>
             <Description>Security mode 4, level 2 (C.1)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GMAP_110_3</Name>
+            <Description>Peripheral (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GMAP_110_4</Name>
+            <Description>Central (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GMAP_111_1</Name>
+            <Description>Game (C.1)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -17706,7 +17853,25 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_24_6</Name>
-            <Description>LE Secure Connections (M)</Description>
+            <Description>LE Secure Connections (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_24_7</Name>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_24_8</Name>
+            <Description>Out of Band (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_24_9</Name>
+            <Description>Peripheral (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -17789,6 +17954,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_HAP_52_1</Name>
+            <Description>Central (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_HAP_70_1</Name>
             <Description>HAP v1.0 (M)</Description>
             <Value>FALSE</Value>
@@ -17850,19 +18021,19 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_73_5</Name>
-            <Description>Set Active Preset - Synchronized Locally Procedure (C.4)</Description>
+            <Description>Set Active Preset – Synchronized Locally Procedure (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAP_73_6</Name>
-            <Description>Set Next Preset - Synchronized Locally Procedure (C.5)</Description>
+            <Description>Set Next Preset – Synchronized Locally Procedure (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAP_73_7</Name>
-            <Description>Set Previous Preset - Synchronized Locally Procedure (C.6)</Description>
+            <Description>Set Previous Preset – Synchronized Locally Procedure (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -17922,7 +18093,13 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_82_1</Name>
-            <Description>Bondable mode (LE) (M)</Description>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_82_2</Name>
+            <Description>Central (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -17987,8 +18164,20 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_HAP_94_1</Name>
+            <Description>Central (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_94_2</Name>
+            <Description>Bondable mode (LE) (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18195,7 +18384,7 @@
           </Row>
           <Row>
             <Name>TSPC_HAS_3_1a</Name>
-            <Description>Hearing Aid Preset Control Point Characteristic Notifications(C.5)</Description>
+            <Description>Hearing Aid Preset Control Point Characteristic Notifications (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18321,19 +18510,19 @@
           </Row>
           <Row>
             <Name>TSPC_HAS_4_8</Name>
-            <Description>Set Active Preset - Synchronized Locally Procedure (C.3)</Description>
+            <Description>Set Active Preset – Synchronized Locally Procedure (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAS_4_9</Name>
-            <Description>Set Next Preset - Synchronized Locally Procedure (C.3)</Description>
+            <Description>Set Next Preset – Synchronized Locally Procedure (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAS_4_10</Name>
-            <Description>Set Previous Preset - Synchronized Locally Procedure (C.3)</Description>
+            <Description>Set Previous Preset – Synchronized Locally Procedure (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18381,7 +18570,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18602,13 +18791,13 @@
           </Row>
           <Row>
             <Name>TSPC_HRS_2_9</Name>
-            <Description>Heart Rate Control Point Characteristic - Reset Energy Expended (C.1)</Description>
+            <Description>Heart Rate Control Point Characteristic – Reset Energy Expended (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HRS_3_1</Name>
-            <Description>No longer used</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18745,12 +18934,6 @@
         <Name>IAS</Name>
         <Rows>
           <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_IAS_0_1</Name>
             <Description>IAS v1.0 (M)</Description>
             <Value>TRUE</Value>
@@ -18820,6 +19003,12 @@
             <Name>TSPC_GAP_5_4</Name>
             <Description>Central</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
         </Rows>
@@ -18932,13 +19121,13 @@
           </Row>
           <Row>
             <Name>TSPC_IOPT_1_1a</Name>
-            <Description>3DD - 3D Display (M)</Description>
+            <Description>3DD – 3D Display (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_IOPT_1_1b</Name>
-            <Description>3DG - 3D Glasses (M)</Description>
+            <Description>3DG – 3D Glasses (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -18998,7 +19187,7 @@
           </Row>
           <Row>
             <Name>TSPC_IOPT_1_4c</Name>
-            <Description>Advanced Image Printing Responder (= Printer) (M)</Description>
+            <Description>Advanced Image Printing Responder (= Printer) (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -19292,7 +19481,7 @@
           </Row>
           <Row>
             <Name>TSPC_IOPT_1_23a</Name>
-            <Description>SPP as a standalone profile - Device B (DevB) (M)</Description>
+            <Description>SPP as a standalone profile – Device B (DevB) (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -19639,18 +19828,6 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_IOPT_2_63a</Name>
-            <Description>Gaming Audio Service (GMAS) over BR/EDR (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IOPT_2_63b</Name>
-            <Description>Gaming Audio Service (GMAS) over LE (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_IOPT_2_26a</Name>
             <Description>Generic Health Sensor Service (GHSS) over BR/EDR (M)</Description>
             <Value>FALSE</Value>
@@ -19768,18 +19945,6 @@
             <Name>TSPC_IOPT_2_35b</Name>
             <Description>Immediate Alert Service (IAS) over LE (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IOPT_2_61a</Name>
-            <Description>Industrial Measurement Device Service (IMDS) over BR/EDR (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IOPT_2_61b</Name>
-            <Description>Industrial Measurement Device Service (IMDS) over LE (M)</Description>
-            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -19939,18 +20104,6 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_IOPT_2_62a</Name>
-            <Description>Ranging Service (RAS) over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IOPT_2_62b</Name>
-            <Description>Ranging Service (RAS) over LE (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_IOPT_2_49a</Name>
             <Description>Reconnection Configuration Service (RCS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
@@ -20095,6 +20248,42 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_IOPT_2_61a</Name>
+            <Description>Industrial Measurement Device Service (IMDS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_61b</Name>
+            <Description>Industrial Measurement Device Service (IMDS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_62a</Name>
+            <Description>Ranging Service (RAS) over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_62b</Name>
+            <Description>Ranging Service (RAS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_63a</Name>
+            <Description>Gaming Audio Service (GMAS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_63b</Name>
+            <Description>Gaming Audio Service (GMAS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_IOPT_2_64a</Name>
             <Description>HID ISO Service over BR/EDR (HOGP) (C.1)</Description>
             <Value>FALSE</Value>
@@ -20192,7 +20381,7 @@
           </Row>
           <Row>
             <Name>TSPC_3DSP_1_1</Name>
-            <Description>3DD - 3D Display (C.1)</Description>
+            <Description>3DD – 3D Display (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -20209,14 +20398,38 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_AICS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ASCS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_AVRCP_1_1</Name>
             <Description>Controller (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BASS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BPP12_1_1</Name>
             <Description>Printer (Pr) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -20263,8 +20476,32 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_MCS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCS_21_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MICS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_OPP_1_2</Name>
             <Description>Object Push Server (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -20305,6 +20542,24 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TBS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TBS_21_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_VDP_1_1</Name>
             <Description>Source (C.1)</Description>
             <Value>FALSE</Value>
@@ -20317,80 +20572,14 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_AICS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_ASCS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_BASS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CAS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MCS_21_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MICS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_TBS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_TBS_21_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_VCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_VOCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1,C.3)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turns on all the test cases</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -20870,6 +21059,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_L2CAP_2_50</Name>
+            <Description>Cross Transport Key Derivation Supported (C.32)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_L2CAP_3_1</Name>
             <Description>RTX timer (M)</Description>
             <Value>TRUE</Value>
@@ -21278,20 +21473,27 @@
             <Type>OCTETSTRING</Type>
             <Value>01020304050607</Value>
           </Row>
+          <Row>
+            <Name>TSPX_spsm_64</Name>
+            <Description>LE PSM to be used by IUT and TESTER. (Default: 0029)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0029</Value>
+            <Helper>True</Helper>
+          </Row>
+          <Row>
+            <Name>TSPX_spsm_128</Name>
+            <Description>LE PSM to be used by IUT and TESTER. (Default: 0031)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0031</Value>
+            <Helper>True</Helper>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
     <PROJECT_INFORMATION NAME="MBTM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>MBTM</Name>
-        <Version />
         <Rows>
-          <Row>
-            <Name>TSPC_MBTM_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
           <Row>
             <Name>TSPC_MBTM_0_1</Name>
             <Description>Mesh Binary Large Object Transfer Model v1.0 (M)</Description>
@@ -21331,6 +21533,12 @@
           <Row>
             <Name>TSPC_MBTM_20_2</Name>
             <Description>Push BLOB Transfer Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_100_1</Name>
+            <Description>Node (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22439,19 +22647,19 @@
           </Row>
           <Row>
             <Name>TSPC_MCP_21_1</Name>
-            <Description>Object Discovery - Discover All Objects (M)</Description>
+            <Description>Object Discovery – Discover All Objects (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_21_2</Name>
-            <Description>Select Object - Select by Object ID (M)</Description>
+            <Description>Select Object – Select by Object ID (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_21_3</Name>
-            <Description>Read Object - Read Object Contents (M)</Description>
+            <Description>Read Object – Read Object Contents (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22586,18 +22794,6 @@
         <Name>MCS</Name>
         <Rows>
           <Row>
-            <Name>TSPC_MCS_0b_1</Name>
-            <Description>Media Control Service (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MCS_0b_2</Name>
-            <Description>Generic Media Control Service (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_MCS_0_1</Name>
             <Description>MCS v1.0 (M)</Description>
             <Value>FALSE</Value>
@@ -22607,6 +22803,18 @@
             <Name>TSPC_MCS_0a_1</Name>
             <Description>MCS v1.0.1 (O)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCS_0b_1</Name>
+            <Description>Media Control Service (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCS_0b_2</Name>
+            <Description>Generic Media Control Service (C.1)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -22641,7 +22849,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_2_4</Name>
-            <Description>Media Player Name - Read Long Support (O)</Description>
+            <Description>Media Player Name – Read Long Support (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -22671,7 +22879,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_2_9</Name>
-            <Description>Track Title - Read Long Support (O)</Description>
+            <Description>Track Title – Read Long Support (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -24300,12 +24508,6 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_MESH_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_ALL</Name>
             <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
@@ -24737,6 +24939,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_MICP_6_16</Name>
+            <Description>Peripheral (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MICP_6_17</Name>
+            <Description>Central (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_MICP_8_1</Name>
             <Description>MICP v1.0 (M)</Description>
             <Value>TRUE</Value>
@@ -25067,6 +25281,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_MICP_16_16</Name>
+            <Description>Peripheral (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MICP_16_17</Name>
+            <Description>Central (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GATT_1a_4</Name>
             <Description>GATT Server over BR/EDR (C.2)</Description>
             <Value>FALSE</Value>
@@ -25364,12 +25590,6 @@
         <Name>OTP</Name>
         <Rows>
           <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_OTP_0_1</Name>
             <Description>OTP v1.0 (M)</Description>
             <Value>TRUE</Value>
@@ -25377,7 +25597,7 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_2_1</Name>
-            <Description>Object Server  (C.1)</Description>
+            <Description>Object Server (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25409,6 +25629,18 @@
             <Name>TSPC_OTP_4_2</Name>
             <Description>Object Transfer Service UUID in AD Type field of Advertising Data (C.1)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_OTP_4a_1</Name>
+            <Description>Peripheral (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_OTP_4a_2</Name>
+            <Description>Central (C.1)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25653,19 +25885,19 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_8_2</Name>
-            <Description>Object Discovery - Discover All Objects (C.1)</Description>
+            <Description>Object Discovery – Discover All Objects (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_3</Name>
-            <Description>Object Discovery - Search for Specific Object (C.1)</Description>
+            <Description>Object Discovery – Search for Specific Object (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_4</Name>
-            <Description>Object Discovery - Discover by Filter (C.1)</Description>
+            <Description>Object Discovery – Discover by Filter (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25731,43 +25963,43 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_8_15</Name>
-            <Description>Object Discovery - Discover by Directory Listing Object (O)</Description>
+            <Description>Object Discovery – Discover by Directory Listing Object (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_16</Name>
-            <Description>Select Object - Select by Object Discovery (C.3)</Description>
+            <Description>Select Object – Select by Object Discovery (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_17</Name>
-            <Description>Select Object - Select by Object ID (C.3)</Description>
+            <Description>Select Object – Select by Object ID (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_18</Name>
-            <Description>Read Object - Read Object Metadata (M)</Description>
+            <Description>Read Object – Read Object Metadata (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_19</Name>
-            <Description>Read Object - Read Object Contents (C.4)</Description>
+            <Description>Read Object – Read Object Contents (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_20</Name>
-            <Description>Write Object - Write Object Metadata (C.5)</Description>
+            <Description>Write Object – Write Object Metadata (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_21</Name>
-            <Description>Write Object - Write Object Contents (C.4)</Description>
+            <Description>Write Object – Write Object Contents (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25779,13 +26011,13 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_8_23</Name>
-            <Description>Resume Writing Object Contents - Current Size Method (O)</Description>
+            <Description>Resume Writing Object Contents – Current Size Method (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_8_24</Name>
-            <Description>Resume Writing Object Contents - Data Integrity Method (O)</Description>
+            <Description>Resume Writing Object Contents – Data Integrity Method (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25946,6 +26178,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_OTP_11_1</Name>
+            <Description>Peripheral (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_OTP_11_2</Name>
+            <Description>Central (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_0_3</Name>
             <Description>BR/EDR/LE</Description>
             <Value>FALSE</Value>
@@ -25954,6 +26198,12 @@
           <Row>
             <Name>TSPC_GATT_1a_4</Name>
             <Description>GATT Server over BR/EDR (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26084,12 +26334,6 @@
         <Name>OTS</Name>
         <Rows>
           <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_OTS_0_1</Name>
             <Description>OTS v1.0 (M)</Description>
             <Value>TRUE</Value>
@@ -26145,13 +26389,13 @@
           </Row>
           <Row>
             <Name>TSPC_OTS_4_4</Name>
-            <Description>Object Name Characteristic - Read Long (longer than default ATT_MTU-1 octets) (C.2)</Description>
+            <Description>Object Name Characteristic – Read Long (longer than default ATT_MTU-1 octets) (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_4_5</Name>
-            <Description>Object Name Characteristic - Write Long (longer than default ATT_MTU-3 octets) (O)</Description>
+            <Description>Object Name Characteristic – Write Long (longer than default ATT_MTU-3 octets) (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26235,13 +26479,13 @@
           </Row>
           <Row>
             <Name>TSPC_OTS_4_18</Name>
-            <Description>Object List Filter Characteristic - Read Long (longer than default ATT_MTU-1 octets) (C.7)</Description>
+            <Description>Object List Filter Characteristic – Read Long (longer than default ATT_MTU-1 octets) (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_4_19</Name>
-            <Description>Object List Filter Characteristic - Write Long (longer than default ATT_MTU-3 octets) (O)</Description>
+            <Description>Object List Filter Characteristic – Write Long (longer than default ATT_MTU-3 octets) (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26289,19 +26533,19 @@
           </Row>
           <Row>
             <Name>TSPC_OTS_5_7</Name>
-            <Description>Appending Additional Data (increasing the object's Allocated Size) (O)</Description>
+            <Description>Appending Additional Data (increasing the object’s Allocated Size) (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_5_8</Name>
-            <Description>Truncation of Objects (decreasing the object's Current Size) (O)</Description>
+            <Description>Truncation of Objects (decreasing the object’s Current Size) (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_5_9</Name>
-            <Description>Patching of Objects (over-writing a portion of the object's contents) (O)</Description>
+            <Description>Patching of Objects (over-writing a portion of the object’s contents) (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26361,7 +26605,7 @@
           </Row>
           <Row>
             <Name>TSPC_OTS_7_1</Name>
-            <Description>Generation of Directory Listing Object  (O)</Description>
+            <Description>Generation of Directory Listing Object (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26418,6 +26662,12 @@
             <Description>Write Characteristic Descriptor (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
         </Rows>
       </PICS>
@@ -28804,13 +29054,13 @@
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_2</Name>
-            <Description>Configuration B: 1 stream with 1 channel from CG to CT, 1 stream with 1 channel from 2nd CT to CG. (M)</Description>
+            <Description>Configuration B: 1 stream with 1 channel from CG to CT, 1 stream with 1 channel from 2nd CT to CG. (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_3</Name>
-            <Description>Configuration C: 1 stream with 1 channel from CG to CT, 1 bidirectional stream between CG and a 2nd CT (M)</Description>
+            <Description>Configuration C: 1 stream with 1 channel from CG to CT, 1 bidirectional stream between CG and a 2nd CT (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -28834,7 +29084,7 @@
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_7</Name>
-            <Description>Configuration G: 1 bidirectional stream from CG to CT, 1 bidirectional stream between CG and a 2nd CT (O)</Description>
+            <Description>Configuration G: 1 bidirectional stream from CG to CT, 1 bidirectional stream between CG and a 2nd CT (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30337,6 +30587,18 @@
             <Description>LE security mode 1 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_156_2</Name>
+            <Description>Peripheral (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_156_3</Name>
+            <Description>Central (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
