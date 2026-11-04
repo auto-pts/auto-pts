@@ -38,6 +38,7 @@ from . import (
                micp,
                mics,
                mmdl,
+               opp,
                ots,
                pacs,
                pbp,
@@ -77,9 +78,11 @@ __all__ = [
     "micp",
     "mics",
     "mmdl",
+    "opp",
     "ots",
     "pacs",
     "pbp",
+    "rfcomm",
     "sdp",
     "sm",
     "tbs",
@@ -87,7 +90,6 @@ __all__ = [
     "vcp",
     "vcs",
     "vocs",
-    "rfcomm",
 # GENERATOR append 2
 ]
 

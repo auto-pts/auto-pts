@@ -16,6 +16,7 @@ from .mcp import MCP_EV
 from .mesh import MESH_EV
 from .micp import MICP_EV
 from .mics import MICS_EV
+from .opp import OPP_EV
 from .ots import OTS_EV
 from .pacs import PACS_EV
 from .pbp import PBP_EV
@@ -48,6 +49,7 @@ __all__ = [
     "MESH_EV",
     "MICP_EV",
     "MICS_EV",
+    "OPP_EV",
     "OTS_EV",
     "PACS_EV",
     "PBP_EV",
