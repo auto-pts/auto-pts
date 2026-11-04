@@ -70,6 +70,10 @@ PTS_START_LOCK = threading.RLock()
 # own call timeout.
 TEST_CASE_CANCEL_TIME = 30
 
+# Logs that PTS writes during a test case into the logfiles folder next to
+# the workspace, for all test cases into the same files
+PTS_LOGFILES = ('HciLogs.txt', 'pts_dbg_log.txt')
+
 
 def pts_lock_wrapper(lock):
     def _pts_lock_wrapper(func):
@@ -363,6 +367,8 @@ class PyPTS:
         self._ready = False
 
         self._temp_workspace_path = None
+        # Path of the workspace file opened in PTS
+        self._workspace_path = None
 
         self._pts = None
         self._pts_dispatch_id = None
@@ -727,8 +733,10 @@ class PyPTS:
             log("Using temporary workspace: %s", self._temp_workspace_path)
 
             self._pts.OpenWorkspace(self._temp_workspace_path)
+            self._workspace_path = self._temp_workspace_path
         else:
             self._pts.OpenWorkspace(workspace_path)
+            self._workspace_path = workspace_path
 
         self.add_recov(self.open_workspace, workspace_path, copy_workspace)
         self._cache_test_cases()
@@ -815,6 +823,7 @@ class PyPTS:
             test_case_name)
 
         err = None
+        log_offsets = None
 
         try:
             self._pts_logger.reopen()
@@ -841,6 +850,7 @@ class PyPTS:
             if not address:
                 raise Exception("Bluetooth address not available")
 
+            log_offsets = self._get_log_offsets()
             cancel_timer = self._start_cancel_timer(address)
             try:
                 self._pts.RunTestCase(project_name, test_case_name)
@@ -861,6 +871,11 @@ class PyPTS:
             if isinstance(e, pythoncom.com_error):
                 err = parse_ptscontrol_error(e)
                 # If successfully parsed, it was PTS exception
+
+            # PTS provides no logs of this test case, so save what it has
+            # written to the logfiles during the test case before restart.
+            if log_offsets is not None:
+                self._save_log_tails(log_offsets, project_name, test_case_name)
 
             self.stop_test_case(project_name, test_case_name)
             self.recover_pts()
@@ -911,6 +926,56 @@ class PyPTS:
                 self._test_case_cancelled = True
             else:
                 log(f"Failed to find PTS window with title: {title}")
+
+    def _get_logfiles_dir(self):
+        if not self._workspace_path:
+            return None
+
+        return os.path.join(os.path.dirname(self._workspace_path), 'logfiles')
+
+    def _get_log_offsets(self):
+        """Returns sizes of the PTS logfiles, to know where the logs of
+        the next test case start."""
+        logfiles_dir = self._get_logfiles_dir()
+        if not logfiles_dir:
+            return None
+
+        offsets = {}
+        for name in PTS_LOGFILES:
+            try:
+                offsets[name] = os.path.getsize(os.path.join(logfiles_dir, name))
+            except OSError:
+                offsets[name] = 0
+
+        return offsets
+
+    def _save_log_tails(self, offsets, project_name, test_case_name):
+        """Saves the parts of the PTS logfiles written since the offsets
+        into the workspace folder of the test case, like PTS saves its logs."""
+        logfiles_dir = self._get_logfiles_dir()
+        if not logfiles_dir:
+            return
+
+        timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+        tc_name = test_case_name.replace('/', '_').replace('-', '_')
+        tc_dir = os.path.join(os.path.dirname(self._workspace_path), project_name, f'{tc_name}_{timestamp}')
+
+        for name, offset in offsets.items():
+            try:
+                with open(os.path.join(logfiles_dir, name), 'rb') as f:
+                    f.seek(0, os.SEEK_END)
+                    # PTS may have recreated the file
+                    if f.tell() < offset:
+                        offset = 0
+                    f.seek(offset)
+                    data = f.read()
+
+                Path(tc_dir).mkdir(parents=True, exist_ok=True)
+                with open(os.path.join(tc_dir, name), 'wb') as f:
+                    f.write(data)
+                log(f"Saved {len(data)} bytes of {name} to {tc_dir}")
+            except OSError as e:
+                log(f"Failed to save {name}: {e}")
 
     def stop_test_case(self, project_name, test_case_name):
         log("%s %s %s", self.stop_test_case.__name__, project_name,
