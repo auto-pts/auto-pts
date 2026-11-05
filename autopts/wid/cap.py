@@ -17,7 +17,10 @@
 import logging
 import re
 import struct
+import threading
+import time
 from argparse import Namespace
+from contextlib import AbstractContextManager, nullcontext
 
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
@@ -41,6 +44,7 @@ from autopts.pybtp.types import (
     BAPAnnouncement,
     CAPAnnouncement,
     PaSyncRequest,
+    PaSyncState,
     WIDParams,
 )
 from autopts.wid import generic_wid_hdl
@@ -57,6 +61,59 @@ from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
+# Commander Broadcast Audio Reception Start (CAP/COM/BST/BV-01-C and BV-02-C) test cases
+BST_TEST_NAMES: list[str] = ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/BV-02-C"]
+
+# The LT1 and LT2 threads share one IUT BTP socket, concurrent commands overflow the tester RX buffer
+_BST_IUT_LOCK = threading.Lock()
+
+
+def bst_iut_lock(params: WIDParams) -> AbstractContextManager:
+    """Return a lock serializing IUT commands of LT1 and LT2 in the BST test cases, no-op for other test cases.
+
+    Args:
+        params: WID parameters, used to identify the running test case.
+    """
+    if params.test_case_name.removesuffix("_LT2") in BST_TEST_NAMES:
+        return _BST_IUT_LOCK
+
+    return nullcontext()
+
+
+def base_streaming_contexts_ltv(base: bytes | None) -> bytes | None:
+    """Extract the Streaming_Audio_Contexts LTV of the first subgroup from a Basic Audio Announcement.
+
+    Args:
+        base: Periodic advertising data containing the BASE service data AD (UUID 0x1851),
+            or None when no periodic advertising data was received.
+
+    Returns:
+        The complete LTV (length, type, value) or None if it could not be found.
+    """
+    # AD length (1), AD type (1), UUID (2), Presentation Delay (3), Number of Subgroups (1)
+    if not base or len(base) < 8 or base[1] != 0x16 or base[2:4] != b'\x51\x18' or base[7] == 0:
+        return None
+
+    # Subgroup: Num BIS (1), Codec ID (5), Codec Specific Config Len (1) + data, Metadata Len (1) + data
+    offset = 8 + 1 + 5
+    if offset >= len(base):
+        return None
+    offset += 1 + base[offset]
+    if offset >= len(base):
+        return None
+    metadata = base[offset + 1:offset + 1 + base[offset]]
+
+    pos = 0
+    while pos + 1 < len(metadata):
+        ltv_len = metadata[pos]
+        if ltv_len == 0 or pos + 1 + ltv_len > len(metadata):
+            return None
+        if metadata[pos + 1] == defs.AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS:
+            return metadata[pos:pos + 1 + ltv_len]
+        pos += 1 + ltv_len
+
+    return None
+
 
 def cap_wid_hdl(wid, description, test_case_name):
     log(f'{cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
@@ -69,6 +126,10 @@ def hdl_wid_100(params: WIDParams):
     """
     Please synchronize with Broadcast ISO request
     """
+    if params.test_case_name.endswith("_LT3") and params.test_case_name.removesuffix("_LT3") in BST_TEST_NAMES:
+        # The IUT is a Commander: the Lower Testers 1 and 2 synchronize after Add Source (hdl_wid_345)
+        return True
+
     if params.test_case_name.endswith('LT3'):
         addr = lt3_addr_get()
         addr_type = lt3_addr_type_get()
@@ -272,6 +333,49 @@ def hdl_wid_312(params: WIDParams):
     return True
 
 
+def bst_discover_broadcaster(addr_type: int, addr: str) -> dict | None:
+    """Discover the Broadcast Source and its BASE, so that the Commander can add it to a Scan Delegator.
+
+    The IUT tester does not report Broadcast Audio Announcements found by the Broadcast Assistant scan,
+    so the Broadcast Sink scan and a Periodic Advertising sync are used instead. The events stay queued,
+    therefore the second Lower Tester reuses the result of the first one. The Periodic Advertising sync is kept,
+    it is needed to send PAST when a Scan Delegator asks for the SyncInfo.
+
+    Args:
+        addr_type: Address type of the Broadcast Source.
+        addr: Address of the Broadcast Source as a hex string.
+
+    Returns:
+        The BAA found event of the Broadcast Source, or None if the BAA or the BASE was not received.
+    """
+    stack = get_stack()
+
+    ev = stack.bap.wait_baa_found_ev(addr_type, addr, 1, False)
+    if ev is not None and stack.bap.wait_bis_found_ev(ev['broadcast_id'], 1, False) is not None:
+        return ev
+
+    btp.bap_broadcast_sink_setup()
+    btp.bap_broadcast_scan_start()
+
+    ev = stack.bap.wait_baa_found_ev(addr_type, addr, 30, False)
+    btp.bap_broadcast_scan_stop()
+    if ev is None:
+        return None
+
+    btp.bap_broadcast_sink_sync(ev['broadcast_id'], ev['advertiser_sid'], 5, 1000, False, 0,
+                                ev['addr_type'], ev['addr'])
+
+    if stack.bap.wait_bis_found_ev(ev['broadcast_id'], 20, False) is None:
+        return None
+
+    # The BASE data may be delivered right after the BIS found event
+    deadline = time.monotonic() + 5
+    while stack.gap.periodic_adv_report_data is None and time.monotonic() < deadline:
+        time.sleep(0.1)
+
+    return ev
+
+
 def hdl_wid_345(params: WIDParams):
     """Please ADD Broadcast Source to Lower Tester with PA SYNC with PAST(01) or No PAST(02), BIS INDEX: 0x00000001"""
     stack = get_stack()
@@ -304,7 +408,7 @@ def hdl_wid_345(params: WIDParams):
         broadcast_id = stack.cap.local_broadcast_id
     else:
         # A Lower Tester is Broadcaster
-        if test_name in ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/BV-02-C", "CAP/COM/BST/BV-06-C"]:
+        if test_name in [*BST_TEST_NAMES, "CAP/COM/BST/BV-06-C"]:
             broadcaster_addr = lt3_addr_get()
             broadcaster_addr_type = lt3_addr_type_get()
         else:
@@ -312,15 +416,21 @@ def hdl_wid_345(params: WIDParams):
             broadcaster_addr_type = lt2_addr_type_get()
 
         log(f"Wait for BAA for {broadcaster_addr}")
-        ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
-        if ev is None:
-            log('No BAA found')
-            return False
+        if test_name in BST_TEST_NAMES:
+            ev = bst_discover_broadcaster(broadcaster_addr_type, broadcaster_addr)
+            if ev is None:
+                log('No BAA or BASE found')
+                return False
+        else:
+            ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+            if ev is None:
+                log('No BAA found')
+                return False
 
-        base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
-        if base_found_ev is None:
-            log('No base found')
-            return False
+            base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+            if base_found_ev is None:
+                log('No base found')
+                return False
 
         advertiser_sid = ev['advertiser_sid']
         broadcast_id = ev['broadcast_id']
@@ -332,8 +442,15 @@ def hdl_wid_345(params: WIDParams):
     result = re.search(r'BIS INDEX: 0x(\d+)', params.description)
     if result:
         bis_sync = int(result.group(1), 16)
-    metadata_len = 0
-    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    # Add Source must carry the Streaming_Audio_Contexts metadata of the Broadcast Source
+    metadata = b''
+    if test_name in BST_TEST_NAMES:
+        metadata = base_streaming_contexts_ltv(stack.gap.periodic_adv_report_data)
+        if metadata is None:
+            log("Streaming_Audio_Contexts not found in BASE")
+            return False
+    metadata_len = len(metadata)
+    subgroups = struct.pack('<IB', bis_sync, metadata_len) + metadata
     btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
                               padv_interval, num_subgroups, subgroups,
                               broadcaster_addr_type, broadcaster_addr,
@@ -346,6 +463,10 @@ def hdl_wid_345(params: WIDParams):
     if ev is None:
         log('No broadcast receive state event 1')
         return False
+
+    if test_name in BST_TEST_NAMES and ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
+        # The Scan Delegator asks for the SyncInfo, the IUT still holds the Periodic Advertising sync to the source
+        btp.bap_send_past(ev['src_id'], addr_type, addr)
 
     # We get 2 Broadcast Receive State updates: one to ack the sync process and one that sync was achieved.
 
@@ -743,7 +864,8 @@ def hdl_wid_405(params: WIDParams):
         # Ordered Access Operation reads locks of all members
         return True
 
-    btp.csip_start_ordered_access()
+    with bst_iut_lock(params):
+        btp.csip_start_ordered_access()
 
     return True
 
@@ -990,6 +1112,11 @@ def hdl_wid_20100(params: WIDParams):
     """
         Please initiate a GATT connection to the PTS.
     """
+    with bst_iut_lock(params):
+        return _hdl_wid_20100(params)
+
+
+def _hdl_wid_20100(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
