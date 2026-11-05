@@ -213,6 +213,9 @@ class InterruptableThread(threading.Thread):
 
     def interrupt(self):
         thread_id = self.get_id()
+        if thread_id is None:
+            # Not started or already finished
+            return
         # Inject raise KeyboardInterrupt into a thread. Under Windows will not
         # work if a thread stacked on wait() or get() from the 'threading' module.
         # The id is unsigned long, ctypes would pass it as int by default.
