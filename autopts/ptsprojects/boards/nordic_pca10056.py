@@ -35,7 +35,7 @@ def reset_cmd(iutctl):
     if iutctl.debugger_snr:
         with_srn = f'{iutctl.debugger_snr}'
 
-    return f'nrfutil device reset --reset-kind RESET_PIN --serial-number {with_srn}'
+    return f'nrfutil device reset --reset-kind RESET_SYSTEM --serial-number {with_srn}'
 
 
 def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
