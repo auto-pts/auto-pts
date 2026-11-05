@@ -26,7 +26,7 @@ from .tmap import TMAP_EV
 from .vcp import VCP_EV
 from .vcs import VCS_EV
 from .vocs import VOCS_EV
-
+from .rap import RAP_EV
 # GENERATOR append 1
 
 __all__ = [
@@ -58,5 +58,6 @@ __all__ = [
     "VCP_EV",
     "VCS_EV",
     "VOCS_EV",
+    "RAP_EV",
 # GENERATOR append 2
 ]

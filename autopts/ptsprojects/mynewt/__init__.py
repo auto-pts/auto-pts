@@ -13,9 +13,26 @@
 # more details.
 #
 
-from . import bap, gap, gatt, l2cap, mesh, pacs, sm
-
-__all__ = ["bap", "gap", "gatt", "l2cap", "mesh", "pacs", "sm"]
-
-
+from . import (
+    bap,
+    gap,
+    gatt,
+    l2cap,
+    mesh,
+    pacs,
+    sm,
+    rap,
 # GENERATOR append 1
+)
+
+__all__ = [
+    "bap",
+    "gap",
+    "gatt",
+    "l2cap",
+    "mesh",
+    "pacs",
+    "sm",
+    "rap",
+# GENERATOR append 2
+]

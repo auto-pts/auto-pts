@@ -150,6 +150,7 @@ log = logging.debug
 def {profile_name_lower}_wid_hdl(wid, description, test_case_name):
 """
 "    log(f'{" + profile_name_lower + "_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')\n"
+"    from autopts.wid import generic_wid_hdl\n"
 f"    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.{profile_name_lower}'])\n",
     # END of autopts/ptsprojects/zephyr/profile_wid.py
 
@@ -166,6 +167,7 @@ log = logging.debug
 def {profile_name_lower}_wid_hdl(wid, description, test_case_name):
 """
 "    log(f'{" + profile_name_lower + "_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')\n"
+"    from autopts.wid import generic_wid_hdl\n"
 """    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
