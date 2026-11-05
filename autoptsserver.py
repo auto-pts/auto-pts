@@ -53,6 +53,7 @@ import wmi
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
 from autopts.autopts_types import PTSProxy
+from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.utils import (
     CounterWithFlag,
     active_hub_server_replug_usb,
@@ -307,6 +308,9 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
                 log(f'Setting result {result} for blocking method {method_name}')
                 self.ptscontrol_response_queue.put(result)
             elif self._callback:
+                if isinstance(result, BaseException):
+                    # xmlrpc would send an exception as an empty dict
+                    result = E_FATAL_ERROR if method_name == 'run_test_case' else False
                 log(f'Setting result {result} for non-blocking method {method_name}')
                 self._callback.set_result(method_name, result)
             else:
@@ -518,6 +522,9 @@ class Server(threading.Thread, PTSProxy):
 
             except BaseException as e:
                 logging.exception(e)
+
+        # Refuse further client calls, instead of leaving them unanswered
+        self.server.server_close()
 
         if threading.current_thread().name != 'MainThread':
             pythoncom.CoUninitialize()
