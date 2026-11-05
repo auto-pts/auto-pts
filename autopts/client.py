@@ -74,6 +74,9 @@ log_lock = threading.RLock()
 RUNNING_TEST_CASE = {}
 autoprojects = None
 TEST_CASE_TIMEOUT_MS = 300000  # milliseconds
+# Socket timeout of a call to autoptsserver in seconds. Long, because
+# some calls wait until the PTS thread of the server is free.
+SERVER_CALL_TIMEOUT = 600
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -94,11 +97,30 @@ def logger_log(self, *args, **kwargs):
         self.original_log(*args, **kwargs)
 
 
+class TimeoutTransport(xmlrpc.client.Transport):
+    """XML-RPC transport with a socket timeout, so a call to
+    an unresponsive server does not block forever.
+
+    Args:
+        timeout: socket timeout in seconds
+    """
+
+    def __init__(self, timeout: float):
+        super().__init__()
+        self.timeout: float = timeout
+
+    def make_connection(self, host):
+        conn = super().make_connection(host)
+        conn.timeout = self.timeout
+        return conn
+
+
 class PtsServerProxy(xmlrpc.client.ServerProxy, PTSProxy):
     """Client to remote autoptsserver"""
     def __init__(self, server_address, server_port):
         super().__init__(uri=f"http://{server_address}:{server_port}/",
-                         allow_none=True, transport=None,
+                         allow_none=True,
+                         transport=TimeoutTransport(SERVER_CALL_TIMEOUT),
                          encoding=None, verbose=False,
                          use_datetime=False, use_builtin_types=False,
                          headers=(), context=None)
