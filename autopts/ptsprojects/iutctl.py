@@ -17,9 +17,6 @@
 
 import logging
 import os
-import shlex
-import socket
-import subprocess
 import sys
 import time
 from contextvars import ContextVar
@@ -30,7 +27,8 @@ from autopts.config import FILE_PATHS, IUTMode
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import Stack
 from autopts.pybtp import btp, defs
-from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocket, BTPWorker, LoggerWorker
+from autopts.pybtp.transport import SerialTransport, SocketServerTransport
 from autopts.pybtp.types import BTPInitError
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
@@ -106,7 +104,6 @@ class IutCtl:
         self.is_running = False
         self.board = None
         self.btp_address = BTP_ADDRESS
-        self._socat_process = None
         self.socket_srv = None
         self.btp_socket = None
         self.test_case = None
@@ -215,45 +212,12 @@ class IutCtl:
 
         # If the board has been reset before BTP socket is open, it is possible
         # to receive none, a partial or whole IUT ready event.
-        # Flush serial to ignore it.
-        self.flush_serial(self.rtscts)
-
-        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
-        self.socket_srv.open(self.btp_address)
+        # SerialTransport drops it on open.
+        tty = tty_to_com(self.tty_file) if sys.platform == "win32" else self.tty_file
+        transport = SerialTransport(tty, self.tty_baudrate, self.rtscts)
+        self.socket_srv = BTPSocket(transport, test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
-        flow_control = "crtscts" if self.rtscts else ""
-
-        if sys.platform == "win32":
-            # On windows socat.exe does not support setting serial baud rate.
-            # Set it with 'mode' from cmd.exe
-            com = tty_to_com(self.tty_file)
-            # RTS=HS -> (Hardware Handshaking)
-            # RTS=OFF
-            handshake_mode = "hs" if self.rtscts else "off"
-            mode_cmd = (
-                f'>nul 2>nul cmd.exe /c "mode {com} '
-                f'BAUD={self.tty_baudrate} PARITY=n DATA=8 STOP=1 RTS={handshake_mode}"'
-            )
-            os.system(mode_cmd)
-
-            socat_cmd = (
-                f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
-                f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
-                f"{self.tty_file},raw,b{self.tty_baudrate},{flow_control}"
-            )
-        else:
-            socat_cmd = (
-                f"socat -x -v {self.tty_file},rawer,b{self.tty_baudrate},{flow_control} UNIX-CONNECT:{self.btp_address}"
-            )
-
-        log(f"Starting socat process: {socat_cmd}")
-
-        # socat dies after socket is closed, so no need to kill it
-        self._socat_process = subprocess.Popen(shlex.split(socat_cmd),
-                                               shell=False,
-                                               stdout=subprocess.DEVNULL,
-                                               stderr=subprocess.DEVNULL)
-
         self.btp_socket.accept()
 
         if do_reset and len(self.stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
@@ -262,8 +226,9 @@ class IutCtl:
             self.board.reset()
 
     def _start_qemu_mode(self, test_case):
-        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv = BTPSocket(SocketServerTransport(self.btp_address), test_case.log_dir,
+                                    f"autopts-iutctl-{self.iut_target_name}.log")
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
 
         if self._btattach and self._btattach_at_every_test_case:
@@ -293,8 +258,9 @@ class IutCtl:
         self.btp_socket.accept()
 
     def _start_native_mode(self, test_case):
-        self.socket_srv = BTPSocketSrv(test_case.log_dir, f"autopts-iutctl-{self.iut_target_name}.log")
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv = BTPSocket(SocketServerTransport(self.btp_address), test_case.log_dir,
+                                    f"autopts-iutctl-{self.iut_target_name}.log")
+        self.socket_srv.open()
         self.btp_socket = BTPWorker(self.socket_srv, iut_name=self.iut_target_name)
 
         if self._btattach and self._btattach_at_every_test_case:
@@ -330,10 +296,6 @@ class IutCtl:
             else:
                 tty = self.tty_file
 
-            # The main reason why we do not use serial.Serial for
-            # boards is to have only one, generic implementation of
-            # BTPWorker/BTPSocket. Although we can still use it for
-            # flushing serial if the data does not matter.
             ser = serial.Serial(port=tty,
                                 baudrate=self.tty_baudrate,
                                 rtscts=rtscts,
@@ -443,11 +405,6 @@ class IutCtl:
 
         if self._net_tty_file:
             self._uart_logger.close()
-
-        if self._socat_process:
-            self._socat_process.terminate()
-            self._socat_process.wait()
-            self._socat_process = None
 
     def _stop_qemu_mode(self):
         if self.btp_socket:
