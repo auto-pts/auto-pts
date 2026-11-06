@@ -77,6 +77,11 @@ TEST_CASE_TIMEOUT_MS = 300000  # milliseconds
 # Socket timeout of a call to autoptsserver in seconds. Long, because
 # some calls wait until the PTS thread of the server is free.
 SERVER_CALL_TIMEOUT = 600
+# While waiting for the end of a test case, the client checks every
+# SERVER_CHECK_INTERVAL seconds if autoptsserver responds, and fails the test
+# case if it has not responded for SERVER_UNREACHABLE_TIMEOUT seconds.
+SERVER_CHECK_INTERVAL = 10
+SERVER_UNREACHABLE_TIMEOUT = 60
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -97,6 +102,10 @@ def logger_log(self, *args, **kwargs):
         self.original_log(*args, **kwargs)
 
 
+class ServerUnreachableError(ConnectionError):
+    """autoptsserver does not respond"""
+
+
 class TimeoutTransport(xmlrpc.client.Transport):
     """XML-RPC transport with a socket timeout, so a call to
     an unresponsive server does not block forever.
@@ -114,6 +123,12 @@ class TimeoutTransport(xmlrpc.client.Transport):
         conn.timeout = self.timeout
         return conn
 
+    def request(self, host, handler, request_body, verbose=False):
+        try:
+            return super().request(host, handler, request_body, verbose)
+        except OSError as e:
+            raise ServerUnreachableError(f'autoptsserver {host} not responding: {e!r}') from e
+
 
 class PtsServerProxy(xmlrpc.client.ServerProxy, PTSProxy):
     """Client to remote autoptsserver"""
@@ -128,6 +143,31 @@ class PtsServerProxy(xmlrpc.client.ServerProxy, PTSProxy):
         self.server_address = server_address
         self.callback_thread = None
         self.callback = None
+        # Separate connection with a short timeout for check_alive()
+        self._alive_proxy = xmlrpc.client.ServerProxy(
+            uri=f"http://{server_address}:{server_port}/", allow_none=True,
+            transport=TimeoutTransport(SERVER_CHECK_INTERVAL))
+        self._last_check: float = 0.0
+        self._unreachable_since: float | None = None
+
+    def check_alive(self) -> None:
+        """Checks, at most every SERVER_CHECK_INTERVAL seconds, if the server
+        responds. Raises ServerUnreachableError if it has not responded for
+        SERVER_UNREACHABLE_TIMEOUT seconds."""
+        now = time.time()
+        if now - self._last_check < SERVER_CHECK_INTERVAL:
+            return
+        self._last_check = now
+
+        try:
+            self._alive_proxy.ready()
+            self._unreachable_since = None
+        except (OSError, xmlrpc.client.Error) as e:
+            log(f'autoptsserver {self.info} not responding: {e!r}')
+            if self._unreachable_since is None:
+                self._unreachable_since = now
+            elif now - self._unreachable_since >= SERVER_UNREACHABLE_TIMEOUT:
+                raise ServerUnreachableError(f'autoptsserver {self.info} not responding') from e
 
 
 class FakeProxy(PTSProxy):
@@ -1012,7 +1052,7 @@ def get_error_code(exc):
     elif isinstance(exc, TimeoutError):
         error_code = ptstypes.E_BTP_TIMEOUT
 
-    elif isinstance(exc, xmlrpc.client.Fault):
+    elif isinstance(exc, (xmlrpc.client.Fault, ServerUnreachableError)):
         error_code = ptstypes.E_XML_RPC_ERROR
 
     elif isinstance(exc, MissingWIDError):
@@ -1154,6 +1194,8 @@ class LTThread(InterruptableThread):
                     if mode == AutoPTSMode.GUI_CLIENT_ONLY:
                         # AutoPTS GUI mode
                         pts.ask_for_wid()
+                    elif isinstance(pts, PtsServerProxy):
+                        pts.check_alive()
 
                     return True
 
@@ -1165,6 +1207,10 @@ class LTThread(InterruptableThread):
                     if test_case.state == "RUNNING":
                         status = pts.callback.get_result(
                             'run_test_case', predicate=wait_if_no_step)
+
+                        if status is not None and not isinstance(status, str):
+                            log(f'Unexpected result of run_test_case: {status!r}')
+                            status = E_FATAL_ERROR
 
                         if status:
                             test_case.status = status
@@ -1196,8 +1242,14 @@ class LTThread(InterruptableThread):
 
                 error_code = get_error_code(test_case_error)
                 exceptions.put(test_case_error)
-                pts.set_wid_response("Cancel")
-                pts.stop_test_case(test_case.project_name, test_case.name)
+                if isinstance(test_case_error, ServerUnreachableError):
+                    log('autoptsserver not responding, ending the test case without stopping the PTS')
+                else:
+                    try:
+                        pts.set_wid_response("Cancel")
+                        pts.stop_test_case(test_case.project_name, test_case.name)
+                    except (OSError, xmlrpc.client.Error) as e:
+                        log(f'Failed to stop the test case: {e!r}')
 
             finally:
                 if not self.locked:
