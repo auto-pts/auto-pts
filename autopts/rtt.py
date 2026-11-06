@@ -15,7 +15,6 @@
 
 import logging
 import os
-import re
 import signal
 import socket
 import subprocess
@@ -25,29 +24,35 @@ import time
 
 import pylink
 
-from autopts.config import BTMON_PORT
 from autopts.utils import get_global_end
 
 log = logging.debug
 
 
+class JLinkWrapper(pylink.JLink):
+    def __init__(self, debugger_snr, lib):
+        super().__init__(lib=lib)
+        self.debugger_snr = debugger_snr
+        self.refcount = 0
+
+
 class RTT:
     # Due to Pylink module limitations we have to
-    # share one instance of JLink object
-    jlink = None
-    lib = None
+    # share one instance of JLink object per serial number
+    jlink_instances = {}
 
     def __init__(self):
+        self.debugger_snr = None
         self.read_thread = None
         self.stop_thread = threading.Event()
         pylink.logger.setLevel(logging.WARNING)
 
-    def _get_buffer_index(self, buffer_name):
+    def _get_buffer_index(self, jlink, buffer_name):
         timeout = time.time() + 10
         num_up = 0
         while True:
             try:
-                num_up = RTT.jlink.rtt_get_num_up_buffers()
+                num_up = jlink.rtt_get_num_up_buffers()
                 break
             except pylink.errors.JLinkRTTException:
                 if time.time() > timeout:
@@ -55,7 +60,7 @@ class RTT:
                 time.sleep(0.1)
 
         for buf_index in range(num_up):
-            buf = RTT.jlink.rtt_get_buf_descriptor(buf_index, True)
+            buf = jlink.rtt_get_buf_descriptor(buf_index, True)
             if buf.name == buffer_name:
                 return buf_index
 
@@ -70,43 +75,77 @@ class RTT:
             pass  # JLink closed
 
     def init_jlink(self, device_core, debugger_snr):
-        if RTT.jlink:
-            return
+        jlink, lib = RTT.jlink_instances.get(debugger_snr, (None, None))
+        if jlink:
+            jlink.refcount += 1
+            return jlink
 
-        if not RTT.lib and (dllpath := os.environ.get("AUTOPTS_RTT_OVERRIDE_JLINK_DLLPATH")):
+        if not lib and (dllpath := os.environ.get("AUTOPTS_RTT_OVERRIDE_JLINK_DLLPATH")):
             # Allow for the J-Link DLL to be specified
-            RTT.lib = pylink.library.Library(dllpath=dllpath)
+            lib = pylink.library.Library(dllpath=dllpath)
 
-        RTT.jlink = pylink.JLink(lib=RTT.lib)
+        jlink = JLinkWrapper(debugger_snr=debugger_snr, lib=lib)
         # Pylink loads a new cache of J-Link DLL at its __init__,
         # but the __del__ does not unload it. Luckily we can reuse
         # the cached lib to prevent memory leak (around 20MB per test case!).
-        RTT.lib = RTT.jlink._library
+        lib = jlink._library
 
-        if not RTT.jlink.opened():
-            RTT.jlink.open(serial_no=debugger_snr)
-        RTT.jlink.disable_dialog_boxes()
+        if not jlink.opened():
+            jlink.open(serial_no=debugger_snr)
+        jlink.disable_dialog_boxes()
 
-        RTT.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
-        RTT.jlink.connect(device_core)
+        jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
+        jlink.connect(device_core)
 
-        status = RTT.jlink.rtt_get_status()
+        status = jlink.rtt_get_status()
         if status.IsRunning == 0:
-            RTT.jlink.rtt_start()
+            jlink.rtt_start()
+
+        jlink.refcount += 1
+        RTT.jlink_instances[debugger_snr] = (jlink, lib)
+        return jlink
 
     def start(self, buffer_name, device_core, debugger_snr, user_callback, user_data):
-        log("%s.%s", self.__class__, self.start.__name__)
+        log(f"{self.__class__}.{self.start.__name__}, {debugger_snr}, {device_core}, {buffer_name}")
 
-        self.init_jlink(device_core, debugger_snr)
-        buffer_index = self._get_buffer_index(buffer_name)
-        self.stop_thread.clear()
-        self.read_thread = threading.Thread(target=self._read_from_buffer,
-                                            args=(RTT.jlink,
-                                                  buffer_index,
-                                                  self.stop_thread,
-                                                  user_callback,
-                                                  user_data))
-        self.read_thread.start()
+        self.debugger_snr = debugger_snr
+        jlink = self.init_jlink(device_core, debugger_snr)
+        try:
+            buffer_index = self._get_buffer_index(jlink, buffer_name)
+            self.stop_thread.clear()
+            self.read_thread = threading.Thread(target=self._read_from_buffer,
+                                                args=(jlink,
+                                                      buffer_index,
+                                                      self.stop_thread,
+                                                      user_callback,
+                                                      user_data))
+            self.read_thread.start()
+        except BaseException:
+            # stop() releases the J-Link only if the thread is running
+            self.read_thread = None
+            self.release_jlink(debugger_snr)
+            raise
+
+    def release_jlink(self, debugger_snr):
+        jlink, lib = RTT.jlink_instances.get(debugger_snr, (None, None))
+        if not jlink:
+            return
+
+        if jlink.refcount > 1:
+            jlink.refcount -= 1
+            return
+
+        try:
+            jlink.rtt_stop()
+            log(f"{self.__class__},{self.release_jlink.__name__}, the RTT of {debugger_snr} stopped.")
+        except (pylink.errors.JLinkRTTException, pylink.errors.JLinkException) as err:
+            log(f'Failed to stop RTT, err: {err}')
+        try:
+            jlink.close()
+        except pylink.errors.JLinkException as err:
+            log(f'Failed to close J-Link connection, err: {err}')
+        # Keep the cached lib for the next J-Link of this serial number
+        RTT.jlink_instances[debugger_snr] = (None, lib)
 
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)
@@ -115,17 +154,7 @@ class RTT:
         if self.read_thread:
             self.read_thread.join()
             self.read_thread = None
-            if RTT.jlink:
-                try:
-                    RTT.jlink.rtt_stop()
-                except (pylink.errors.JLinkRTTException, pylink.errors.JLinkException) as err:
-                    log(f'Failed to stop RTT, err: {err}')
-                try:
-                    RTT.jlink.close()
-                except pylink.errors.JLinkException as err:
-                    log(f'Failed to close J-Link connection, err: {err}')
-                del RTT.jlink
-                RTT.jlink = None
+            self.release_jlink(self.debugger_snr)
 
 
 class BTMON:
@@ -133,6 +162,7 @@ class BTMON:
         self.rtt_reader = RTT()
         self.btmon_process = None
         self.socat_process = None
+        self.pty_link = None
         self.log_filename = None
         self.plain_log_filename = None
         self.log_filecwd = None
@@ -156,6 +186,17 @@ class BTMON:
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
 
+    def _wsl_kill_btmon(self):
+        if self.pty_link:
+            # [/] keeps pkill from matching the bash running it
+            self._wsl_call(f"pkill -f '[/]{self.pty_link[1:]}'")
+
+    @staticmethod
+    def _get_free_port():
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(('localhost', 0))
+            return sock.getsockname()[1]
+
     def is_running(self):
         return not self.rtt_reader.stop_thread.is_set()
 
@@ -172,32 +213,36 @@ class BTMON:
         if sys.platform == 'win32':
             # Remember to install btmon and socat in your Ubuntu WSL2 instance,
             # as they are not available after fresh install.
-            self._wsl_call('killall btmon')
-            self._wsl_call('killall socat')
 
-            cmd = f'socat -dd pty,raw,echo=0 TCP-LISTEN:{BTMON_PORT},reuseaddr'
+            # The pty link name is in the command lines of both socat and
+            # btmon, so the processes of this IUT can be killed by it.
+            self.pty_link = f'/tmp/autopts-btmon-{debugger_snr}'
+            self._wsl_kill_btmon()
+
+            port = self._get_free_port()
+            cmd = f'socat -dd pty,raw,echo=0,link={self.pty_link} TCP-LISTEN:{port},reuseaddr'
             self.socat_process = self._wsl_popen(cmd, self.log_filecwd)
             if not self.socat_process or self.socat_process.poll():
                 log('Socat failed to start')
                 self.stop()
                 return
 
-            pty = None
+            # The pty link exists once socat listens
+            listening = False
             err = ""
             for line in self.socat_process.stderr:
-                match = re.findall(r'/dev/pts/\d+', line.decode())
-                if match:
-                    pty = match[0]
+                if 'listening on' in line.decode():
+                    listening = True
                     break
                 else:
                     err += line.decode()
 
-            if not pty:
+            if not listening:
                 log(f'Socat failed to start, err: {err}')
                 self.stop()
                 return
 
-            cmd = ['btmon', '-C', str(130), '-d', pty, '-w', self.log_filename]
+            cmd = ['btmon', '-C', str(130), '-d', self.pty_link, '-w', self.log_filename]
             self.btmon_process = self._wsl_popen(subprocess.list2cmdline(cmd), self.log_filecwd)
             if not self.btmon_process or self.btmon_process.poll():
                 log('BTMON failed to start')
@@ -205,7 +250,7 @@ class BTMON:
                 return
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            server_address = ('localhost', BTMON_PORT)
+            server_address = ('localhost', port)
             sock.connect(server_address)
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
@@ -236,6 +281,10 @@ class BTMON:
             self.socat_process.terminate()
             self.socat_process.wait()
             self.socat_process = None
+
+        if sys.platform == 'win32':
+            # Terminating bash.exe may leave socat and btmon running in WSL
+            self._wsl_kill_btmon()
 
         # copy btmon output to readable log file
         cmd = f"btmon -r {self.log_filename} -P > {self.plain_log_filename}"
