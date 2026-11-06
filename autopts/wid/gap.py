@@ -18,7 +18,7 @@ import copy
 import logging
 import re
 import struct
-from time import sleep
+from time import monotonic, sleep
 
 from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import btp, defs, types
@@ -1857,7 +1857,17 @@ def hdl_wid_312(params: WIDParams):
         return True
 
     btp.gap_padv_create_sync(0, 0, 500, 0)
-    return stack.gap.wait_periodic_established(20)
+    if not stack.gap.wait_periodic_established(20):
+        return False
+
+    # PTS sends subevent data as soon as this WID is acknowledged, without waiting
+    # for its controller's next Subevent Data Request. Sync is reported right after
+    # a PAwR event, so reply mid-interval (PTS uses a 750 ms interval and a 100 ms
+    # response slot delay), well clear of the event that was just received.
+    delay = stack.gap.periodic_sync_established_time + 0.375 - monotonic()
+    if delay > 0:
+        sleep(delay)
+    return True
 
 
 def hdl_wid_313(params: WIDParams):

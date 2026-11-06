@@ -19,6 +19,7 @@ import binascii
 import logging
 import re
 import struct
+import time
 from random import randint
 
 from autopts.ptsprojects.stack import ConnParams, get_stack
@@ -364,6 +365,7 @@ def gap_padv_sync_established_ev_(gap, data, data_len):
     logging.debug("")
     stack = get_stack()
 
+    stack.gap.periodic_sync_established_time = time.monotonic()
     stack.gap.periodic_sync_established_rxed = True
 
 
