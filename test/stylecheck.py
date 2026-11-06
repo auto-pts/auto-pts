@@ -27,7 +27,6 @@ def run_checks(py_files):
         "ptscontrol.py": "E402",
         "ptsprojects/zephyr/iutctl.py": "E501",
         "test/test-mmi-parser.py": "E122,E501,E402",
-        "tools/btpclient.py": "E402",
         "tools/create-workspace.py": "E402"
     }
 
