@@ -480,19 +480,23 @@ supported_svcs_cmds = {
     },
     "GAP": {
         "service": 1 << defs.BTP_SERVICE_ID_GAP,
-        "supported_commands": defs.BTP_GAP_CMD_READ_SUPPORTED_COMMANDS
+        "supported_commands": defs.BTP_GAP_CMD_READ_SUPPORTED_COMMANDS,
+        "supported_events": defs.BTP_GAP_CMD_READ_SUPPORTED_EVENTS
     },
     "GATT": {
         "service": 1 << defs.BTP_SERVICE_ID_GATT,
-        "supported_commands": defs.BTP_GATT_CMD_READ_SUPPORTED_COMMANDS
+        "supported_commands": defs.BTP_GATT_CMD_READ_SUPPORTED_COMMANDS,
+        "supported_events": defs.BTP_GATT_CMD_READ_SUPPORTED_EVENTS
     },
     "L2CAP": {
         "service": 1 << defs.BTP_SERVICE_ID_L2CAP,
-        "supported_commands": defs.BTP_L2CAP_CMD_READ_SUPPORTED_COMMANDS
+        "supported_commands": defs.BTP_L2CAP_CMD_READ_SUPPORTED_COMMANDS,
+        "supported_events": defs.BTP_L2CAP_CMD_READ_SUPPORTED_EVENTS
     },
     "MESH": {
         "service": 1 << defs.BTP_SERVICE_ID_MESH,
-        "supported_commands": defs.BTP_MESH_CMD_READ_SUPPORTED_COMMANDS
+        "supported_commands": defs.BTP_MESH_CMD_READ_SUPPORTED_COMMANDS,
+        "supported_events": defs.BTP_MESH_CMD_READ_SUPPORTED_EVENTS
     },
     "MESH_MMDL": {
         "service": 1 << defs.BTP_SERVICE_ID_MMDL,
@@ -500,7 +504,8 @@ supported_svcs_cmds = {
     },
     "GATT_CL": {
         "service": 1 << defs.BTP_SERVICE_ID_GATTC,
-        "supported_commands": defs.BTP_GATTC_CMD_READ_SUPPORTED_COMMANDS
+        "supported_commands": defs.BTP_GATTC_CMD_READ_SUPPORTED_COMMANDS,
+        "supported_events": defs.BTP_GATTC_CMD_READ_SUPPORTED_EVENTS
     },
     "VCS": {
         "service": 1 << defs.BTP_SERVICE_ID_VCS,
@@ -527,7 +532,8 @@ supported_svcs_cmds = {
     },
     "BAP": {
         "service": 1 << defs.BTP_SERVICE_ID_BAP,
-        "supported_commands": defs.BTP_BAP_CMD_READ_SUPPORTED_COMMANDS
+        "supported_commands": defs.BTP_BAP_CMD_READ_SUPPORTED_COMMANDS,
+        "supported_events": defs.BTP_BAP_CMD_READ_SUPPORTED_EVENTS
     },
     "MICP": {
         "service": 1 << defs.BTP_SERVICE_ID_MICP,

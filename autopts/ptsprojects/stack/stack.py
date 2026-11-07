@@ -53,11 +53,22 @@ from autopts.pybtp import common
 _get_stack = None
 log = logging.debug
 
+# Stack layers that expose supported command/event bitmaps, by service name
+SERVICE_TO_LAYER = {
+    "GAP": "gap",
+    "GATT": "gatt",
+    "GATT_CL": "gatt_cl",
+    "L2CAP": "l2cap",
+    "MESH": "mesh",
+    "BAP": "bap",
+}
+
 
 class Stack:
     def __init__(self):
         self.supported_svcs = 0
         self.supported_cmds = {}
+        self.supported_events = {}
         self.synch = None
 
         self.gap = None
@@ -104,24 +115,65 @@ class Stack:
         supported_cmds = self.supported_cmds.get(svc, 0)
         return (supported_cmds & (1 << cmd)) > 0
 
+    def is_event_supported(self, svc, event):
+        """
+        Return True if the IUT reported support for a BTP event of service svc.
+        Bit 0 of the supported events bitmap is event opcode 0x80.
+        """
+        if not self.is_svc_supported(svc):
+            return False
+
+        supported_events = self.supported_events.get(svc, 0)
+        return (supported_events & (1 << (event - 0x80))) > 0
+
+    def _set_layer_bitmap(self, svc, bitmap_name, bitmap):
+        """
+        Expose a supported command/event bitmap on the service's stack layer,
+        if the service has one and it is initialized.
+        """
+        layer = getattr(self, SERVICE_TO_LAYER.get(svc, ""), None)
+        if layer is not None:
+            setattr(layer, bitmap_name, bitmap)
+
+    def set_supported_commands(self, svc, bitmap):
+        self.supported_cmds[svc] = bitmap
+        self._set_layer_bitmap(svc, "supported_commands", bitmap)
+
+    def set_supported_events(self, svc, bitmap):
+        self.supported_events[svc] = bitmap
+        self._set_layer_bitmap(svc, "supported_events", bitmap)
+
+    def _apply_layer_capabilities(self, svc):
+        """
+        Apply bitmaps read before the layer was initialized.
+        """
+        self._set_layer_bitmap(svc, "supported_commands",
+                               self.supported_cmds.get(svc, 0))
+        self._set_layer_bitmap(svc, "supported_events",
+                               self.supported_events.get(svc, 0))
+
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
                  le_supp_feat=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
                        svcs, uri, periodic_data, le_supp_feat)
+        self._apply_layer_capabilities("GAP")
 
     def mesh_init(self, uuid, uuid_lt2=None):
         if self.mesh:
             return
 
         self.mesh = Mesh(uuid, uuid_lt2)
+        self._apply_layer_capabilities("MESH")
 
     def l2cap_init(self, psm, initial_mtu):
         self.l2cap = L2cap(psm, initial_mtu)
+        self._apply_layer_capabilities("L2CAP")
 
     def gatt_init(self):
         self.gatt = Gatt()
         self.gatt_cl = self.gatt
+        self._apply_layer_capabilities("GATT")
 
     def vcs_init(self):
         self.vcs = VCS()
@@ -143,6 +195,7 @@ class Stack:
 
     def bap_init(self):
         self.bap = BAP()
+        self._apply_layer_capabilities("BAP")
 
     def ccp_init(self):
         self.ccp = CCP()
@@ -167,6 +220,7 @@ class Stack:
 
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
+        self._apply_layer_capabilities("GATT_CL")
 
     def synch_init(self):
         if not self.synch:
