@@ -21,7 +21,7 @@ from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.cap_wid import cap_wid_hdl
-from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave, ZTestCaseSlave2
 from autopts.pybtp import btp
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
@@ -1087,6 +1087,40 @@ def test_cases(ptses):
         ),
     ]
 
+    def bst_synch_elements(name: str) -> list[TestFunc]:
+        """Synchronize the WIDs of the Broadcast Assistant test case (LT1) with its LT2 and LT3 counterparts.
+
+        Args:
+            name: Name of the LT1 test case, e.g. "CAP/COM/BST/BV-01-C".
+        """
+        return [
+            # The IUT connects to LT1 and LT2 one after the other
+            TestFunc(
+                get_stack().synch.add_synch_element,
+                [SynchPoint(name, 20100), SynchPoint(f"{name}_LT2", 20100)],
+            ),
+            # LT3 (Broadcast Source) must not proceed with the BIG before the Add Source was handled for LT1 and
+            # LT2, otherwise it ends the test case and stops advertising before the IUT can add the source.
+            TestFunc(
+                get_stack().synch.add_synch_element,
+                [SynchPoint(name, 345), SynchPoint(f"{name}_LT2", 345), SynchPoint(f"{name}_LT3", 100)],
+            ),
+        ]
+
+    # LT1 and LT2 are the Scan Delegators, LT3 is the Broadcast Source
+    bst_test_names = ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/BV-02-C"]
+    custom_test_cases.extend(
+        ZTestCase(
+            "CAP",
+            bst_name,
+            cmds=pre_conditions + bst_synch_elements(bst_name),
+            generic_wid_hdl=cap_wid_hdl,
+            lt2=f"{bst_name}_LT2",
+            lt3=f"{bst_name}_LT3",
+        )
+        for bst_name in bst_test_names
+    )
+
     test_case_name_list = pts.get_test_case_list('CAP')
     tc_list = []
 
@@ -1146,5 +1180,24 @@ def test_cases(ptses):
         ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-04-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
     ]
+    test_cases_lt2.extend(
+        ZTestCaseSlave("CAP", f"{bst_name}_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl)
+        for bst_name in bst_test_names
+    )
 
-    return tc_list + test_cases_lt2
+    if len(ptses) < 3:
+        return tc_list + test_cases_lt2
+
+    pts3 = ptses[2]
+
+    # LT3 is only a Broadcast Source, it does not need the IUT address
+    pre_conditions_lt3 = [
+        TestFunc(btp.set_lt3_addr, pts3.q_bd_addr, Addr.le_public),
+    ]
+
+    test_cases_lt3 = [
+        ZTestCaseSlave2("CAP", f"{bst_name}_LT3", cmds=pre_conditions_lt3, generic_wid_hdl=cap_wid_hdl)
+        for bst_name in bst_test_names
+    ]
+
+    return tc_list + test_cases_lt2 + test_cases_lt3
