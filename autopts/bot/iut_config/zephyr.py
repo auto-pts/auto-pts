@@ -58,6 +58,10 @@ iut_config = {
             'GAP/SEC/SEM/BV-40-C',
             'GAP/SEC/SEM/BV-42-C',
             'GAP/SEC/SEM/BV-44-C',
+            'GAP/SEC/SEM/BV-84-C',
+            'GAP/SEC/SEM/BV-85-C',
+            'GAP/SEC/SEM/BV-86-C',
+            'GAP/SEC/SEM/BV-87-C',
         ]
     },
 
