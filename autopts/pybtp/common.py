@@ -603,6 +603,14 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_RFCOMM,
         "supported_commands": defs.BTP_RFCOMM_CMD_READ_SUPPORTED_COMMANDS
     },
+    "HID_DEVICE": {
+        "service": 1 << defs.BTP_SERVICE_ID_HID_DEVICE,
+        "supported_commands": defs.BTP_HID_DEVICE_CMD_READ_SUPPORTED_COMMANDS
+    },
+    "HID_HOST": {
+        "service": 1 << defs.BTP_SERVICE_ID_HID_HOST,
+        "supported_commands": defs.BTP_HID_HOST_CMD_READ_SUPPORTED_COMMANDS
+    },
 # GENERATOR append 1
     "VENDOR": {
         "service": 1 << defs.BTP_SERVICE_ID_VENDOR,
@@ -685,6 +693,10 @@ reg_unreg_service = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_SDP),
     "rfcomm_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_RFCOMM),
+    "hid_device_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HID_DEVICE),
+    "hid_host_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HID_HOST),
 # GENERATOR append 2
     "vendor_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VENDOR),
