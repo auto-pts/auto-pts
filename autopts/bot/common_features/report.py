@@ -22,7 +22,6 @@ import zipfile
 from pathlib import Path
 from xmlrpc.client import ServerProxy
 
-import git
 import xlsxwriter
 import yaml
 
@@ -48,11 +47,17 @@ def get_known_issues(known_issues_files):
 
 
 def get_autopts_version():
-    repo = git.Repo(AUTOPTS_ROOT_DIR)
-    version = repo.git.show('-s', '--format=%H')
+    try:
+        import git
 
-    if repo.is_dirty():
-        version += '-dirty'
+        repo = git.Repo(AUTOPTS_ROOT_DIR)
+        version = repo.git.show('-s', '--format=%H')
+
+        if repo.is_dirty():
+            version += '-dirty'
+    except Exception as e:
+        log(f"Failed to get AutoPTS version: {e}")
+        return ''
 
     return version
 
@@ -311,6 +316,8 @@ def github_push_report(report_folder, log_git_conf, commit_msg):
     param: log_git_conf git settings from githubdrive field of config.py
     param: commit_msg ready commit message
     """
+    import git
+
     github.update_sources(log_git_conf['path'], log_git_conf['remote'],
                           log_git_conf['branch'], True)
 

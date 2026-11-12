@@ -16,8 +16,6 @@
 import os
 import pathlib
 
-import git
-
 from autopts import bot
 
 
@@ -26,6 +24,8 @@ def describe_repo(repo_path):
     :param repo_path: git repository path
     :return: Commit SHA at HEAD
     """
+    import git
+
     repo = git.Repo(repo_path)
 
     return repo.git.describe('--always'), repo.git.show('-s', '--format=%H')
@@ -39,6 +39,8 @@ def update_sources(repo_path, remote, branch, stash_changes=False):
     :param stash_changes: stash non-committed changes
     :return: Commit SHA at HEAD
     """
+    import git
+
     repo = git.Repo(repo_path)
 
     print('Updating ' + repo_path)
