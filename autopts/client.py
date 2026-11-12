@@ -1391,6 +1391,37 @@ def run_or_not(test_case_name, test_cases, excluded):
     return True
 
 
+def order_test_cases(test_cases: list[str], order: list[str] | None) -> list[str]:
+    """Reorder test cases to follow the order in which they were requested.
+
+    :param test_cases: Test case names to reorder, e.g. the output of
+                       ``get_test_cases`` (workspace order).
+    :param order: Test case names or prefixes in user-specified order
+                  (e.g. values passed with the -c option). If empty or
+                  None, ``test_cases`` is returned unchanged (as a copy).
+    :return: New list with test cases grouped by the first entry in
+             ``order`` they match, in the order of ``order``. Test cases
+             matched by the same entry keep their relative order from
+             ``test_cases``. Test cases matching no entry are appended
+             at the end in their original order.
+    """
+    if not order:
+        return list(test_cases)
+
+    ordered: list[str] = []
+    added: set[str] = set()
+
+    for prefix in order:
+        for tc in test_cases:
+            if tc not in added and tc.startswith(prefix):
+                ordered.append(tc)
+                added.add(tc)
+
+    ordered += [tc for tc in test_cases if tc not in added]
+
+    return ordered
+
+
 def get_test_cases(pts, test_cases, excluded):
     """
     param: pts: proxy to initiated pts instance
@@ -1760,9 +1791,11 @@ class Client:
         build-flash-run routines, so multiple reinitialization could
         be skipped. See BotClient class in bot/common.py.
         """
-        self.args.test_cases = get_test_cases(self.ptses[0],
-                                              self.args.test_cases,
-                                              self.args.excluded)
+        # Keep the order given with -c, so tests can be run in a specific
+        # sequence (e.g. when debugging order-dependent failures).
+        self.args.test_cases = order_test_cases(
+            get_test_cases(self.ptses[0], self.args.test_cases, self.args.excluded),
+            self.args.test_cases)
 
         projects = self.ptses[0].get_project_list()
 

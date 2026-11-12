@@ -951,6 +951,16 @@ def get_filtered_test_cases(iut_config, bot_args, config_default, pts):
             len(iut_config[config_default].get('test_cases', [])) == 0:
         config_testcases_map[config_default] = filtered_test_cases
 
+    # Follow the order given with -c, but only if all test cases run with
+    # the default config. If any of them needs an IUT overlay config
+    # (separate build and flash), keep the config-driven order.
+    requested = bot_args.test_cases
+    only_default_config = all(not tcs for config, tcs in config_testcases_map.items()
+                              if config != config_default)
+    if requested and only_default_config:
+        config_testcases_map[config_default] = autoptsclient.order_test_cases(
+            config_testcases_map[config_default], requested)
+
     return run_order, config_testcases_map
 
 
