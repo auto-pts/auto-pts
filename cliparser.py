@@ -117,7 +117,7 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                                "test cases can be specified by profile names."
                                 "Option can be used multiple times.")
 
-        self.add_argument("--test-cases-file", type=argparse.FileType('r'),
+        self.add_argument("--test-cases-file", type=existing_file,
                           help="A file with names of test cases to run. "
                                 "One test case per line. Use instead of -c option.")
 
@@ -672,3 +672,16 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
 
 def is_executable(path):
     return os.path.exists(path) and os.access(path, os.X_OK)
+
+
+def existing_file(path: str) -> Path:
+    """Argparse type of path to an existing file.
+
+    path: the path given in the command line
+    Returns the path, or raises ArgumentTypeError if it is not a file.
+    """
+    file_path = Path(path)
+    if not file_path.is_file():
+        raise argparse.ArgumentTypeError(f"no such file: '{path}'")
+
+    return file_path
