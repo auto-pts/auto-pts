@@ -629,7 +629,7 @@ def init_pts(args: Namespace, proxy_list: list[PTSProxy]):
     """
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
-    server_count = getattr(args, 'server_count', len(args.cli_port))
+    server_count = getattr(args, 'server_count', None) or len(args.cli_port)
 
     if len(proxy_list) < server_count:
         for i in range(len(proxy_list), server_count):
