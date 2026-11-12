@@ -27,6 +27,8 @@ import sys
 import pylink
 import serial.tools.list_ports
 
+from autopts.utils import check_call, check_output
+
 # For each new board just create a <new-board-name>.py file that contains reset_cmd() function and list
 # of supported boards.
 
@@ -342,7 +344,6 @@ class NrfUtil:
 
     @staticmethod
     def _check_nrfutil():
-        from autopts.bot.common import check_call
 
         try:
             check_call(["nrfutil", "--version"], stdout=False, stderr=False)
@@ -388,7 +389,6 @@ class NrfUtil:
 
     @staticmethod
     def _get_family(sn):
-        from autopts.bot.common import check_output
 
         output = check_output(["nrfutil", "device", "list", "--json", "--skip-overhead"])
         stdout = output.decode("utf-8")
@@ -408,7 +408,6 @@ class NrfUtil:
         :param board_name: board name
         :return: debugger serial number
         """
-        from autopts.bot.common import check_output
 
         output = check_output(["nrfutil", "device", "list", "--json", "--skip-overhead"])
         stdout = output.decode("utf-8")
@@ -434,7 +433,6 @@ class NrfUtil:
 
         :return: True if device protection is enabled, False otherwise
         """
-        from autopts.bot.common import check_output
 
         cmd = ["nrfutil", "device", "protection-get", "--json", "--skip-overhead", "--serial-number", self.debugger_snr]
         output = check_output(cmd)
@@ -453,7 +451,6 @@ class NrfUtil:
         Erases user code and UICR flash areas.
         :return: None
         """
-        from autopts.bot.common import check_call
 
         # For multicore devices like nRF53 Series, make sure to recover the network core before the application core:
         if self._is_multi_core(self.family):

@@ -16,8 +16,8 @@
 import logging
 import os
 
-from autopts.bot.common import check_call
 from autopts.ptsprojects.boards.nrf5x import reset_cmd  # noqa: F401
+from autopts.utils import check_call
 
 supported_projects = ['zephyr']
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
