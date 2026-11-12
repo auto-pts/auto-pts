@@ -17,8 +17,8 @@
 import logging
 import os
 
-from autopts.bot.common import check_call
 from autopts.ptsprojects.boards import Jlink
+from autopts.utils import check_call
 
 log = logging.debug
 

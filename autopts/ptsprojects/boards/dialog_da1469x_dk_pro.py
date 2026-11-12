@@ -17,7 +17,7 @@ import logging
 import os
 import sys
 
-from autopts.bot.common import check_call
+from autopts.utils import check_call
 
 supported_projects = ['mynewt']
 
