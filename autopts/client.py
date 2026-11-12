@@ -1856,13 +1856,19 @@ def run_recovery(args, ptses):
     log('Running recovery')
 
     iut = get_iut()
-    for iut_id in args.iut_map.keys():
+    # args.iut_map is set by the bot only
+    if hasattr(iut, 'get_iut_map'):
+        iut_map = iut.get_iut_map()
+    else:
+        iut_map = {'0': next(iter(args.iut_targets_args))}
+
+    for iut_id in iut_map.keys():
         if hasattr(iut, 'select_iut'):
             iut.select_iut(iut_id)
         iut.stop()
 
         # USB replug parameters are set per IUT
-        iut_args = args.iut_targets_args[args.iut_map[iut_id]]
+        iut_args = args.iut_targets_args[iut_map[iut_id]]
         if iut_args.usb_replug_available:
             iut.btattach_stop()
             replug_usb(iut_args, iut)
@@ -1912,7 +1918,7 @@ def run_recovery(args, ptses):
             log('Server is still resetting. Wait a little more.')
             time.sleep(1)
 
-    for iut_id in args.iut_map.keys():
+    for iut_id in iut_map.keys():
         if hasattr(iut, 'select_iut'):
             iut.select_iut(iut_id)
         iut.cleanup_stack()
