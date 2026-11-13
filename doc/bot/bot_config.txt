@@ -86,26 +86,11 @@ description: The ports used by autoptsserver. Each autoptsserver instance
 value type: list of integers
 default value: [65000]
 
-'cli_port':
-description: The ports used by autoptsclient. Each port is used for a callbacks
-    from different autoptsserver instance. Number of ports have to match
-    the number of ports in 'srv_port' parameter. Allowed value range is
-    <49152,65535>.
-value type: list of integers
-default value: [65001]
-
 'server_ip':
 description: The IP addresses of the autoptsserver instances. Number of
     addresses have to match the number of ports in 'srv_port' parameter.
     Note that one autoptsserver.py process can run multiple autoptsserver
     instances (see -S option of autoptsserver.py).
-value type: list of strings
-default value: ['127.0.0.1']
-
-'local_ip':
-description: The IP addresses used by autoptsclient. Each address is used for
-    a callbacks from different autoptsserver instance. Number of addresses have
-    to match the number of ports in 'cli_port' parameter.
 value type: list of strings
 default value: ['127.0.0.1']
 
@@ -210,7 +195,7 @@ default value: False
 description: Capture IUT logs from the device over JLink RTT. Requires RTT
     support on IUT. Used only in TTY mode. If set to True, the capture is on
     and the logs will be saved in
-    logs/cli_port_<cli_port>/<datetime>/<test_case><datetime>/<test_case>_iutctl.log
+    logs/srv_port_<srv_port>/<datetime>/<test_case><datetime>/<test_case>_iutctl.log
 value type: bool
 default value: False
 
@@ -218,7 +203,7 @@ default value: False
 description: Capture btmon logs from the device over JLink RTT. Requires RTT
     support and btsnoop formatted logs on IUT. Used only in TTY mode. If set to
     True, the capture is on and the logs will be saved in
-    logs/cli_port_<cli_port>/<datetime>/<test_case><datetime>/<test_case>_iutctl.log.
+    logs/srv_port_<srv_port>/<datetime>/<test_case><datetime>/<test_case>_iutctl.log.
     The btmon is a Linux tool, but after setup of WSL2 can be used under
     Windows too, because AutoPTS client has implemented a tunnel for this
     (see autopts/rtt.py).
@@ -336,10 +321,6 @@ description: Skip board resets to avoid gdb server disconnection.
 description: IP address of the PTS automation servers.
 example: -i 192.168.2.2
 
-'-l <IP address>' or '--local_addr <IP address>':
-description: Local IP address of PTS automation client.
-example: -l 192.168.2.2
-
 '-a <bluetooth address>' or '--bd-addr <bluetooth address>'
 description: Bluetooth device address of the IUT.
 example: -a 12:34:56:65:43:21
@@ -370,11 +351,6 @@ description: Repeat every test even if previous result was PASS.
 description: Specify the server port number/s. If the option is not used,
     then the default port is 65000.
 example: -S 65006 65008
-
-'-C <port number>' or '--cli_port <port number':
-description: Specify the client port number/s. If the option is not used,
-    then the default port is 65001.
-example: -S 65007 65009
 
 '--recovery':
 description: Specify if autoptsclient should try to recover itself after

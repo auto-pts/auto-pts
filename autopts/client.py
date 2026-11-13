@@ -623,8 +623,8 @@ def init_pts(args: Namespace, proxy_list: list[PTSProxy]):
         List of initialized PTS Proxy instances.
     """
 
-    init_logging('_' + '_'.join(str(x) for x in args.cli_port))
-    server_count = getattr(args, 'server_count', len(args.cli_port))
+    init_logging('_' + '_'.join(str(x) for x in args.srv_port))
+    server_count = getattr(args, 'server_count', len(args.srv_port))
 
     if len(proxy_list) < server_count:
         for i in range(len(proxy_list), server_count):
@@ -1490,10 +1490,10 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
     session_log_dir = stats.session_log_dir
 
     if not session_log_dir:
-        ports_str = '_'.join(str(x) for x in args.cli_port)
+        ports_str = '_'.join(str(x) for x in args.srv_port)
         now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         logs_folder = kwargs["file_paths"]["IUT_LOGS_DIR"]
-        session_log_dir = f'{logs_folder}/cli_port_{ports_str}/{now}'
+        session_log_dir = f'{logs_folder}/srv_port_{ports_str}/{now}'
         stats.session_log_dir = session_log_dir
         try:
             os.makedirs(session_log_dir)
