@@ -115,6 +115,11 @@ def test_cases(ptses):
         TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu, L2CapChannelStatusCode.UNACCEPTABLE_PARAMETERS)
     ]
 
+    pre_conditions_reduced_mtu = common + [
+        TestFunc(stack.l2cap_init, le_psm, 64),
+        TestFunc(btp.l2cap_le_listen, le_psm, 64)
+    ]
+
     pre_conditions_gatt = common + [
               TestFunc(btp.core_reg_svc_gatt),
     ]
@@ -168,6 +173,9 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-32-C",
                   pre_conditions_encryption,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-33-C",
+                  pre_conditions_reduced_mtu,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
                   pre_conditions +
