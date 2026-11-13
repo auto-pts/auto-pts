@@ -83,6 +83,8 @@ def test_cases(ptses):
                   "L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_l2ca_num_concurrent_credit_based_connections", "2")),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_iut_role_initiator", "False")),
               TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     pre_conditions = common + [
