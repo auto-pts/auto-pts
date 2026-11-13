@@ -182,6 +182,9 @@ class Gap:
         self.big_bis_data_path_setup = []
         self.big_bis_stream_rx = {}
         self.big_broadcast_code = None
+        # Outcome of the last BIG create request sent to the IUT:
+        # None - not requested yet, True - IUT rejected it, False - IUT accepted it
+        self.big_create_rejected: bool | None = None
 
         # Used for MMI handling
         self.delay_mmi = False
