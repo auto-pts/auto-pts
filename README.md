@@ -201,19 +201,19 @@ Start a proxy for Bluetooth adapter by using `btproxy` tool from BlueZ:
 
 Then start the AutoPTS Client using e.g. own workspace file:
 
-    ./autoptsclient-zephyr.py "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" zephyr.elf -i SERVER_IP -l LOCAL_IP
+    ./autoptsclient-zephyr.py "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" zephyr.elf -i SERVER_IP
 
 **Testing Zephyr combined (controller + host) build on nRF52**:
 
-    ./autoptsclient-zephyr.py zephyr-master -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nrf52
+    ./autoptsclient-zephyr.py zephyr-master -i SERVER_IP -t /dev/ttyACM0 -b nrf52
 
 **Testing Zephyr Host Stack on native posix**:
 
-    ./autoptsclient-zephyr.py zephyr-master <path>/zephyr.exe -i SERVER_IP -l LOCAL_IP --hci 0
+    ./autoptsclient-zephyr.py zephyr-master <path>/zephyr.exe -i SERVER_IP --hci 0
 
 **Testing Mynewt build on nRF52**:
 
-    ./autoptsclient-mynewt.py nimble-master -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nordic_pca10056
+    ./autoptsclient-mynewt.py nimble-master -i SERVER_IP -t /dev/ttyACM0 -b nordic_pca10056
 
 **Testing BlueZ on Linux**:
 
@@ -256,23 +256,23 @@ or both in one console
 
 **Run many autoptsclient-zephyr.py instances on one machine**
 
-Under Windows, run in first console: (-S 65000 -C 65001 by default)
+Under Windows, run in first console: (-S 65000 by default)
 
     $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52
 
 and in second console:
 
-    $ python ./autoptsclient-zephyr.py zephyr-master -t COM4 -b nrf52 -S 65002 -C 65003
+    $ python ./autoptsclient-zephyr.py zephyr-master -t COM4 -b nrf52 -S 65002
 
-and more. Note that IP 127.0.0.1 is default, so there is no need to specify with -i and -l options.
+and more. Note that IP 127.0.0.1 is default, so there is no need to specify it with -i option.
 
-Under Linux, run in first console: (-S 65000 -C 65001 by default)
+Under Linux, run in first console: (-S 65000 by default)
 
-    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -l 192.168.4.1 192.168.4.1 -t /dev/ttyACM0 -b nrf52
+    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -t /dev/ttyACM0 -b nrf52
 
 in second console:
 
-    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -l 192.168.4.1 192.168.4.1 -t /dev/ttyACM1 -b nrf52 -S 65002 -C 65003
+    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -t /dev/ttyACM1 -b nrf52 -S 65002
 
 **Example run of autoptsclient-zephyr for MESH testing:**
 
@@ -282,11 +282,11 @@ In some test cases 2 instances of PTS are needed. So run autoptsserver with 2 in
 
 Under Windows, run in second console:
 
-    $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52 -c MESH -S 65000 65002 -C 65001 65003
+    $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52 -c MESH -S 65000 65002
 
 Under Linux, run in one console:
 
-    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -l 192.168.4.1 192.168.4.1 -t /dev/ttyACM0 -b nrf52 -c MESH -S 65000 65002 -C 65001 65003
+    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -t /dev/ttyACM0 -b nrf52 -c MESH -S 65000 65002
 
 #### Recovery tips
 

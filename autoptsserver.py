@@ -40,7 +40,6 @@ import threading
 import time
 import traceback
 import xmlrpc.client
-import xmlrpc.server
 from functools import partial
 from os.path import abspath, dirname
 from pathlib import Path
@@ -51,6 +50,7 @@ import serial.tools.list_ports
 import wmi
 
 from autopts import ptscontrol
+from autopts.event_stream import EventStream, EventStreamXMLRPCServer
 from autopts.config import SERVER_PORT
 from autopts.autopts_types import PTSProxy
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
@@ -106,27 +106,6 @@ def init_logging(_args):
         root_logger.addHandler(file_handler)
 
 
-class PtsClientProxy(xmlrpc.client.ServerProxy):
-    """TCP/IP socket for sending callbacks to the auto-pts client.
-    Args:
-        client_address: IP address of the auto-pts client that started
-         its own xmlrpc server to receive callback messages
-
-        client_port: TCP port
-    """
-    def __init__(self, client_address, client_port):
-        super().__init__(uri=f"http://{client_address}:{client_port}/",
-                         allow_none=True, transport=None,
-                         encoding=None, verbose=False,
-                         use_datetime=False, use_builtin_types=False,
-                         headers=(), context=None)
-
-        log(f"{self.__init__.__name__}, uri={self.uri}")
-
-        self.client_address = client_address
-        self.client_port = client_port
-
-
 class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
     """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
 
@@ -136,7 +115,9 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         threading.Thread.__init__(self, target=self._pts_thread_work,
                                   name=name)
         self.args = args
+        self.event_stream = EventStream()
         self.client_callback = None
+        self.register_ptscallback(self.event_stream)
         self.pts_thread = None
         self.pts_thread_id = None
         self.ptscontrol_request_queue = Queue()
@@ -147,28 +128,21 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         pass
 
     def register_client_callback(self, kwargs):
-        """Registers client callback. xmlrpc proxy/client calls this method
-        to register its callback
-        """
+        """Registers the callback of the client running in the same process,
+        instead of the event stream"""
 
         log(f"{self.register_client_callback.__name__}")
 
-        if 'xmlrpc_address' in kwargs:
-            # auto-pts client and server as a separate processes
-            self.client_callback = PtsClientProxy(kwargs['xmlrpc_address'], kwargs['xmlrpc_port'])
-        else:
-            # One process mode
-            self.client_callback = kwargs['client_callback']
-
+        self.client_callback = kwargs['client_callback']
         self.register_ptscallback(self.client_callback)
 
     def unregister_client_callback(self):
-        """Unregisters the client callback"""
+        """Switches back to the event stream"""
 
         log(f"{self.unregister_client_callback.__name__},"
             f"{self.client_callback}")
 
-        self.unregister_ptscallback()
+        self.register_ptscallback(self.event_stream)
         self.client_callback = None
 
     def _replug_dongle(self):
@@ -525,6 +499,7 @@ class Server(threading.Thread, PTSProxy):
 
         # Refuse further client calls, instead of leaving them unanswered
         self.server.server_close()
+        self.pts.event_stream.close()
 
         if threading.current_thread().name != 'MainThread':
             pythoncom.CoUninitialize()
@@ -538,7 +513,8 @@ class Server(threading.Thread, PTSProxy):
 
         print(f"Serving on port {self._args.srv_port} ...")
 
-        self.server = xmlrpc.server.SimpleXMLRPCServer(("", self._args.srv_port), allow_none=True)
+        self.server = EventStreamXMLRPCServer(("", self._args.srv_port), self.pts.event_stream,
+                                              allow_none=True)
         # These methods will be run in the XMLRPC context
         self.server.register_function(self.list_workspace_tree, 'list_workspace_tree')
         self.server.register_function(self.copy_file, 'copy_file')
