@@ -39,6 +39,13 @@ from autopts.wid.common import _safe_bap_send
 log = logging.debug
 
 
+def get_settings_name(test_case_name: str) -> str:
+    """Returns the name of the TMAP test case executed by the IOPT one,
+    e.g. IOPT/TMAP/CG/VRC/BV-02-I_LT2 -> TMAP/CG/VRC/BV-02-C_LT2.
+    Other names are returned unchanged."""
+    return re.sub(r'^IOPT/(.+)-I(_LT\d)?$', r'\1-C\2', test_case_name)
+
+
 def trigger_discovery_if_needed(params):
     # get peer addr
     if params.test_case_name.endswith('LT2'):
@@ -159,7 +166,7 @@ def hdl_wid_311(params: WIDParams):
         log('hdl_wid_311 started for LT2')
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        settings_name = params.test_case_name
+        settings_name = get_settings_name(params.test_case_name)
         # This WID for LT2 is synchronized to arrived as a second one.
         # All CISes in a CIG shall have different CIS_ID, so let's keep
         # the increasing order to assure this.
@@ -168,7 +175,7 @@ def hdl_wid_311(params: WIDParams):
         log('hdl_wid_311 started for LT1')
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
-        settings_name = params.test_case_name
+        settings_name = get_settings_name(params.test_case_name)
         cis_id = 0x00
 
     lt_count, num_sink_ases, sink_locations, num_source_ases, qos_set_name = \
@@ -452,7 +459,7 @@ def hdl_wid_504(params: WIDParams):
         log('hdl_wid_504 started for LT2')
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        settings_name = params.test_case_name
+        settings_name = get_settings_name(params.test_case_name)
         # This WID for LT2 is synchronized to arrived as a second one.
         # All CISes in a CIG shall have different CIS_ID, so let's keep
         # the increasing order to assure this.
@@ -461,7 +468,7 @@ def hdl_wid_504(params: WIDParams):
         log('hdl_wid_504 started for LT1')
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
-        settings_name = params.test_case_name
+        settings_name = get_settings_name(params.test_case_name)
         cis_id = 0x00
 
     default_config = create_default_config()
@@ -800,7 +807,7 @@ def hdl_wid_20001(params: WIDParams):
         Please prepare IUT into a connectable mode.
         Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
     """
-    settings_name = params.test_case_name
+    settings_name = get_settings_name(params.test_case_name)
 
     stack = get_stack()
 
