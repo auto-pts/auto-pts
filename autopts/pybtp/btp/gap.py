@@ -1488,14 +1488,31 @@ def gap_set_extended_advertising_off():
 
 
 def parse_eir_data(eir):
+    """Parse advertising/EIR data into a dict of AD type -> AD data.
+
+    Args:
+        eir: Raw advertising data (sequence of length-type-data AD structures).
+
+    Returns:
+        dict: AD type (int) mapped to its data (bytes). A zero length field
+        ends the significant part (Core Vol 3, Part C, Section 11), and the
+        remaining octets are padding. A truncated AD structure stops parsing.
+    """
     data = {}
 
     eir_len = len(eir)
     i = 0
     while i < eir_len:
         data_len = eir[i]
+        if data_len == 0:
+            break
+
+        if i + 1 + data_len > eir_len:
+            logging.warning("Truncated AD structure at offset %d: %r", i, eir)
+            break
+
         data_type = eir[i + 1]
-        data[data_type] = eir[i + 2:i + data_len + 1]
+        data[data_type] = eir[i + 2:i + 1 + data_len]
         i += 1 + data_len
 
     return data

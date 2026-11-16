@@ -30,7 +30,7 @@ from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import defs
 from autopts.pybtp.btp.audio import pack_metadata
-from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
+from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data, parse_eir_data
 from autopts.pybtp.types import AdType
 from autoptsclient_bot import import_bot_module, import_bot_projects
 from test.mocks.mocked_test_cases import (
@@ -303,6 +303,34 @@ class MyTestCase(unittest.TestCase):
         assert advData[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
         assert advData[AdType.uuid16_svc_data][1] == struct.pack('<HB', 0xAABB, 1)
         assert advData[AdType.uuid16_svc_data][2] == struct.pack('<HH', 0xFFFF, 0xABCD)
+
+    def test_parse_eir_data(self):
+        # Well-formed AD structures
+        eir = bytes.fromhex('0201060409414243')
+        assert parse_eir_data(eir) == {0x01: bytes.fromhex('06'),
+                                       0x09: b'ABC'}
+
+        # Zero length field ends the significant part, the rest is padding
+        # (PTS advertising data from GAP/SCN/BV-02-C)
+        eir = bytes.fromhex('031a2008'
+                            '1531eddb5a88209eaeab45d4bdcbfa6c121e3f8f32d1'
+                            '020acc'
+                            '0000')
+        data = parse_eir_data(eir)
+        assert data[AdType.advertising_interval] == bytes.fromhex('2008')
+        assert data[AdType.encrypted_data] == bytes.fromhex(
+            'eddb5a88209eaeab45d4bdcbfa6c121e3f8f32d1')
+        assert data[0x0a] == bytes.fromhex('cc')
+        assert len(data) == 3
+
+        # Truncated AD structure stops parsing instead of raising
+        eir = bytes.fromhex('0201060509')
+        assert parse_eir_data(eir) == {0x01: bytes.fromhex('06')}
+
+        # Length field without the type octet
+        assert parse_eir_data(bytes.fromhex('02010601')) == {0x01: bytes.fromhex('06')}
+
+        assert parse_eir_data(b'') == {}
 
     def test_audio_pack_metadata(self):
         try:
