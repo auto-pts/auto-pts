@@ -62,6 +62,9 @@ log = logging.debug
 # Commander Broadcast Audio Reception Start test cases, with LT1 and LT2 as Scan Delegators and LT3 as Broadcast Source
 COM_BST_RECEPTION_START_TESTS: list[str] = ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/BV-02-C"]
 
+# Commander Broadcast Audio Reception Stop test cases, with LT1 as Scan Delegator and LT2 as Broadcast Source
+COM_BST_RECEPTION_STOP_TESTS: list[str] = ["CAP/COM/BST/BV-03-C", "CAP/COM/BST/BV-04-C"]
+
 
 def cap_wid_hdl(wid, description, test_case_name):
     log(f'{cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
@@ -74,9 +77,12 @@ def hdl_wid_100(params: WIDParams):
     """
     Please synchronize with Broadcast ISO request
     """
-    if params.test_case_name.removesuffix("_LT2").removesuffix("_LT3") in COM_BST_RECEPTION_START_TESTS:
+    if params.test_case_name.removesuffix("_LT2").removesuffix("_LT3") in [
+        *COM_BST_RECEPTION_START_TESTS,
+        *COM_BST_RECEPTION_STOP_TESTS,
+    ]:
         # The IUT is a Commander, it must not synchronize to the broadcast as a sink.
-        # The Scan Delegators synchronize after Add Source (hdl_wid_345).
+        # The Scan Delegators synchronize after Add Source (hdl_wid_345, hdl_wid_347).
         return True
 
     if params.test_case_name.endswith('LT3'):
@@ -465,20 +471,30 @@ def hdl_wid_347(params: WIDParams):
     broadcaster_addr = lt2_addr_get()
     broadcaster_addr_type = lt2_addr_type_get()
 
-    ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
-    if ev is None:
-        log('No BAA found')
-        return False
+    is_stop_test = params.test_case_name in COM_BST_RECEPTION_STOP_TESTS
 
-    base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
-    if base_found_ev is None:
-        log('No base found')
-        return False
+    if is_stop_test:
+        ev = com_bst_discover_broadcaster(broadcaster_addr_type, broadcaster_addr)
+        if ev is None:
+            log('No BAA or BASE found')
+            return False
+    else:
+        ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+        if ev is None:
+            log('No BAA found')
+            return False
+
+        base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+        if base_found_ev is None:
+            log('No base found')
+            return False
 
     broadcast_id = ev['broadcast_id']
 
-    # stop sync to free resources on Controller
-    btp.bap_broadcast_sink_stop(broadcast_id, addr_type, addr)
+    if not is_stop_test:
+        # stop sync to free resources on Controller
+        # (not in the Reception Stop test cases, the sync is needed to send PAST to the Scan Delegator)
+        btp.bap_broadcast_sink_stop(broadcast_id, addr_type, addr)
 
     advertiser_sid = ev['advertiser_sid']
     padv_interval = ev['padv_interval']
@@ -488,8 +504,22 @@ def hdl_wid_347(params: WIDParams):
     result = re.search(r'BIS INDEX: 0x(\d+)', params.description)
     if result:
         bis_sync = int(result.group(1), 16)
-    metadata_len = 0
-    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    metadata = b''
+    if is_stop_test:
+        # As in the Reception Start test cases, Add Source carries the Streaming_Audio_Contexts of the Broadcast Source
+        try:
+            base = parse_base(stack.gap.periodic_adv_report_data)
+        except (TypeError, ValueError) as e:
+            log(f"Invalid BASE: {e}")
+            return False
+
+        metadata_ltvs = base.subgroups[0].metadata if base.subgroups else []
+        contexts = find_ltv(metadata_ltvs, defs.AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS)
+        if contexts is None:
+            log("Streaming_Audio_Contexts not found in BASE")
+            return False
+        metadata = contexts.to_bytes()
+    subgroups = struct.pack('<IB', bis_sync, len(metadata)) + metadata
     btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
                               padv_interval, num_subgroups, subgroups,
                               broadcaster_addr_type, broadcaster_addr,
@@ -503,6 +533,10 @@ def hdl_wid_347(params: WIDParams):
         log('No broadcast receive state event 1')
         return False
 
+    if is_stop_test and ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
+        # The Scan Delegator asks for the SyncInfo, the IUT still holds the Periodic Advertising sync to the source
+        btp.bap_send_past(ev['src_id'], addr_type, addr)
+
     # We get 2 Broadcast Receive State updates: one to ack the sync process and one that sync was achieved.
 
     # Issue: On PTS 8.5.3, if we send a new command before the second was received, it will be ignored
@@ -512,9 +546,24 @@ def hdl_wid_347(params: WIDParams):
         broadcast_id, addr_type, addr, broadcaster_addr_type,
         broadcaster_addr, WildCard(), timeout=10, remove=True)
 
+    if is_stop_test:
+        # Modify Source has to stop a reception that is ongoing: wait until the Scan Delegator has synchronized to
+        # the BISes. The subgroups of the Receive State have the same layout as the ones of Add Source.
+        # The Scan Delegator may report PA and BIS sync in the same notification, so only wait for another one
+        # if the one we already have does not satisfy that condition.
+        if ev is None or ev['pa_sync_state'] != PaSyncState.SYNCED or ev.get('subgroups') != subgroups:
+            ev = stack.bap.wait_broadcast_receive_state_ev(
+                broadcast_id, addr_type, addr, broadcaster_addr_type,
+                broadcaster_addr, PaSyncState.SYNCED, subgroups=subgroups, timeout=20, remove=True)
+
+            if ev is None:
+                log('No broadcast receive state event with BIS synchronized')
+                return False
+
     # stop sync with Modify Source
     padv_sync = PaSyncRequest.NO_SYNC
     bis_sync = 0
+    metadata_len = 0
     subgroups = struct.pack('<IB', bis_sync, metadata_len)
     source_id = (ev['src_id'])
     btp.bap_modify_broadcast_src(source_id, padv_sync, padv_interval, num_subgroups, subgroups, addr_type, addr)
