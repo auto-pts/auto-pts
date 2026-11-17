@@ -16,12 +16,32 @@
 import logging
 import re
 import struct
+import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import AdType, OwnAddrType, WIDParams, gap_settings_btp2txt
 
 log = logging.debug
+
+# Delay of the last WID response per Lower Tester, in seconds
+LT_END_DELAY: dict[str, int] = {"_LT2": 6, "_LT3": 12}
+
+
+def delay_lt_end(test_case_name: str) -> None:
+    """Delays the end of the test case on LT2 and LT3.
+
+    PTS instances that end at the same time save the Bluetooth Protocol
+    Viewer trace at the same time. With the Ellisys analyzer one of them
+    then blocks on a modal dialog and never returns from RunTestCase().
+
+    Args:
+        test_case_name: Name of the test case, with the _LT2 or _LT3 suffix
+            on the other Lower Testers.
+    """
+    for suffix, delay in LT_END_DELAY.items():
+        if test_case_name.endswith(suffix):
+            time.sleep(delay)
 
 
 def csip_wid_hdl(wid, description, test_case_name):
@@ -36,13 +56,15 @@ def hdl_wid_3(_: WIDParams):
     return True
 
 
-def hdl_wid_4(_: WIDParams):
+def hdl_wid_4(params: WIDParams):
     """Please verify the number of discovered Set Members is equal to 3."""
 
     stack = get_stack()
 
     if stack.csip.member_cnt != 3:
         return False
+
+    delay_lt_end(params.test_case_name)
 
     return True
 
@@ -76,20 +98,24 @@ def hdl_wid_5(params: WIDParams):
     return True
 
 
-def hdl_wid_9(_: WIDParams):
+def hdl_wid_9(params: WIDParams):
     """Please verify IUT write to the Lock characteristic on PTS in ascending order of
        the Rank characteristic value.(LT1, LT2, LT3)"""
 
     # In zephyr the members are locked starting from lowest rank going up.
 
+    delay_lt_end(params.test_case_name)
+
     return True
 
 
-def hdl_wid_10(_: WIDParams):
+def hdl_wid_10(params: WIDParams):
     """Please verify IUT write to the Lock characteristic on PTS in descending order
        of the Rank characteristic value.(LT3, LT2, LT1)"""
 
     # In zephyr the members are unlocked starting from highest rank going down.
+
+    delay_lt_end(params.test_case_name)
 
     return True
 
