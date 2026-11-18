@@ -18,7 +18,6 @@
 import logging
 import os
 import sys
-import time
 from contextvars import ContextVar
 
 import serial
@@ -326,7 +325,6 @@ class IutCtl:
 
     def rtt_logger_stop(self):
         if self._rtt_logger:
-            time.sleep(0.1)  # Make sure all logs have been collected, in case test failed early.
             self._rtt_logger.stop()
 
     def wait_iut_ready_event(self, reset=True):
