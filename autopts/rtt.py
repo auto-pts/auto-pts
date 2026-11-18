@@ -174,17 +174,18 @@ class BTMON:
         except UnicodeDecodeError:
             pass
 
+    # The output is discarded, as an undrained pipe blocks the process once its buffer is full
     def _wsl_call(self, cmd):
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
         subprocess.call(cmd, shell=False,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL)
 
-    def _wsl_popen(self, cmd, cwd):
+    def _wsl_popen(self, cmd, cwd, stderr=subprocess.DEVNULL):
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
         return subprocess.Popen(cmd, shell=False, cwd=cwd,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+                                stdout=subprocess.DEVNULL,
+                                stderr=stderr)
 
     def _wsl_kill_btmon(self):
         if self.pty_link:
@@ -221,7 +222,8 @@ class BTMON:
 
             port = self._get_free_port()
             cmd = f'socat -dd pty,raw,echo=0,link={self.pty_link} TCP-LISTEN:{port},reuseaddr'
-            self.socat_process = self._wsl_popen(cmd, self.log_filecwd)
+            # The stderr tells when socat listens. With -dd it reports only the connection after that.
+            self.socat_process = self._wsl_popen(cmd, self.log_filecwd, stderr=subprocess.PIPE)
             if not self.socat_process or self.socat_process.poll():
                 log('Socat failed to start')
                 self.stop()
