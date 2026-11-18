@@ -158,7 +158,17 @@ def hdl_wid_23(params: WIDParams):
 
 def hdl_wid_24(params: WIDParams):
     """Please command IUT1 and IUT2 to update the targeted characteristic Coordinated Set Size"""
-    raise NotImplementedError()
+    iut = btp.get_iut_method()
+
+    # The IUTs are registered with Set Size 1 and Rank 1, make them a set of 2 with Ranks 1 and 2
+    try:
+        for iut_id in (0, 1):
+            iut.select_iut(iut_id)
+            btp.csis_set_set_size(2, iut_id + 1)
+    finally:
+        iut.select_iut(0)
+
+    return True
 
 
 def hdl_wid_20001(_: WIDParams):
