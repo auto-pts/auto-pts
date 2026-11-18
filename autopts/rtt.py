@@ -320,10 +320,9 @@ class BTMON:
 
 
 class RTTLogger:
-    def __init__(self, syncto=0):
+    def __init__(self):
         self.rtt_reader = RTT()
         self.log_file = None
-        self.syncto = syncto
 
     def _on_line_read_callback(self, data, user_data):
         file, = user_data
@@ -343,8 +342,6 @@ class RTTLogger:
 
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)
-        if self.syncto > 0:
-            time.sleep(self.syncto)
         self.rtt_reader.stop()
 
         if self.log_file:

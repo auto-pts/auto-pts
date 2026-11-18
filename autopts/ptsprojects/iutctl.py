@@ -18,6 +18,7 @@
 import logging
 import os
 import sys
+import time
 from contextvars import ContextVar
 
 import serial
@@ -110,6 +111,8 @@ class IutCtl:
         self._rtt_logger_name = 'Logger'
         self._btmon_rtt_name = 'btmonitor'
         self._btmon = None
+        # Seconds the RTT logs and btmon are still collected after the test case
+        self._rtt_log_syncto: float = getattr(args, 'rtt_log_syncto', 0)
         self._btattach = None
         self._btproxy = None
         self._uart_logger = None
@@ -127,7 +130,7 @@ class IutCtl:
 
             if self.debugger_snr:
                 self.btp_address = BTP_ADDRESS + self.debugger_snr
-                self._rtt_logger = RTTLogger(args.rtt_log_syncto) if args.rtt_log else None
+                self._rtt_logger = RTTLogger() if args.rtt_log else None
         self._btmon = BTMON() if args.btmon else None
 
         if self.iut_mode == IUTMode.TTY:
@@ -382,6 +385,9 @@ class IutCtl:
         self.is_running = False
 
     def _stop_tty_mode(self):
+        if (self._rtt_logger or self._btmon) and self._rtt_log_syncto > 0:
+            time.sleep(self._rtt_log_syncto)
+
         self.rtt_logger_stop()
         self.btmon_stop()
 

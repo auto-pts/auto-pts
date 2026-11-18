@@ -306,7 +306,7 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                           action='store_true', default=False, iut_param=True)
 
         self.add_argument("--rtt-log-syncto",
-                          help="Specify the number of seconds that the RTT logging"
+                          help="Specify the number of seconds that the RTT logging and btmon "
                           "should continue after the test has finished executing.",
                           type=float, default=0, iut_param=True)
 
