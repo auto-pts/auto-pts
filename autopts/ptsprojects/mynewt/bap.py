@@ -25,6 +25,7 @@ from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
+BROADCAST_ID = 0x123456
 
 
 def set_pixits(ptses):
@@ -53,6 +54,7 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_broadcast_code", broadcast_code)
+    pts.set_pixit("BAP", "TSPX_Broadcast_ID", BROADCAST_ID)
 
     if len(ptses) < 2:
         return
@@ -73,6 +75,7 @@ def set_pixits(ptses):
     pts2.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_broadcast_code", broadcast_code)
+    pts2.set_pixit("BAP", "TSPX_Broadcast_ID", BROADCAST_ID)
 
 
 def test_cases(ptses):
@@ -101,6 +104,8 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_connectable),
                       TestFunc(btp.core_reg_svc_bap),
                       TestFunc(stack.bap_init),
+                      TestFunc(lambda: stack.bap.set_broadcast_id(BROADCAST_ID)),
+                      TestFunc(stack.ascs_init),
                       TestFunc(lambda: stack.bap.set_broadcast_code(broadcast_code)),
                       TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
