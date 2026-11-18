@@ -98,10 +98,12 @@ PTSCONTROL_E_TEST_SUITE_PARAM_UPDATE_FAILED = 0x849C0024
 PTSCONTROL_E_PICS_ENTRY_UPDATE_FAILED = 0x849C0030
 PTSCONTROL_E_PICS_ENTRY_NOT_FOUND = 0x849C0031
 PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED = 0x849C0032
+PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_REGISTERED = 0x849C0040
 PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED = 0x849C0041
 PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_EXPECTED_TO_FAIL = 0x849C0042
 PTSCONTROL_E_BLUETOOTH_ADDRESS_NOT_FOUND = 0x849C0043
 PTSCONTROL_E_INTERNAL_ERROR = 0x849C0044
+PTSCONTROL_E_DEVICE_NOT_AVAILABLE = 0x849C0045
 PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED = 0x849C0099
 E_NOINTERFACE = 0x80004002
 CO_E_SERVER_EXEC_FAILURE = 0x80080005
@@ -154,11 +156,13 @@ PTSCONTROL_E_STRING = {
     PTSCONTROL_E_PICS_ENTRY_UPDATE_FAILED: "PTSCONTROL_E_PICS_ENTRY_UPDATE_FAILED",
     PTSCONTROL_E_PICS_ENTRY_NOT_FOUND: "PTSCONTROL_E_PICS_ENTRY_NOT_FOUND",
     PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED: "PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED",
+    PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_REGISTERED: "PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_REGISTERED",
     PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED: "PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED",
     PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_EXPECTED_TO_FAIL:
     "PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_EXPECTED_TO_FAIL",
     PTSCONTROL_E_BLUETOOTH_ADDRESS_NOT_FOUND: "PTSCONTROL_E_BLUETOOTH_ADDRESS_NOT_FOUND",
     PTSCONTROL_E_INTERNAL_ERROR: "PTSCONTROL_E_INTERNAL_ERROR",
+    PTSCONTROL_E_DEVICE_NOT_AVAILABLE: "PTSCONTROL_E_DEVICE_NOT_AVAILABLE",
     PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED: "PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED",
     E_NOINTERFACE: "E_NOINTERFACE",
     CO_E_SERVER_EXEC_FAILURE: "CO_E_SERVER_EXEC_FAILURE",
@@ -171,4 +175,45 @@ PTSCONTROL_E_STRING = {
     E_IUT_INIT_ERROR: E_IUT_INIT_ERROR,
     E_FATAL_ERROR: E_FATAL_ERROR,
     E_MISSING_WID_ERROR: E_MISSING_WID_ERROR,
+}
+
+# Descriptions of the errors of PTSControl calls, based on the "Extended Automating - PTS Control API" document
+PTSCONTROL_E_DESCRIPTION: dict[int, str] = {
+    PTSCONTROL_E_GUI_UPDATE_FAILED: "passing the ICS or IXIT update to the test suite failed",
+    PTSCONTROL_E_PTS_FILE_FAILED_TO_INITIALIZE: "the ICS file is invalid or does not exist",
+    PTSCONTROL_E_FAILED_TO_CREATE_WORKSPACE: "the workspace could not be created",
+    PTSCONTROL_E_CLIENT_LOG_NOT_EXPECTED_TO_FAIL: "the client logger callback returned a failure",
+    PTSCONTROL_E_FAILED_TO_OPEN_WORKSPACE:
+        "the workspace could not be opened, the file may be corrupted or created with another PTS version, "
+        "try to open it in the PTS GUI",
+    PTSCONTROL_E_PROJECT_NOT_FOUND: "the project is not in the workspace, or the project index is out of range",
+    PTSCONTROL_E_TESTCASE_NOT_FOUND: "the test case does not exist, or the test case index is out of range",
+    PTSCONTROL_E_TESTCASE_NOT_STARTED: "the test case could not be started",
+    PTSCONTROL_E_INVALID_TEST_SUITE: "the data of the project is invalid",
+    PTSCONTROL_E_PTS_VERSION_NOT_FOUND: "the version of PTS could not be determined",
+    PTSCONTROL_E_PROJECT_VERSION_NOT_FOUND: "the project is not in the workspace",
+    PTSCONTROL_E_TESTCASE_NOT_ACTIVE: "the test case is not active in the project, check the ICS",
+    PTSCONTROL_E_TESTCASE_TIMEOUT: "the PTS call timeout expired",
+    PTSCONTROL_E_INVALID_PIXIT_PARAM_VALUE:
+        "the value has characters invalid for the IXIT data type, or an odd length for an OCTETSTRING",
+    PTSCONTROL_E_PIXIT_PARAM_NOT_CHANGED: "the IXIT value could not be updated",
+    PTSCONTROL_E_PIXIT_PARAM_UPDATE_FAILED: "the IXIT value could not be updated",
+    PTSCONTROL_E_PIXIT_PARAM_NOT_FOUND: "the IXIT item is not defined for the project",
+    PTSCONTROL_E_TEST_SUITE_PARAM_UPDATE_FAILED: "the ICS or IXIT value could not be updated",
+    PTSCONTROL_E_PICS_ENTRY_UPDATE_FAILED: "the ICS value could not be updated",
+    PTSCONTROL_E_PICS_ENTRY_NOT_FOUND: "the ICS item is not defined for the project",
+    PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED: "the ICS value could not be updated",
+    PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_REGISTERED: "no implicit send callback is registered",
+    PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED: "an implicit send callback is already registered",
+    PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_NOT_EXPECTED_TO_FAIL: "the implicit send callback returned a failure",
+    PTSCONTROL_E_BLUETOOTH_ADDRESS_NOT_FOUND:
+        "the address of the PTS dongle could not be determined, the dongle may be disconnected, have a wrong "
+        "driver, or PTS may be still initializing",
+    PTSCONTROL_E_INTERNAL_ERROR: "unspecified PTS failure",
+    PTSCONTROL_E_DEVICE_NOT_AVAILABLE: "the PTS dongle does not exist or is used by another PTS instance",
+    PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED: "the function is not implemented by PTS",
+    E_NOINTERFACE: "the PTS Control API is not registered, run 'regsvr32 PTSControl.dll' in the PTS bin directory",
+    CO_E_SERVER_EXEC_FAILURE: "PTS is running, but not in the COM server mode, close it and try again",
+    E_RPC_SERVER_UNAVAILABLE: "the PTS process is not running, it may have crashed",
+    E_RPC_CALL_FAILED: "the PTS process is not running, it may have crashed",
 }

@@ -332,6 +332,58 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                                        [rsp, rsp_len, is_present])
 
 
+class PTSControlError(pythoncom.com_error):
+    """Error of a PTSControl call, with the call and the PTSCONTROL_E_* code in the message.
+
+    It is a com_error with the same attributes, so the callers can handle it as before.
+    """
+
+    def __init__(self, call: str, err: pythoncom.com_error) -> None:
+        """
+        Args:
+            call: The failed call, with its arguments.
+            err: The error raised by the PTSControl COM object.
+        """
+        super().__init__(*err.args)
+        for attr in ('hresult', 'strerror', 'excepinfo', 'argerror'):
+            setattr(self, attr, getattr(err, attr, None))
+
+        # PTS returns its own codes in the excepinfo, other COM errors only in the hresult
+        hresult = err.excepinfo[5] if err.excepinfo and err.excepinfo[5] else err.hresult
+        hresult = ctypes.c_uint32(hresult).value if hresult is not None else 0
+        name = ptstypes.PTSCONTROL_E_STRING.get(hresult, err.strerror)
+        description = ptstypes.PTSCONTROL_E_DESCRIPTION.get(hresult)
+
+        self.message = f"{call} failed: {name} (0x{hresult:08X})" + (f", {description}." if description else "")
+
+    def __str__(self) -> str:
+        return self.message
+
+
+class PTSControl:
+    """Wrapper of the PTSControl COM object that raises PTSControlError from its calls."""
+
+    def __init__(self, com_obj) -> None:
+        """
+        Args:
+            com_obj: The PTSControl COM object.
+        """
+        self.com_obj = com_obj
+
+    def __getattr__(self, name: str):
+        attr = getattr(self.com_obj, name)
+        if not callable(attr):
+            return attr
+
+        def call(*args):
+            try:
+                return attr(*args)
+            except pythoncom.com_error as e:
+                raise PTSControlError(f"{name}({', '.join(map(repr, args))})", e) from e
+
+        return call
+
+
 def parse_ptscontrol_error(err):
     try:
         # Decode HRESULT code from PTS exception
@@ -585,14 +637,18 @@ class PyPTS:
 
         log("start_pts")
 
-        self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
+        prog_id = 'ProfileTuningSuite_6.PTSControlServer'
+        try:
+            self._pts = PTSControl(win32com.client.Dispatch(prog_id))
+        except pythoncom.com_error as e:
+            raise PTSControlError(f"Dispatch({prog_id!r})", e) from e
 
         if self.lite_start:
             return True
 
         # The dispatched COM object cannot be passed between threads directly
         self._pts_dispatch_id = pythoncom.CoMarshalInterThreadInterfaceInStream(
-            pythoncom.IID_IDispatch, self._pts)
+            pythoncom.IID_IDispatch, self._pts.com_obj)
 
         log('Started new PTS daemon')
 
