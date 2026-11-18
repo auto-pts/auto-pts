@@ -28,6 +28,11 @@ from autopts.utils import get_global_end
 
 log = logging.debug
 
+# After stop(), RTT data is still read until the IUT has been silent for RTT_DRAIN_IDLE seconds,
+# but not longer than RTT_DRAIN_TIMEOUT seconds
+RTT_DRAIN_IDLE = 0.1
+RTT_DRAIN_TIMEOUT = 3
+
 
 class JLinkWrapper(pylink.JLink):
     def __init__(self, debugger_snr, lib):
@@ -45,6 +50,7 @@ class RTT:
         self.debugger_snr = None
         self.read_thread = None
         self.stop_thread = threading.Event()
+        self.drain_deadline = 0.0
         pylink.logger.setLevel(logging.WARNING)
 
     def _get_buffer_index(self, jlink, buffer_name):
@@ -64,13 +70,26 @@ class RTT:
             if buf.name == buffer_name:
                 return buf_index
 
-    @staticmethod
-    def _read_from_buffer(jlink, buffer_index, stop_thread, user_callback, user_data):
+    def _read_from_buffer(self, jlink, buffer_index, stop_thread, user_callback, user_data):
+        idle_since = None
         try:
-            while not stop_thread.is_set() and jlink.connected() and not get_global_end():
+            while jlink.connected() and not get_global_end():
                 byte_list = jlink.rtt_read(buffer_index, 1024)
                 if len(byte_list) > 0:
                     user_callback(bytes(byte_list), user_data)
+                    idle_since = None
+
+                if stop_thread.is_set():
+                    # Collect the logs the IUT still sends, e.g. when the test case failed early
+                    now = time.monotonic()
+                    if not byte_list and idle_since is None:
+                        idle_since = now
+                    if now >= self.drain_deadline or \
+                            (idle_since is not None and now - idle_since >= RTT_DRAIN_IDLE):
+                        break
+
+                if not byte_list:
+                    time.sleep(0.01)
         except BaseException:
             pass  # JLink closed
 
@@ -149,6 +168,7 @@ class RTT:
 
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)
+        self.drain_deadline = time.monotonic() + RTT_DRAIN_TIMEOUT
         self.stop_thread.set()
 
         if self.read_thread:
