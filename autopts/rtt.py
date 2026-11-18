@@ -112,6 +112,14 @@ class RTT:
         jlink = self.init_jlink(device_core, debugger_snr)
         try:
             buffer_index = self._get_buffer_index(jlink, buffer_name)
+            if buffer_index is None:
+                # Reading index None would read buffer 0, e.g. the logs of another reader
+                logging.error(f"RTT buffer {buffer_name} not found on {debugger_snr}")
+                self.stop_thread.set()
+                self.read_thread = None
+                self.release_jlink(debugger_snr)
+                return
+
             self.stop_thread.clear()
             self.read_thread = threading.Thread(target=self._read_from_buffer,
                                                 args=(jlink,
