@@ -29,8 +29,9 @@ from autopts.utils import get_global_end
 log = logging.debug
 
 # After stop(), RTT data is still read until the IUT has been silent for RTT_DRAIN_IDLE seconds,
-# but not longer than RTT_DRAIN_TIMEOUT seconds
-RTT_DRAIN_IDLE = 0.1
+# but not longer than RTT_DRAIN_TIMEOUT seconds. Reads of another RTT buffer of the same J-Link
+# may delay the data for over 0.1 s.
+RTT_DRAIN_IDLE = 0.3
 RTT_DRAIN_TIMEOUT = 3
 
 
@@ -166,10 +167,15 @@ class RTT:
         # Keep the cached lib for the next J-Link of this serial number
         RTT.jlink_instances[debugger_snr] = (None, lib)
 
+    def request_stop(self):
+        """Lets the reader read the remaining data and stop, without waiting for it."""
+        if not self.stop_thread.is_set():
+            self.drain_deadline = time.monotonic() + RTT_DRAIN_TIMEOUT
+            self.stop_thread.set()
+
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)
-        self.drain_deadline = time.monotonic() + RTT_DRAIN_TIMEOUT
-        self.stop_thread.set()
+        self.request_stop()
 
         if self.read_thread:
             self.read_thread.join()
@@ -285,6 +291,9 @@ class BTMON:
                                                   stderr=subprocess.DEVNULL,
                                                   preexec_fn=os.setsid)
 
+    def request_stop(self):
+        self.rtt_reader.request_stop()
+
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)
         self.rtt_reader.stop()
@@ -339,6 +348,9 @@ class RTTLogger:
         log("%s.%s", self.__class__, self.start.__name__)
         self.log_file = open(log_filename, 'ab')
         self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (self.log_file,))
+
+    def request_stop(self):
+        self.rtt_reader.request_stop()
 
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)

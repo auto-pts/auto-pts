@@ -388,6 +388,12 @@ class IutCtl:
         if (self._rtt_logger or self._btmon) and self._rtt_log_syncto > 0:
             time.sleep(self._rtt_log_syncto)
 
+        # Let both of them read their remaining data at the same time
+        if self._rtt_logger:
+            self._rtt_logger.request_stop()
+        if self._btmon:
+            self._btmon.request_stop()
+
         self.rtt_logger_stop()
         self.btmon_stop()
 
