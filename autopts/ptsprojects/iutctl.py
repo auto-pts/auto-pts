@@ -58,8 +58,11 @@ def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address, rtscts, **kwarg
 
     flow_control = "crtscts" if rtscts else ""
 
+    # Controllers without a public address get a static random one from the native_sim entropy.
+    # Seed it per HCI device, otherwise IUTs started at the same time get the same identity.
+    # 0x5678 is the default native_sim seed.
     return (
-        f"{kernel_image} --bt-dev=hci{hci} "
+        f"{kernel_image} --bt-dev=hci{hci} --seed={0x5678 + int(hci)} "
         f'--attach_uart_cmd="socat %s,rawer,b{tty_baudrate},{flow_control} UNIX-CONNECT:{btp_address} &"'
     )
 
