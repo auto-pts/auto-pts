@@ -84,6 +84,7 @@ class IutCtl:
         self.iut_mode = args.iut_mode
         self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
+        self.rtt_search_range = args.rtt_search_range
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
         self.kernel_cpu = args.kernel_cpu
@@ -312,7 +313,8 @@ class IutCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     f'_{self.iut_target_name}_btmon.log')
-            self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr, self.hci)
+            self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr, self.hci,
+                              self.rtt_search_range)
 
     def btmon_stop(self):
         if self._btmon:
@@ -324,7 +326,7 @@ class IutCtl:
                                     self.test_case.name.replace('/', '_') +
                                     f'_{self.iut_target_name}_iutctl.log')
             self._rtt_logger.start(self._rtt_logger_name, log_file, self.device_core,
-                                   self.debugger_snr)
+                                   self.debugger_snr, self.rtt_search_range)
 
     def rtt_logger_stop(self):
         if self._rtt_logger:

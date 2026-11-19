@@ -109,6 +109,7 @@ class BotConfigArgs(Namespace):
         self.rtt_log = args.get('rtt_log', False)
         self.btmon = args.get('btmon', False)
         self.device_core = args.get('device_core', 'NRF52840_XXAA')
+        self.rtt_search_range = args.get('rtt_search_range', None)
         self.qemu_bin = args.get('qemu_bin', None)
         self.qemu_options = args.get('qemu_options', '-cpu cortex-m3 -machine lm3s6965evb')
         self.btattach_bin = args.get('btattach_bin', None)
