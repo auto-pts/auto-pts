@@ -1167,6 +1167,31 @@ def test_cases(ptses):
             generic_wid_hdl=cap_wid_hdl,
             lt2="CAP/COM/BST/BV-04-C_LT2",
         ),
+        ZTestCase(
+            "CAP",
+            "CAP/COM/BST/BV-06-C",
+            cmds=pre_conditions
+            + [
+                # The IUT connects to LT1 and LT2 one after the other
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/COM/BST/BV-06-C", 20100), SynchPoint("CAP/COM/BST/BV-06-C_LT2", 20100)],
+                ),
+                # LT3 (Broadcast Source) must not proceed with the BIG before the Add Source was handled for LT1 and
+                # LT2, otherwise it ends the test case and stops advertising before the IUT can add the source.
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [
+                        SynchPoint("CAP/COM/BST/BV-06-C", 345),
+                        SynchPoint("CAP/COM/BST/BV-06-C_LT2", 345),
+                        SynchPoint("CAP/COM/BST/BV-06-C_LT3", 100),
+                    ],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/COM/BST/BV-06-C_LT2",
+            lt3="CAP/COM/BST/BV-06-C_LT3",
+        ),
     ]
 
     test_case_name_list = pts.get_test_case_list('CAP')
@@ -1231,6 +1256,7 @@ def test_cases(ptses):
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-04-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/COM/BST/BV-06-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
     ]
 
     if len(ptses) < 3:
@@ -1246,6 +1272,7 @@ def test_cases(ptses):
     test_cases_lt3 = [
         ZTestCaseSlave2("CAP", "CAP/COM/BST/BV-01-C_LT3", cmds=pre_conditions_lt3, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave2("CAP", "CAP/COM/BST/BV-02-C_LT3", cmds=pre_conditions_lt3, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave2("CAP", "CAP/COM/BST/BV-06-C_LT3", cmds=pre_conditions_lt3, generic_wid_hdl=cap_wid_hdl),
     ]
 
     return tc_list + test_cases_lt2 + test_cases_lt3

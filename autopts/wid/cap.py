@@ -62,6 +62,9 @@ log = logging.debug
 # Commander Broadcast Audio Reception Start test cases, with LT1 and LT2 as Scan Delegators and LT3 as Broadcast Source
 COM_BST_RECEPTION_START_TESTS: list[str] = ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/BV-02-C"]
 
+# Commander Distribute Broadcast Code test case, with LT1 and LT2 as Scan Delegators and LT3 as Broadcast Source
+COM_BST_BROADCAST_CODE_TESTS: list[str] = ["CAP/COM/BST/BV-06-C"]
+
 # Commander Broadcast Audio Reception Stop test cases, with LT1 as Scan Delegator and LT2 as Broadcast Source
 COM_BST_RECEPTION_STOP_TESTS: list[str] = ["CAP/COM/BST/BV-03-C", "CAP/COM/BST/BV-04-C"]
 
@@ -79,6 +82,7 @@ def hdl_wid_100(params: WIDParams):
     """
     if params.test_case_name.removesuffix("_LT2").removesuffix("_LT3") in [
         *COM_BST_RECEPTION_START_TESTS,
+        *COM_BST_BROADCAST_CODE_TESTS,
         *COM_BST_RECEPTION_STOP_TESTS,
     ]:
         # The IUT is a Commander, it must not synchronize to the broadcast as a sink.
@@ -345,6 +349,9 @@ def hdl_wid_345(params: WIDParams):
 
     test_name = params.test_case_name.removesuffix("_LT2")
 
+    # The Scan Delegators are LT1 and LT2, the Broadcast Source is LT3
+    is_com_bst_add_source = test_name in [*COM_BST_RECEPTION_START_TESTS, *COM_BST_BROADCAST_CODE_TESTS]
+
     # get broadcaster address
     if test_name.startswith("CAP/INI/UTB/BV-") or test_name.startswith("CAP/INI/BTU/BV-"):
         if not params.test_case_name.endswith("LT2"):
@@ -371,7 +378,7 @@ def hdl_wid_345(params: WIDParams):
             broadcaster_addr_type = lt2_addr_type_get()
 
         log(f"Wait for BAA for {broadcaster_addr}")
-        if test_name in COM_BST_RECEPTION_START_TESTS:
+        if is_com_bst_add_source:
             ev = com_bst_discover_broadcaster(broadcaster_addr_type, broadcaster_addr)
             if ev is None:
                 log('No BAA or BASE found')
@@ -399,7 +406,7 @@ def hdl_wid_345(params: WIDParams):
         bis_sync = int(result.group(1), 16)
     # Add Source must carry the Streaming_Audio_Contexts metadata of the Broadcast Source
     metadata = b''
-    if test_name in COM_BST_RECEPTION_START_TESTS:
+    if is_com_bst_add_source:
         try:
             base = parse_base(stack.gap.periodic_adv_report_data)
         except (TypeError, ValueError) as e:
@@ -427,7 +434,7 @@ def hdl_wid_345(params: WIDParams):
         log('No broadcast receive state event 1')
         return False
 
-    if test_name in COM_BST_RECEPTION_START_TESTS and ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
+    if is_com_bst_add_source and ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
         # The Scan Delegator asks for the SyncInfo, the IUT still holds the Periodic Advertising sync to the source
         btp.bap_send_past(ev['src_id'], addr_type, addr)
 
@@ -445,6 +452,17 @@ def hdl_wid_345(params: WIDParams):
         return False
 
     # handle BIG Encryption
+    if test_name in COM_BST_BROADCAST_CODE_TESTS and ev['big_encryption'] != 1:
+        # The Scan Delegator reports that the Broadcast Code is required in a notification of its own, after the one
+        # that reports that PA is synchronized. Only wait for it if the current notification does not report it.
+        ev = stack.bap.wait_broadcast_receive_state_ev(
+            broadcast_id, addr_type, addr, broadcaster_addr_type,
+            broadcaster_addr, PaSyncState.SYNCED, big_encryption=1, timeout=10, remove=True)
+
+        if ev is None:
+            log('No broadcast receive state event with Broadcast Code required')
+            return False
+
     if ev['big_encryption'] == 1:
         log("BIG Encryption, set Broadcast code")
         source_id = (ev['src_id'])
