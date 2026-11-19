@@ -19,6 +19,7 @@ import os
 import queue
 import re
 import threading
+import time
 from datetime import datetime
 
 import serial
@@ -212,6 +213,7 @@ class BTPWorker:
         self._iut_name = iut_name
         self._rx_queue = queue.Queue()
         self._running = threading.Event()
+        self._closed = threading.Event()
         self._lock = threading.Lock()
 
         self._rx_worker = threading.Thread(target=self._rx_task)
@@ -233,6 +235,7 @@ class BTPWorker:
         while self._running.is_set() and not get_global_end():
             try:
                 data = self._socket.read(timeout=1.0)
+                self._closed.clear()
 
                 hdr = data[0]
                 if hdr.op >= 0x80:
@@ -250,6 +253,10 @@ class BTPWorker:
                 if socket_ok:
                     socket_ok = False
                     log("socket.error: BTPSocket is closed")
+                # E.g. the IUT has closed the connection. Fail the awaited
+                # response and do not retry in a busy loop.
+                self._closed.set()
+                time.sleep(1)
             except Exception as e:
                 logging.error("%r", e)
 
@@ -272,6 +279,9 @@ class BTPWorker:
             raise_on_global_end()
 
             if self._rx_queue.empty():
+                if self._closed.is_set():
+                    t.cancel()
+                    raise ConnectionError("BTP connection closed")
                 continue
 
             t.cancel()
