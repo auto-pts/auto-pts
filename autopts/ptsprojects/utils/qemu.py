@@ -20,6 +20,8 @@ import shlex
 import subprocess
 from time import sleep, time
 
+from autopts.ptsprojects.utils import check_process_alive
+
 log = logging.debug
 
 
@@ -75,6 +77,10 @@ class QEMU:
         except Exception:
             self.close()
             raise
+
+    def check_alive(self) -> None:
+        """Raises IUTExitedError if the QEMU process has ended."""
+        check_process_alive(self._qemu_process, "QEMU")
 
     def close(self):
         if self._master_fd is None:

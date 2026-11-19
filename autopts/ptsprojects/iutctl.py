@@ -116,6 +116,8 @@ class IutCtl:
         self._btattach = None
         self._btproxy = None
         self._uart_logger = None
+        self._qemu = None
+        self._native = None
         self.rtscts = args.rtscts
         self._start_mode = None
         self._stop_mode = None
@@ -384,6 +386,15 @@ class IutCtl:
 
         self.is_running = False
 
+    def check_alive(self) -> None:
+        """Raises IUTExitedError if the process of the running IUT has ended."""
+        if not self.is_running:
+            return
+
+        for process in (self._native, self._qemu):
+            if process:
+                process.check_alive()
+
     def _stop_tty_mode(self):
         if (self._rtt_logger or self._btmon) and self._rtt_log_syncto > 0:
             time.sleep(self._rtt_log_syncto)
@@ -499,6 +510,11 @@ class IutCtlWrapper:
 
     def get_iut_map(self):
         return self._iut_map
+
+    def check_alive(self) -> None:
+        """Raises IUTExitedError if the process of a running IUT has ended."""
+        for iutctl in self._iut_targets.values():
+            iutctl.check_alive()
 
     def __getattribute__(self, name):
         try:

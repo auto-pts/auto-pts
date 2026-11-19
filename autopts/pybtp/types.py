@@ -257,6 +257,10 @@ class BTPInitError(Exception):
     """Exception raised for IUT ready event non-occurence"""
 
 
+class IUTExitedError(Exception):
+    """Exception raised if the IUT process has ended, e.g. crashed"""
+
+
 class SynchError(Exception):
     """Exception raised if cannot synchronize"""
 

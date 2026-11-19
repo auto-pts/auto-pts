@@ -14,7 +14,10 @@
 #
 
 import logging
+import signal
 import subprocess
+
+from autopts.pybtp.types import IUTExitedError
 
 # make sure adb is in path or modify this variable
 ADB = "adb"
@@ -72,3 +75,23 @@ def exec_adb_root():
     exec_iut_cmd("adb root", True, False)
     # it takes an instance of time to get adbd restarted with root permissions
     exec_iut_cmd("adb wait-for-device", True, False)
+
+
+def check_process_alive(process: subprocess.Popen | None, name: str) -> None:
+    """Raises IUTExitedError if the IUT process has ended.
+
+    :param process: the IUT process, None if not started
+    :param name: name of the IUT process, used in the error message
+    """
+    if process is None or (code := process.poll()) is None:
+        return
+
+    if code < 0:
+        try:
+            reason = f"signal {signal.Signals(-code).name}"
+        except ValueError:
+            reason = f"signal {-code}"
+    else:
+        reason = f"exit code {code}"
+
+    raise IUTExitedError(f"The {name} process has ended with {reason}")
