@@ -581,6 +581,9 @@ def hdl_wid_82(_: WIDParams):
 
 
 def hdl_wid_83(_: WIDParams):
+    """
+        Please prepare IUT into the General Connection Establishment Procedure. Press OK to continue.
+    """
     return True
 
 
@@ -589,6 +592,9 @@ def hdl_wid_84(_: WIDParams):
 
 
 def hdl_wid_85(_: WIDParams):
+    """
+        Please prepare IUT into the Direct Connection Establishment Procedure.
+    """
     return True
 
 
@@ -812,6 +818,9 @@ def hdl_wid_130(params: WIDParams):
 
 
 def hdl_wid_135(_: WIDParams):
+    """
+        Please have Upper Tester remove the bonding information of the PTS. Press OK to continue.
+    """
     btp.gap_unpair()
     return True
 
