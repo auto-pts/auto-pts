@@ -128,6 +128,8 @@ class IutCtl:
 
         if args.board_name:
             self.board = Board(args.board_name, self)
+            if not self.rtt_search_range:
+                self.rtt_search_range = self.board.rtt_search_range
 
             if self.debugger_snr:
                 self.btp_address = BTP_ADDRESS + self.debugger_snr
