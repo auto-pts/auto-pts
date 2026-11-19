@@ -42,8 +42,7 @@ def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=No
     :param project_repos: a list of repo paths
     :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
     """
-    logging.debug("%s: %s %s %s %s", build_and_flash.__name__, zephyr_wd, tester_app_dir,
-                  board, conf_file)
+    logging.debug("%s %s %s %s", zephyr_wd, tester_app_dir, board, conf_file)
 
     if env_cmd:
         env_cmd = env_cmd.split() + ['&&']

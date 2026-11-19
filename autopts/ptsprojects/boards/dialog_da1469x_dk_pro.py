@@ -48,8 +48,7 @@ def build_and_flash(project_path, board, overlay=None):
     :param board: IUT
     :param overlay: configuration map to be used
     """
-    logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
-                  board, overlay)
+    logging.debug("%s %s %s", project_path, board, overlay)
 
     board = 'dialog_da1469x-dk-pro'
     check_call('rm -rf bin/'.split(), cwd=project_path)
