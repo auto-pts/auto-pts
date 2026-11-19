@@ -2921,3 +2921,34 @@ def hdl_wid_357(_: WIDParams):
         return False
 
     return True
+
+
+def hdl_wid_358(params: WIDParams):
+    """
+    Please have Upper Tester orders the IUT to establish a BIG with a single BIS.
+    """
+    stack = get_stack()
+
+    try:
+        # Broadcast_Code is shared with the IUT but not authenticated
+        btp.gap_create_big(0, 1, 10000, 20, stack.gap.big_broadcast_code)
+    except types.BTPError:
+        log('IUT rejected BIG creation as expected')
+        stack.gap.big_create_rejected = True
+        return True
+
+    log('IUT created a BIG with a Broadcast_Code that is not authenticated')
+    stack.gap.big_create_rejected = False
+    return False
+
+
+def hdl_wid_359(_: WIDParams):
+    """
+    Click Yes if the IUT rejects the request from the IUT, otherwise click No.
+    """
+    rejected = get_stack().gap.big_create_rejected
+    if rejected is None:
+        log('No BIG create request was sent to the IUT')
+        return False
+
+    return rejected
