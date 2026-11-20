@@ -438,6 +438,19 @@ iut_config = {
             'GAP/PADV/PASE/BV-12-C',
         ]
     },
+
+    "br_ftp_large_mtu.conf": {
+        "pre_overlay": "prj_br.conf",
+        "overlay": {
+            'CONFIG_BT_BUF_ACL_RX_SIZE': '1000',
+            'CONFIG_BT_L2CAP_TX_MTU': '1000',
+            'CONFIG_BT_L2CAP_MPS': '1000',
+        },
+        "test_cases": [
+            'FTP/CL/OTR/BV-14-C',
+            'FTP/SR/OTR/BV-13-C',
+        ]
+    },
 }
 
 retry_config = {
