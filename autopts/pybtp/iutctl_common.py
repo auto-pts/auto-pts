@@ -19,6 +19,7 @@ import os
 import queue
 import re
 import threading
+import time
 from datetime import datetime
 
 import serial
@@ -212,6 +213,7 @@ class BTPWorker:
         self._iut_name = iut_name
         self._rx_queue = queue.Queue()
         self._running = threading.Event()
+        self._closed = threading.Event()
         self._lock = threading.Lock()
 
         self._rx_worker = threading.Thread(target=self._rx_task)
@@ -233,6 +235,7 @@ class BTPWorker:
         while self._running.is_set() and not get_global_end():
             try:
                 data = self._socket.read(timeout=1.0)
+                self._closed.clear()
 
                 hdr = data[0]
                 if hdr.op >= 0x80:
@@ -250,38 +253,39 @@ class BTPWorker:
                 if socket_ok:
                     socket_ok = False
                     log("socket.error: BTPSocket is closed")
+                # E.g. the IUT has closed the connection. Fail the awaited
+                # response and do not retry in a busy loop.
+                self._closed.set()
+                time.sleep(1)
             except Exception as e:
                 logging.error("%r", e)
 
         log(f'{threading.current_thread().name} finishing...')
 
-    @staticmethod
-    def _read_timeout(flag):
-        flag.clear()
-
     def read(self, timeout=20.0):
         logging.debug("")
 
-        flag = threading.Event()
-        flag.set()
+        deadline = time.monotonic() + timeout
 
-        t = threading.Timer(timeout, self._read_timeout, [flag])
-        t.start()
-
-        while flag.is_set():
+        while True:
             raise_on_global_end()
 
-            if self._rx_queue.empty():
+            if self._closed.is_set() and self._rx_queue.empty():
+                raise ConnectionError("BTP connection closed")
+
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError
+
+            try:
+                # Wake up from time to time to check the conditions above
+                data = self._rx_queue.get(timeout=min(remaining, 0.1))
+            except queue.Empty:
                 continue
 
-            t.cancel()
-
-            data = self._rx_queue.get()
             self._rx_queue.task_done()
 
             return data
-
-        raise TimeoutError
 
     def send(self, svc_id, op, ctrl_index, data):
         self._lock.acquire()

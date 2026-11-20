@@ -18,6 +18,8 @@ import os
 import shlex
 import subprocess
 
+from autopts.ptsprojects.utils import check_process_alive
+
 log = logging.debug
 
 
@@ -38,6 +40,10 @@ class NativeIUT:
         except Exception:
             self.close()
             raise
+
+    def check_alive(self) -> None:
+        """Raises IUTExitedError if the native IUT process has ended."""
+        check_process_alive(self._native_process, "native IUT")
 
     def close(self):
         if self._native_process and self._native_process.poll() is None:

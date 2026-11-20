@@ -52,7 +52,7 @@ from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, 
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp
 from autopts.pybtp.btp import get_iut_method as get_iut
-from autopts.pybtp.types import BTPError, BTPFatalError, BTPInitError, MissingWIDError, SynchError
+from autopts.pybtp.types import BTPError, BTPFatalError, BTPInitError, IUTExitedError, MissingWIDError, SynchError
 from autopts.utils import (
     CounterWithFlag,
     InterruptableThread,
@@ -1039,11 +1039,27 @@ def run_test_case_wrapper(func):
     return wrapper
 
 
+def check_iut_alive() -> None:
+    """Raises IUTExitedError if the process of a running IUT has ended."""
+    iut = get_iut()
+    if hasattr(iut, 'check_alive'):
+        iut.check_alive()
+
+
 def get_error_code(exc):
     """Return string error code for argument exception"""
     error_code = None
 
-    if isinstance(exc, BTPError):
+    try:
+        check_iut_alive()
+    except IUTExitedError as e:
+        # E.g. a BTP timeout, because the IUT process has crashed
+        exc = e
+
+    if isinstance(exc, IUTExitedError):
+        error_code = ptstypes.E_IUT_CRASH
+
+    elif isinstance(exc, BTPError):
         error_code = ptstypes.E_BTP_ERROR
 
     elif isinstance(exc, BTPFatalError):
@@ -1196,6 +1212,8 @@ class LTThread(InterruptableThread):
                         pts.ask_for_wid()
                     elif isinstance(pts, PtsServerProxy):
                         pts.check_alive()
+
+                    check_iut_alive()
 
                     return True
 
