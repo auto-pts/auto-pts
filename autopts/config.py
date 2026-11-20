@@ -19,7 +19,6 @@ import os.path
 from enum import StrEnum
 
 SERVER_PORT = 65000
-CLIENT_PORT = 65001
 BTMON_PORT = 65432
 
 MAX_SERVER_RESTART_TIME = 120

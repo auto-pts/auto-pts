@@ -27,7 +27,7 @@ from itertools import zip_longest
 from pathlib import Path
 
 from autopts.autopts_types import AutoPTSMode
-from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT, IUTMode
+from autopts.config import FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT, IUTMode
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.utils import active_hub_server_replug_usb, get_tc_from_wid, load_wid_report, raise_on_global_end, ykush_replug_usb
@@ -96,12 +96,6 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                           "specify the IP addresses separated by a space, "
                           "e.g. \"-i 192.168.2.2 192.168.2.2\"")
 
-        self.add_argument("-l", "--local_addr", nargs="+", default=None,
-                          help="Local IP address of PTS automation client. "
-                          "If running with multiple servers(PTS dongles), "
-                          "specify the IP addresses separated by a space, "
-                          "e.g. \"-l 192.168.2.1 192.168.2.1\"")
-
         self.add_argument("-a", "--bd-addr",
                           help="Bluetooth device address of the IUT")
 
@@ -149,12 +143,6 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                           "If running with multiple servers(PTS dongles), "
                           "specify the ports separated by a space, "
                           "e.g. \"-S 65000 65002 65004\"")
-
-        self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
-                          help="Specify the client port number. "
-                          "If running with multiple servers(PTS dongles), "
-                          "specify the ports separated by a space, "
-                          "e.g. \"-C 65001 65003 65005\"")
 
         self.add_argument("--tty-baudrate", "--tty_baudrate", type=int,
                           nargs='+', action="extend", default=SERIAL_BAUDRATE,
@@ -624,7 +612,7 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
         args = self.remodel_args(arg_ns, cli_args)
 
         from autopts.client import init_logging
-        init_logging('_' + '_'.join(str(x) for x in args.cli_port),
+        init_logging('_' + '_'.join(str(x) for x in args.srv_port),
                      FILE_PATHS.get('BOT_LOG_FILE', None))
 
         if args.btproxy_bin and not is_executable(args.btproxy_bin):
@@ -638,15 +626,11 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
         if not args.ip_addr:
             args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
 
-        if not args.local_addr:
-            args.local_addr = ['127.0.0.1'] * len(args.cli_port)
-
         for iut_name in args.iut_targets_args:
             _args = args.iut_targets_args[iut_name]
             _args.iut_mode = self.get_iut_mode(_args)
             _args.superguard = args.superguard
             _args.ip_addr = args.ip_addr
-            _args.local_addr = args.local_addr
 
             if _args.ykush or _args.active_hub_server:
                 _args.usb_replug_available = True

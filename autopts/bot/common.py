@@ -93,10 +93,8 @@ class BotConfigArgs(Namespace):
         self.project_path = args['project_path']
         self.tester_app_dir = args.get('tester_app_dir', Path('tests', 'bluetooth', 'tester'))
         self.srv_port = args.get('srv_port', [65000])
-        self.cli_port = args.get('cli_port', [65001])
         self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
-        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
-        self.server_count = args.get('server_count', len(self.cli_port))
+        self.server_count = args.get('server_count', len(self.srv_port))
         self.tty_file = args.get('tty_file', None)
         self.board_name = args.get('board', None)
         self.tty_alias = args.get('tty_alias', None)

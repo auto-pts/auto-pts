@@ -64,8 +64,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -i IP_ADDR [IP_ADDR ...], --ip_addr IP_ADDR [IP_ADDR ...]
                         IP address of the PTS automation servers
-  -l LOCAL_ADDR [LOCAL_ADDR ...], --local_addr LOCAL_ADDR [LOCAL_ADDR ...]
-                        Local IP address of PTS automation client
   -a BD_ADDR, --bd-addr BD_ADDR
                         Bluetooth device address of the IUT
   -d, --debug-logs      Enable the PTS maximum logging. Equivalent to running
