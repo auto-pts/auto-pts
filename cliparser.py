@@ -300,6 +300,12 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                           help="Specify the device core for JLink related features, "
                                "e.g. BTMON or RTT logging.")
 
+        self.add_argument("--rtt-search-range", type=str, nargs='+', action="extend",
+                          default=None, iut_param=True, metavar="ADDRESS,SIZE",
+                          help="RAM range in which J-Link searches for the RTT control block, "
+                               "e.g. 0x22000000,0x8000 for nRF54H20. Needed if J-Link does not "
+                               "find it by itself. Defaults to the range of the board, if it has one.")
+
         self.add_argument("--rtt-log",
                           help="Capture iut logs from device over RTT. "
                           "Requires rtt support on IUT.",

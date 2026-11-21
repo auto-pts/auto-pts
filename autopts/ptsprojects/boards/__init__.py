@@ -45,6 +45,9 @@ class Board:
         self.name = board_name
         self.iutctl = iutctl
         self.type = get_board_type(board_name)
+        # Default of --rtt-search-range for the board
+        self.rtt_search_range = getattr(importlib.import_module(__package__ + '.' + board_name),
+                                        'rtt_search_range', None)
         self.reset_cmd = self.get_reset_cmd()
 
     def reset(self):
