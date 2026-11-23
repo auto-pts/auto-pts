@@ -30,10 +30,12 @@
 
 import argparse
 import copy
+import json
 import logging as root_logging
 import os
 import platform
 import shutil
+import socket
 import subprocess
 import sys
 import threading
@@ -41,6 +43,7 @@ import time
 import traceback
 import xmlrpc.client
 import xmlrpc.server
+from collections.abc import Callable
 from functools import partial
 from os.path import abspath, dirname
 from pathlib import Path
@@ -127,6 +130,147 @@ class PtsClientProxy(xmlrpc.client.ServerProxy):
         self.client_port = client_port
 
 
+# An empty line is sent if there are no events for EVENT_STREAM_IDLE_INTERVAL
+# seconds, must be well below EVENT_STREAM_TIMEOUT of the client
+EVENT_STREAM_IDLE_INTERVAL = 5
+
+
+class EventStream:
+    """PTS callback that forwards the PTS callbacks to the client as JSON
+    lines over the 'GET /events' connection, which the client keeps open:
+
+        {"method": "set_result", "args": ["run_test_case", "PASS"]}
+
+    Events are sent only to the client that was connected when they
+    happened. Events that cannot be sent to it are dropped and their WIDs are
+    canceled. An empty line is sent if there are no events for
+    EVENT_STREAM_IDLE_INTERVAL seconds, so that the client detects a lost
+    connection. A connection to a client that is gone is replaced when the
+    client reconnects.
+
+    Args:
+        cancel_wid: called to cancel the WID of an on_implicit_send that
+            was dropped after it was queued
+    """
+
+    def __init__(self, cancel_wid: Callable[[], None]) -> None:
+        self._queue: Queue[tuple[socket.socket | None, str, tuple, bytes]] = Queue()
+        self._conn: socket.socket | None = None
+        self._lock: threading.Lock = threading.Lock()
+        self._cancel_wid: Callable[[], None] = cancel_wid
+        threading.Thread(target=self._send_events, name='EventStream', daemon=True).start()
+
+    def attach(self, conn: socket.socket) -> None:
+        """Sends the next events over conn, instead of the previous client"""
+        conn.settimeout(10)
+        with self._lock:
+            old, self._conn = self._conn, conn
+        if old:
+            old.close()
+
+    def owns(self, conn: socket.socket) -> bool:
+        """Whether conn is the connection of the event stream"""
+        return conn is self._conn
+
+    def _detach(self, conn: socket.socket) -> None:
+        """Closes conn, which can no longer be used"""
+        with self._lock:
+            if self._conn is conn:
+                self._conn = None
+        conn.close()
+
+    def _put(self, method: str, *args: object) -> bool:
+        """Queues the event for the connected client.
+
+        Returns:
+            False if no client is connected and the event was dropped
+        """
+        conn = self._conn
+        if conn is None:
+            if method != 'log':
+                log(f'No event stream, dropping {method} {args}')
+            return False
+
+        data = json.dumps({'method': method, 'args': args}, default=str) + '\n'
+        self._queue.put((conn, method, args, data.encode()))
+        return True
+
+    def _send_events(self) -> None:
+        """Sends the queued events and the empty lines, in its own thread"""
+        while True:
+            try:
+                self._send_next()
+            except Exception as e:
+                logging.exception(e)
+
+    def _send_next(self) -> None:
+        try:
+            conn, method, args, event = self._queue.get(timeout=EVENT_STREAM_IDLE_INTERVAL)
+        except Empty:
+            conn, method, args, event = self._conn, 'log', (), b'\n'
+
+        if conn is not None and conn is self._conn:
+            try:
+                conn.sendall(event)
+                return
+            except OSError as e:
+                log(f'Event stream lost: {e!r}')
+                self._detach(conn)
+
+        # The client of the event is gone
+        if method != 'log':
+            log(f'Event stream lost, dropping {method} {args}')
+        if method == 'on_implicit_send':
+            self._cancel_wid()
+
+    def log(self, *args: object) -> None:
+        """Sends a PTS log message"""
+        self._put('log', *args)
+
+    def on_implicit_send(self, *args: object) -> str:
+        """Sends a WID, the client responds with set_wid_response()"""
+        if not self._put('on_implicit_send', *args):
+            return "Cancel"
+        return "WAIT"
+
+    def set_result(self, *args: object) -> None:
+        """Sends the result of a nonblocking PTS method"""
+        self._put('set_result', *args)
+
+
+class EventStreamRequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
+    """XML-RPC request handler that also opens the event stream"""
+
+    def do_GET(self) -> None:
+        """Passes the 'GET /events' connection to the event stream"""
+        if self.path != '/events':
+            self.report_404()
+            return
+
+        log(f'Event stream connected: {self.client_address}')
+        # The connection is not used for the next request
+        self.close_connection = True
+        self.send_response(200)
+        self.end_headers()
+        # wfile is buffered, send the headers before the events
+        self.wfile.flush()
+        self.server.pts.attach_event_stream(self.connection)
+
+
+class EventStreamXMLRPCServer(xmlrpc.server.SimpleXMLRPCServer):
+    """XML-RPC server that also serves 'GET /events' with the event stream
+    of pts"""
+
+    def __init__(self, addr: tuple[str, int], pts: 'PyPTSWithCallback', **kwargs) -> None:
+        self.pts: PyPTSWithCallback = pts
+        super().__init__(addr, requestHandler=EventStreamRequestHandler, **kwargs)
+
+    def shutdown_request(self, request: socket.socket) -> None:
+        """Closes the request connection, unless it is the event stream"""
+        if not self.pts.event_stream.owns(request):
+            super().shutdown_request(request)
+
+
 class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
     """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
 
@@ -136,7 +280,9 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         threading.Thread.__init__(self, target=self._pts_thread_work,
                                   name=name)
         self.args = args
+        self.event_stream = EventStream(lambda: self.set_wid_response("Cancel"))
         self.client_callback = None
+        self.register_ptscallback(self.event_stream)
         self.pts_thread = None
         self.pts_thread_id = None
         self.ptscontrol_request_queue = Queue()
@@ -168,8 +314,15 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         log(f"{self.unregister_client_callback.__name__},"
             f"{self.client_callback}")
 
-        self.unregister_ptscallback()
+        self.register_ptscallback(self.event_stream)
         self.client_callback = None
+
+    def attach_event_stream(self, conn: socket.socket) -> None:
+        """Sends the PTS callbacks over conn, also instead of a registered
+        client callback, which may be left by a client that is gone"""
+
+        self.unregister_client_callback()
+        self.event_stream.attach(conn)
 
     def _replug_dongle(self):
         log(f"{self._replug_dongle.__name__}")
@@ -538,7 +691,8 @@ class Server(threading.Thread, PTSProxy):
 
         print(f"Serving on port {self._args.srv_port} ...")
 
-        self.server = xmlrpc.server.SimpleXMLRPCServer(("", self._args.srv_port), allow_none=True)
+        self.server = EventStreamXMLRPCServer(("", self._args.srv_port), self.pts,
+                                              allow_none=True)
         # These methods will be run in the XMLRPC context
         self.server.register_function(self.list_workspace_tree, 'list_workspace_tree')
         self.server.register_function(self.copy_file, 'copy_file')
