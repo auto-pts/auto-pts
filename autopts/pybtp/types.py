@@ -15,9 +15,9 @@
 
 import binascii
 import struct
+import uuid as std_uuid
 from enum import Enum, IntEnum, IntFlag
 from typing import Final, NamedTuple
-from uuid import UUID as StdUUID
 
 from autopts.pybtp import defs
 
@@ -208,7 +208,7 @@ def le_bytes_to_uuid(uuid_bytes: bytes, uuid_len: int | None = None) -> str:
         return format(uu, 'x').upper().rjust(8, '0')
     if uuid_len != 16:
         raise ValueError(f"le_bytes_to_uuid: unsupported UUID length {uuid_len}")
-    return StdUUID(bytes=uuid_bytes[::-1]).urn[9:].replace('-', '').upper()
+    return std_uuid.UUID(bytes=uuid_bytes[::-1]).urn[9:].replace('-', '').upper()
 
 
 # -- Address helpers --
