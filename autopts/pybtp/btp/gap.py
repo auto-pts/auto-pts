@@ -1857,14 +1857,30 @@ def gap_big_create_sync(adv_sid, num_bis, bis_bitfield, sync_timeout, broadcast_
 def gap_create_big(bis_id, num_bis, interval, latency, broadcast_code=None,
                    packing=defs.BTP_GAP_CMD_CREATE_BIG_PACKING_SEQUENTIAL,
                    framing=defs.BTP_GAP_CMD_CREATE_BIG_FRAMING_UNFRAMED,
-                   rtn=2, phy=defs.BTP_GAP_CMD_CREATE_BIG_PHY_2M):
+                   rtn=2, phy=defs.BTP_GAP_CMD_CREATE_BIG_PHY_2M,
+                   bcode_auth_required: bool = False):
+    """Order the IUT to create a BIG.
+
+    :param bcode_auth_required: True if the BIG requires a Broadcast_Code
+        obtained with an authenticated method (LE Security Mode 3 Level 3).
+        Only valid with broadcast_code. The IUT rejects the request if its
+        Broadcast_Code was not obtained that way.
+    """
     logging.debug("")
 
     iutctl = get_iut()
 
+    if bcode_auth_required and broadcast_code is None:
+        raise ValueError('bcode_auth_required needs a broadcast_code')
+
     data_ba = bytearray(struct.pack("<BBIHBBBB", bis_id, num_bis, interval, latency, rtn, phy,
                                     packing, framing))
-    encryption = 1 if broadcast_code is not None else 0
+    if broadcast_code is None:
+        encryption = defs.BTP_GAP_CMD_CREATE_BIG_ENC_DISABLE
+    elif bcode_auth_required:
+        encryption = defs.BTP_GAP_CMD_CREATE_BIG_ENC_ENABLE_AUTH
+    else:
+        encryption = defs.BTP_GAP_CMD_CREATE_BIG_ENC_ENABLE
     data_ba.extend(struct.pack('B', encryption))
 
     if broadcast_code is not None:
