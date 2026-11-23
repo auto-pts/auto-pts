@@ -534,12 +534,27 @@ def hdl_wid_77(params: WIDParams):
 
 
 def hdl_wid_78(params: WIDParams):
+    """
+    Please send an LE connect request to establish a connection.
+
+    Args:
+        params: WID parameters; ``test_case_name`` selects test-specific
+            follow-up actions after the connection is requested.
+
+    Returns:
+        bool: Always True.
+    """
+    stack = get_stack()
+    stack.gap.increase_mmi_round(78)
+
     if params.test_case_name.startswith("GAP/CONN/ACEP"):
         # Use LE ANY addr to trigger auto connection establishment procedure
         btp.gap_connect(b"00:00:00:00:00:00", 0)
     else:
         btp.gap_connect()
-        if params.test_case_name in ['GAP/DM/BON/BV-01-C']:
+        if params.test_case_name == 'GAP/DM/BON/BV-01-C' or \
+                (params.test_case_name == 'GAP/SEC/AUT/BV-29-C' and
+                 stack.gap.get_mmi_round(78) == 2):
             btp.gap_wait_for_connection()
             btp.gap_pair()
 
@@ -2229,6 +2244,80 @@ def hdl_wid_20100(params: WIDParams):
 
 def hdl_wid_2142(_: WIDParams):
     btp.gap_connect()
+    return True
+
+
+def hdl_wid_2507(params: WIDParams) -> bool:
+    """
+    Please enter the following Lower Tester OOB confirmation and OOB random to the IUT:
+    [<OOB confirmation>]
+    [<OOB random>]
+
+    Args:
+        params: WID parameters; the description holds the Lower Tester OOB
+            confirmation and OOB random values, in this order, in brackets.
+
+    Returns:
+        bool: True if the values were passed to the IUT, False if they could
+        not be parsed from the description.
+    """
+    values = re.findall(r"\[([A-Fa-f0-9]{32})]", params.description)
+    if len(values) != 2:
+        log(f'Expected OOB confirmation and OOB random, found: {values}')
+        return False
+
+    conf, rand = values
+    btp.gap_oob_sc_set_remote_data(r=rand, c=conf)
+
+    return True
+
+
+def hdl_wid_2508(_: WIDParams) -> str:
+    """
+    Please enter the OOB confirmation value (32 hex characters) of the IUT:
+
+    Returns:
+        str: The IUT's local LE Secure Connections OOB confirmation value.
+    """
+    _, c = btp.gap_oob_sc_get_local_data()
+
+    return c
+
+
+def hdl_wid_2509(_: WIDParams) -> str:
+    """
+    Please enter the OOB random value (32 hex characters) of the IUT:
+
+    Returns:
+        str: The IUT's local LE Secure Connections OOB random value.
+    """
+    r, _ = btp.gap_oob_sc_get_local_data()
+
+    return r
+
+
+def hdl_wid_2511(_: WIDParams) -> bool:
+    """
+    Does the IUT have OOB data (OOB confirmation and OOB random) to use for pairing?
+    Select Yes to exchange the OOB data. Or Select No.
+
+    The IUT has OOB data if it supports reading its local LE Secure
+    Connections OOB data. The data is read here, which on some IUTs also
+    enables their OOB handling for the following pairing.
+
+    Returns:
+        bool: True (Yes) if the IUT provided its local OOB data, False (No)
+        otherwise.
+    """
+    stack = get_stack()
+
+    if not stack.is_cmd_supported('GAP', defs.BTP_GAP_CMD_OOB_SC_GET_LOCAL_DATA):
+        log('IUT does not support reading local SC OOB data')
+        return False
+
+    r, c = btp.gap_oob_sc_get_local_data()
+    log(f'IUT local SC OOB data: r={r} c={c}')
+
     return True
 
 
