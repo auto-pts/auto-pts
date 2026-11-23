@@ -288,10 +288,6 @@ def is_cleanup_func(func):
     return isinstance(func, TestFuncCleanUp)
 
 
-class AbstractMethodException(Exception):
-    """Exception raised if an abstract method is called."""
-
-
 class PTSCallback:
     """Base class for PTS callback implementors"""
 
@@ -309,7 +305,7 @@ class PTSCallback:
                             [in] LPWSTR pszMessage);
         };
         """
-        raise AbstractMethodException()
+        raise NotImplementedError
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
                          style):
@@ -329,7 +325,7 @@ class PTSCallback:
 
         return -- response as a python string
         """
-        raise AbstractMethodException()
+        raise NotImplementedError
 
 
 class TestCase(PTSCallback):
