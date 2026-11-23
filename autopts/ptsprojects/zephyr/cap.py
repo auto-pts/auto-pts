@@ -1169,6 +1169,21 @@ def test_cases(ptses):
         ),
         ZTestCase(
             "CAP",
+            "CAP/COM/BST/BV-05-C",
+            cmds=pre_conditions
+            + [
+                # LT2 (Broadcast Source) must not proceed with the BIG before the IUT has handled the order to add it,
+                # otherwise it ends the test case and stops advertising before the IUT can discover it.
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/COM/BST/BV-05-C", 345), SynchPoint("CAP/COM/BST/BV-05-C_LT2", 100)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/COM/BST/BV-05-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
             "CAP/COM/BST/BV-06-C",
             cmds=pre_conditions
             + [
@@ -1256,6 +1271,7 @@ def test_cases(ptses):
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-04-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/COM/BST/BV-05-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
         ZTestCaseSlave("CAP", "CAP/COM/BST/BV-06-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
     ]
 

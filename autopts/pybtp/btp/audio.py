@@ -19,6 +19,7 @@ import struct
 from dataclasses import dataclass, field
 
 from autopts.pybtp import defs
+from autopts.pybtp.types import LC3_LTV_Config_Type
 
 
 def is_uint8(val: int) -> bool:
@@ -174,6 +175,19 @@ def find_ltv(ltvs: list[LTV], ltv_type: int) -> LTV | None:
 
 
 @dataclass(frozen=True)
+class BaseBis:
+    """A BIS of a subgroup of a Basic Audio Announcement (BASE).
+
+    Attributes:
+        index: BIS_index, starting at 1.
+        codec_config: BIS specific Codec_Specific_Configuration LTVs, they override the ones of the subgroup.
+    """
+
+    index: int
+    codec_config: list[LTV] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
 class BaseSubgroup:
     """A subgroup of a Basic Audio Announcement (BASE).
 
@@ -182,12 +196,14 @@ class BaseSubgroup:
         codec_config: Codec_Specific_Configuration LTVs common for all BISes of the subgroup.
         metadata: Metadata LTVs of the subgroup.
         bis_indexes: BIS_index of every BIS in the subgroup.
+        bises: The BISes of the subgroup, with their BIS specific Codec_Specific_Configuration.
     """
 
     codec_id: bytes
     codec_config: list[LTV] = field(default_factory=list)
     metadata: list[LTV] = field(default_factory=list)
     bis_indexes: list[int] = field(default_factory=list)
+    bises: list[BaseBis] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -254,11 +270,92 @@ def parse_base(data: bytes) -> Base:
         codec_config = parse_ltvs(take(take(1)[0]))
         metadata = parse_ltvs(take(take(1)[0]))
 
-        bis_indexes = []
+        bises = []
         for _ in range(num_bis):
-            bis_indexes.append(take(1)[0])
-            take(take(1)[0])  # BIS specific Codec_Specific_Configuration
+            bis_index = take(1)[0]
+            bises.append(BaseBis(bis_index, parse_ltvs(take(take(1)[0]))))
 
-        subgroups.append(BaseSubgroup(codec_id, codec_config, metadata, bis_indexes))
+        subgroups.append(BaseSubgroup(codec_id, codec_config, metadata, [bis.index for bis in bises], bises))
 
     return Base(presentation_delay, subgroups)
+
+
+LC3_CODING_FORMAT = 0x06
+
+
+def get_bis_codec_config(subgroup: BaseSubgroup, bis: BaseBis) -> list[LTV]:
+    """Get the Codec_Specific_Configuration of a BIS: the one of its subgroup, overridden by the BIS specific one.
+
+    Args:
+        subgroup: Subgroup of the BASE that the BIS belongs to.
+        bis: BIS of the subgroup.
+
+    Returns:
+        The LTVs of the subgroup that the BIS does not override, followed by the BIS specific LTVs.
+    """
+    overridden = {ltv.type for ltv in bis.codec_config}
+    return [ltv for ltv in subgroup.codec_config if ltv.type not in overridden] + bis.codec_config
+
+
+def is_codec_config_supported(
+    codec_id: bytes,
+    config: list[LTV],
+    coding_format: int,
+    frequencies: int,
+    frame_durations: int,
+    octets_per_frame: int,
+    channel_counts: int,
+) -> bool:
+    """Check if a Codec_Specific_Configuration is supported by a PAC record.
+
+    Only the LC3 parameters that are present in the configuration are checked, a parameter that is not
+    present does not make the configuration unsupported. The codec specific parameters of other codecs are not
+    interpreted, only the coding format is compared.
+
+    Args:
+        codec_id: Codec_ID of the configuration: coding format (1), company ID (2), vendor specific codec ID (2).
+        config: Codec_Specific_Configuration LTVs, e.g. of a BASE subgroup.
+        coding_format: Coding format of the PAC record.
+        frequencies: Supported_Sampling_Frequencies bitfield of the PAC record, bit 0 is 8 kHz.
+        frame_durations: Supported_Frame_Durations bitfield of the PAC record, bit 0 is 7.5 ms and bit 1 is 10 ms.
+        octets_per_frame: Supported_Octets_Per_Codec_Frame of the PAC record: the minimum in the low 16 bits and the
+            maximum in the high 16 bits.
+        channel_counts: Supported_Audio_Channel_Counts bitfield of the PAC record, bit 0 is 1 channel.
+
+    Returns:
+        True if the PAC record supports the configuration, False otherwise.
+    """
+    if codec_id[0] != coding_format:
+        return False
+
+    if coding_format != LC3_CODING_FORMAT:
+        return True
+
+    sampling_freq = find_ltv(config, LC3_LTV_Config_Type.SAMPLING_FREQ)
+    if sampling_freq is not None:
+        # Sampling_Frequency 0x01 is 8 kHz, the same as bit 0 of the Supported_Sampling_Frequencies
+        code = sampling_freq.value[0]
+        if code == 0 or not frequencies & (1 << (code - 1)):
+            return False
+
+    frame_duration = find_ltv(config, LC3_LTV_Config_Type.FRAME_DURATION)
+    if frame_duration is not None:
+        # Frame_Duration 0x00 is 7.5 ms, the same as bit 0 of the Supported_Frame_Durations
+        if not frame_durations & (1 << frame_duration.value[0]):
+            return False
+
+    frame_len = find_ltv(config, LC3_LTV_Config_Type.FRAME_LEN)
+    if frame_len is not None:
+        octets = int.from_bytes(frame_len.value[:2], "little")
+        if not octets_per_frame & 0xFFFF <= octets <= octets_per_frame >> 16:
+            return False
+
+    # Audio_Channel_Allocation is a bitfield of the audio locations, without it or with none set the audio is mono
+    channel_allocation = find_ltv(config, LC3_LTV_Config_Type.CHANNEL_ALLOCATION)
+    channels = 1
+    if channel_allocation is not None:
+        channels = max(1, int.from_bytes(channel_allocation.value[:4], "little").bit_count())
+    if not channel_counts & (1 << (channels - 1)):
+        return False
+
+    return True
