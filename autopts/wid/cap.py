@@ -30,7 +30,13 @@ from autopts.pybtp.btp import (
     pts_addr_get,
     pts_addr_type_get,
 )
-from autopts.pybtp.btp.audio import find_ltv, pack_metadata, parse_base
+from autopts.pybtp.btp.audio import (
+    find_ltv,
+    get_bis_codec_config,
+    is_codec_config_supported,
+    pack_metadata,
+    parse_base,
+)
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
@@ -65,6 +71,10 @@ COM_BST_RECEPTION_START_TESTS: list[str] = ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/
 # Commander Distribute Broadcast Code test case, with LT1 and LT2 as Scan Delegators and LT3 as Broadcast Source
 COM_BST_BROADCAST_CODE_TESTS: list[str] = ["CAP/COM/BST/BV-06-C"]
 
+# Commander Broadcast Audio Reception Start test case where the Sink PACs of the Scan Delegator (LT1) do not support the
+# codec configuration of the Broadcast Source (LT2), the procedure must not be completed
+COM_BST_CODEC_NOT_SUPPORTED_TESTS: list[str] = ["CAP/COM/BST/BV-05-C"]
+
 # Commander Broadcast Audio Reception Stop test cases, with LT1 as Scan Delegator and LT2 as Broadcast Source
 COM_BST_RECEPTION_STOP_TESTS: list[str] = ["CAP/COM/BST/BV-03-C", "CAP/COM/BST/BV-04-C"]
 
@@ -83,6 +93,7 @@ def hdl_wid_100(params: WIDParams):
     if params.test_case_name.removesuffix("_LT2").removesuffix("_LT3") in [
         *COM_BST_RECEPTION_START_TESTS,
         *COM_BST_BROADCAST_CODE_TESTS,
+        *COM_BST_CODEC_NOT_SUPPORTED_TESTS,
         *COM_BST_RECEPTION_STOP_TESTS,
     ]:
         # The IUT is a Commander, it must not synchronize to the broadcast as a sink.
@@ -349,8 +360,12 @@ def hdl_wid_345(params: WIDParams):
 
     test_name = params.test_case_name.removesuffix("_LT2")
 
-    # The Scan Delegators are LT1 and LT2, the Broadcast Source is LT3
-    is_com_bst_add_source = test_name in [*COM_BST_RECEPTION_START_TESTS, *COM_BST_BROADCAST_CODE_TESTS]
+    # The IUT discovers the Broadcast Source with the Broadcast Sink scan and adds it to the Scan Delegator
+    is_com_bst_add_source = test_name in [
+        *COM_BST_RECEPTION_START_TESTS,
+        *COM_BST_BROADCAST_CODE_TESTS,
+        *COM_BST_CODEC_NOT_SUPPORTED_TESTS,
+    ]
 
     # get broadcaster address
     if test_name.startswith("CAP/INI/UTB/BV-") or test_name.startswith("CAP/INI/BTU/BV-"):
@@ -412,6 +427,25 @@ def hdl_wid_345(params: WIDParams):
         except (TypeError, ValueError) as e:
             log(f"Invalid BASE: {e}")
             return False
+
+        if test_name in COM_BST_CODEC_NOT_SUPPORTED_TESTS:
+            # The Broadcast Audio Reception Start procedure is not completed if the Sink PACs of the Scan Delegator
+            # do not support the codec configuration of the Broadcast Source: Add Source is not written.
+            sink_pacs = stack.bap.get_codec_cap_found_evs(addr_type, addr, AudioDir.SINK)
+            if not sink_pacs or not base.subgroups:
+                log("No Sink PAC records or no subgroups in BASE")
+                return False
+
+            # Every BIS that is added has to be supported by a Sink PAC. The BIS specific codec configuration
+            # overrides the one of the subgroup. Without the BIS in the BASE, check the one of the subgroup.
+            subgroup = base.subgroups[0]
+            configs = [get_bis_codec_config(subgroup, bis) for bis in subgroup.bises
+                       if bis_sync & (1 << (bis.index - 1))] or [subgroup.codec_config]
+            for config in configs:
+                if not any(is_codec_config_supported(subgroup.codec_id, config, *pac[3:8]) for pac in sink_pacs):
+                    log(f"Codec configuration {config} of the Broadcast Source is not supported by the Sink PACs "
+                        f"{sink_pacs}, do not add the source")
+                    return True
 
         metadata_ltvs = base.subgroups[0].metadata if base.subgroups else []
         contexts = find_ltv(metadata_ltvs, defs.AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS)
@@ -635,6 +669,7 @@ def hdl_wid_376(params: WIDParams):
                                  'CAP/COM/BST/BV-02-C_LT3',
                                  'CAP/COM/BST/BV-03-C_LT2',
                                  'CAP/COM/BST/BV-04-C_LT2',
+                                 'CAP/COM/BST/BV-05-C_LT2',
                                  'CAP/COM/BST/BV-06-C_LT3'
                                  ]:
         # Confirm that LT1 & LT2 received stream from LT3 ...

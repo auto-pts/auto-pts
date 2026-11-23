@@ -100,6 +100,22 @@ class BAP:
                 (addr_type, addr, pac_dir) == (_addr_type, _addr, _pac_dir),
             timeout, remove)
 
+    def get_codec_cap_found_evs(self, addr_type, addr, pac_dir):
+        """Get all the codec capabilities (PAC records) found on a peer in a given direction.
+
+        Args:
+            addr_type: Address type of the peer.
+            addr: Address of the peer as a hex string.
+            pac_dir: Direction of the PAC records, AudioDir.SINK or AudioDir.SOURCE.
+
+        Returns:
+            The BTP_BAP_EV_CODEC_CAP_FOUND events received so far for the PAC records of the peer, in the order
+            they were found. Each event is a tuple: address type, address, PAC direction, coding format,
+            supported sampling frequencies, supported frame durations, supported octets per frame, channel counts.
+        """
+        return [ev for ev in self.event_queues[defs.BTP_BAP_EV_CODEC_CAP_FOUND]
+                if ev[:3] == (addr_type, addr, pac_dir)]
+
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_event_with_condition(
             self.event_queues[defs.BTP_BAP_EV_DISCOVERY_COMPLETED],
