@@ -679,7 +679,7 @@ def hdl_wid_20100(params: WIDParams):
 
     btp.gap_connect(addr, addr_type)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
-    stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
+    stack.gap.gap_wait_for_sec_lvl_change(min_level=1, timeout=30, addr=addr)
 
     btp.bap_discover(addr_type, addr)
     stack.bap.wait_discovery_completed_ev(addr_type, addr, 30)
