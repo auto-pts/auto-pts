@@ -28,6 +28,8 @@ iut_config = {
             'SM/CEN/OOB/BI-01-C',
             'SM/PER/OOB/BV-04-C',
             'SM/PER/OOB/BI-02-C',
+            'GAP/SEC/AUT/BV-29-C',
+            'GAP/SEC/AUT/BV-30-C',
         ]
     },
 
