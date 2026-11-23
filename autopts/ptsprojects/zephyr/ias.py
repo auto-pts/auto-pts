@@ -39,16 +39,8 @@ def set_pixits(ptses):
     pts.set_pixit("IAS", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("IAS", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("IAS", "TSPX_time_guard", "180000")
-    pts.set_pixit("IAS", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("IAS", "TSPX_mtu_size", "23")
-    pts.set_pixit("IAS", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
     pts.set_pixit("IAS", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("IAS", "TSPX_pin_code", "0000")
-    pts.set_pixit("IAS", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("IAS", "TSPX_delete_ltk", "FALSE")
-    pts.set_pixit("IAS", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("IAS", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("IAS", "TSPX_tester_appearance", "0000")
 
 
 def test_cases(ptses):
