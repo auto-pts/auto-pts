@@ -21,17 +21,17 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.hap_wid import hap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, HAS_TSPX_unavailable_presets_indices
 from autopts.pybtp.types import UUID, Addr, AdType, BAPAnnouncement, CAPAnnouncement, Context
 
 # Options aligned with the overlay-le-audio.conf options
-BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
-                           btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)
-BTP_HAP_HA_OPTS_BINAURAL = (btp.defs.HAP_HA_OPT_PRESETS_INDEPENDENT |
-                            btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
-                            btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)
+BTP_HAP_HA_OPTS_DEFAULT = (defs.HAP_HA_OPT_PRESETS_DYNAMIC |
+                           defs.HAP_HA_OPT_PRESETS_WRITABLE)
+BTP_HAP_HA_OPTS_BINAURAL = (defs.HAP_HA_OPT_PRESETS_INDEPENDENT |
+                            defs.HAP_HA_OPT_PRESETS_DYNAMIC |
+                            defs.HAP_HA_OPT_PRESETS_WRITABLE)
 
 
 def set_pixits(ptses):
@@ -145,13 +145,13 @@ def test_cases(ptses):
 
     pre_conditions_ha_binaural = pre_conditions + adv_conditions + [
         TestFunc(btp.hap_ha_init,
-                 btp.defs.HAP_HA_TYPE_BINAURAL,
+                 defs.HAP_HA_TYPE_BINAURAL,
                  BTP_HAP_HA_OPTS_BINAURAL),
     ]
 
     pre_conditions_ha_banded = pre_conditions + [
         TestFunc(btp.hap_ha_init,
-                 btp.defs.HAP_HA_TYPE_BANDED,
+                 defs.HAP_HA_TYPE_BANDED,
                  BTP_HAP_HA_OPTS_DEFAULT),
     ]
 
@@ -193,7 +193,7 @@ def test_cases(ptses):
                 instance = ZTestCase("HAP", tc_name,
                                      cmds=pre_conditions + [
                                          TestFunc(btp.hap_ha_init,
-                                                  btp.defs.HAP_HA_TYPE_BINAURAL,
+                                                  defs.HAP_HA_TYPE_BINAURAL,
                                                   BTP_HAP_HA_OPTS_BINAURAL),
                                      ],
                                      generic_wid_hdl=hap_wid_hdl)
