@@ -392,9 +392,7 @@ def hdl_wid_482(_: WIDParams):
     stack = get_stack()
 
     audio_dir = AudioDir.SINK
-    coding_format = 0x06
     audio_location_list = [defs.PACS_AUDIO_LOCATION_FRONT_LEFT, defs.PACS_AUDIO_LOCATION_FRONT_RIGHT]
-    ase_ids = []
 
     default_config = create_default_config()
     default_config.codec_set_name = '24_1'

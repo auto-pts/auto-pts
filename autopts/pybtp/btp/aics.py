@@ -77,7 +77,6 @@ def aics_man_gain_only():
 def aics_auto_gain_only():
     logging.debug("")
 
-    data_ba = bytearray()
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*AICS['auto_gain_only'])

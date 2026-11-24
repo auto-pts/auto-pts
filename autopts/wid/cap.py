@@ -958,11 +958,9 @@ def hdl_wid_408(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
-        lt1_test_name = params.test_case_name
 
     btp.micp_mute(addr_type, addr)
 

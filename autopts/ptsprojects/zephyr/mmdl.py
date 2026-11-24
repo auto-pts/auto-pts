@@ -19,7 +19,7 @@ import random
 from binascii import hexlify
 from uuid import uuid4
 
-from autopts.client import get_test_data_path, get_unique_name
+from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
@@ -91,8 +91,6 @@ def test_cases(ptses):
     crpl_size = 10  # Maximum capacity of the replay protection list
     auth_method = 0x00
     iut_device_name = get_unique_name(pts)
-    timeout = 20
-    sample_data_path = get_test_data_path(pts)
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),

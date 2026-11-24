@@ -24,7 +24,7 @@ from autopts.ptsprojects.zephyr.bass_wid import bass_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp import lt2_addr_get
-from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, uuid_to_le_hex_str
+from autopts.pybtp.types import Addr
 
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
@@ -83,17 +83,6 @@ def test_cases(ptses):
     pts_bd_addr = pts.q_bd_addr
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
-
-    # The Unicast Server shall transmit connectable extended advertising PDUs
-    # that contain the Service Data AD data type, including additional
-    # service data defined in BAP_v1.0.1, 3.5.3, Table 3.7.
-    ad = {
-        AdType.name_full: iut_device_name[::1].hex(),
-        AdType.flags: format(AdFlags.br_edr_not_supp |
-                             AdFlags.le_gen_discov_mode, '02x'),
-        AdType.uuid16_all: uuid_to_le_hex_str(UUID.ASCS),
-        AdType.uuid16_svc_data: '4e1801ff0fff0f00',
-    }
 
     queue = Queue()
 

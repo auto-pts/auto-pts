@@ -2043,9 +2043,6 @@ def mmdl_dfu_update_firmware_get():
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_get'], "")
 
-    hdr_fmt = '<B'
-    status = struct.unpack_from(hdr_fmt, rsp)
-
 
 def mmdl_dfu_update_firmware_cancel():
     logging.debug("")

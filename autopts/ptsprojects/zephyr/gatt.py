@@ -342,7 +342,6 @@ def test_cases_server(ptses):
         return tc_list
 
     pts2 = ptses[1]
-    iut_device_name2 = get_unique_name(pts2)
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
