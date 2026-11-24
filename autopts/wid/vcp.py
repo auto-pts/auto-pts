@@ -339,7 +339,6 @@ def hdl_wid_20121(params: WIDParams):
     """
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
-    stack = get_stack()
     btp.vocs_audio_loc(10, addr_type, addr)
 
     return True

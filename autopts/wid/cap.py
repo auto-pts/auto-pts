@@ -663,8 +663,6 @@ def hdl_wid_376(params: WIDParams):
     Please confirm received streaming data.
     """
 
-    stack = get_stack()
-
     if params.test_case_name in ['CAP/COM/BST/BV-01-C_LT3',
                                  'CAP/COM/BST/BV-02-C_LT3',
                                  'CAP/COM/BST/BV-03-C_LT2',

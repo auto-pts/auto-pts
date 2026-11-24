@@ -458,7 +458,6 @@ def gap_bis_stream_received_ev_(gap, data, data_len):
 
 def gap_passkey_confirm_req_ev_(gap, data, data_len):
     logging.debug("")
-    iutctl = get_iut()
 
     fmt = '<B6sI'
 
@@ -476,7 +475,6 @@ def gap_passkey_confirm_req_ev_(gap, data, data_len):
 
 def gap_passkey_entry_req_ev_(gap, data, data_len):
     logging.debug("")
-    iutctl = get_iut()
 
     fmt = '<B6s'
 
@@ -832,8 +830,6 @@ def gap_disconnect(bd_addr=None, bd_addr_type=None):
     logging.debug("%r %r", bd_addr, bd_addr_type)
 
     iutctl = get_iut()
-
-    stack = get_stack()
 
     data_ba = bytearray()
     bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
