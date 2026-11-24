@@ -52,7 +52,7 @@ def set_pixits(ptses):
     pts.set_pixit("DFUM", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("DFUM", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("DFUM", "TSPX_Client_BLOB_Data", r"data.txt")
-    pts.set_pixit("MBTM", "TSPX_Server_Timeout_Base", "5")
+    pts.set_pixit("DFUM", "TSPX_Server_Timeout_Base", "5")
     pts.set_pixit("DFUM", "TSPX_Firmware_ID", "11000011")
     pts.set_pixit("DFUM", "TSPX_New_Firmware_Image", r"data2.txt")
 
