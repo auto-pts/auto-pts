@@ -8,6 +8,33 @@ from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.common import aics_btp
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "AICS",
+    "AICS_EV",
+    "address_to_ba",
+    "aics_auto_gain_only",
+    "aics_auto_gain_set",
+    "aics_change_desc",
+    "aics_command_rsp_succ",
+    "aics_description_ev",
+    "aics_description_get",
+    "aics_gain_setting_prop_ev",
+    "aics_gain_setting_prop_get",
+    "aics_input_type_ev",
+    "aics_man_gain_only",
+    "aics_man_gain_set",
+    "aics_mute",
+    "aics_mute_disable",
+    "aics_procedure_ev",
+    "aics_set_gain",
+    "aics_state_ev",
+    "aics_state_get",
+    "aics_status_ev",
+    "aics_status_get",
+    "aics_type_get",
+    "aics_unmute",
+]
+
 AICS = aics_btp
 
 

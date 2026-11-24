@@ -24,6 +24,16 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, pts_addr_get, pts_addr_type_
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import addr_str_to_le_bytes, le_bytes_to_hex_str, uuid_to_le_bytes
 
+__all__ = [
+    "SDP",
+    "SDP_EV",
+    "sdp_attr_req",
+    "sdp_search_attr_req",
+    "sdp_search_req",
+    "sdp_service_record_handle_ev_",
+    "sdp_wait_for_service_record_handle",
+]
+
 log = logging.debug
 
 

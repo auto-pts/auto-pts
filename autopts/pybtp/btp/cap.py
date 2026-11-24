@@ -25,6 +25,34 @@ from autopts.pybtp.btp.gap import __gap_current_settings_update
 from autopts.pybtp.common import cap_btp
 from autopts.pybtp.types import AdType, BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "BTP_CAP_BROADCAST_SOURCE_SETUP_FLAG_ENCRYPTION",
+    "BTP_CAP_BROADCAST_SOURCE_SETUP_FLAG_SUBGROUP_CODEC",
+    "BTP_CAP_UNICAST_AUDIO_STOP_FLAG_RELEASE",
+    "CAP",
+    "CAP_EV",
+    "address_to_ba",
+    "announcements",
+    "cap_broadcast_adv_start",
+    "cap_broadcast_adv_stop",
+    "cap_broadcast_source_release",
+    "cap_broadcast_source_setup",
+    "cap_broadcast_source_setup_stream",
+    "cap_broadcast_source_setup_subgroup",
+    "cap_broadcast_source_start",
+    "cap_broadcast_source_stop",
+    "cap_broadcast_source_update",
+    "cap_command_rsp_succ",
+    "cap_discover",
+    "cap_ev_discovery_completed_",
+    "cap_ev_unicast_start_completed_",
+    "cap_ev_unicast_stop_completed_",
+    "cap_unicast_audio_start",
+    "cap_unicast_audio_stop",
+    "cap_unicast_audio_update",
+    "cap_unicast_setup_ase",
+]
+
 CAP = cap_btp
 
 

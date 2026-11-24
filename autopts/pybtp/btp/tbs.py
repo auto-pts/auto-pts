@@ -22,6 +22,24 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import addr_str_to_le_bytes
 
+__all__ = [
+    "TBS",
+    "TBS_EV",
+    "address_to_ba",
+    "tbs_command_rsp_succ",
+    "tbs_hold_call",
+    "tbs_originate_call",
+    "tbs_register_bearer",
+    "tbs_remote_hold_call",
+    "tbs_remote_incoming",
+    "tbs_set_bearer_name",
+    "tbs_set_bearer_technology",
+    "tbs_set_signal_strength",
+    "tbs_set_status_flags",
+    "tbs_set_uri_scheme_list",
+    "tbs_terminate_call",
+]
+
 TBS = {
     'read_supported_cmds':   (defs.BTP_SERVICE_ID_TBS,
                               defs.BTP_TBS_CMD_READ_SUPPORTED_COMMANDS,

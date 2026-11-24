@@ -22,6 +22,18 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 
+__all__ = [
+    "VCS",
+    "VCS_EV",
+    "vcs_command_rsp_succ",
+    "vcs_mute",
+    "vcs_register",
+    "vcs_set_vol",
+    "vcs_unmute",
+    "vcs_vol_down",
+    "vcs_vol_up",
+]
+
 VCS = {
     "set_vol": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_SET_VOL,
                CONTROLLER_INDEX),

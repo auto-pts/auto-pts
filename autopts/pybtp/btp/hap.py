@@ -22,6 +22,29 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "HAP",
+    "HAP_EV",
+    "address_to_ba",
+    "hap_command_rsp_succ",
+    "hap_ev_hauc_discovery_complete_",
+    "hap_ev_iac_discovery_complete_",
+    "hap_ev_preset_changed_",
+    "hap_ha_init",
+    "hap_harc_init",
+    "hap_hauc_discover",
+    "hap_hauc_init",
+    "hap_iac_discover",
+    "hap_iac_init",
+    "hap_iac_set_alert",
+    "hap_read_presets",
+    "hap_read_supported_cmds",
+    "hap_set_active_preset",
+    "hap_set_next_preset",
+    "hap_set_previous_preset",
+    "hap_write_preset_name",
+]
+
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()

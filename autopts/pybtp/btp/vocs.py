@@ -23,6 +23,21 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "VOCS",
+    "VOCS_EV",
+    "address_to_ba",
+    "vocs_audio_desc",
+    "vocs_audio_loc",
+    "vocs_audio_loc_ev",
+    "vocs_audio_location_get",
+    "vocs_command_rsp_succ",
+    "vocs_offset_state_get",
+    "vocs_offset_state_set",
+    "vocs_procedure_ev",
+    "vocs_state_ev",
+]
+
 VOCS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_VCP,
                             defs.BTP_VOCS_CMD_READ_SUPPORTED_COMMANDS,

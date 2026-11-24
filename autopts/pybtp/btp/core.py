@@ -18,6 +18,11 @@ import logging
 
 from autopts.pybtp import defs
 
+__all__ = [
+    "CORE_EV",
+    "core_iut_ready_ev",
+]
+
 
 def core_iut_ready_ev(core, data, data_len):
     logging.debug("")

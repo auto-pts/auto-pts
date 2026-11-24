@@ -22,6 +22,17 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import addr_str_to_le_bytes
 
+__all__ = [
+    "CSIS",
+    "address_to_ba",
+    "csis_command_rsp_succ",
+    "csis_get_member_rsi",
+    "csis_set_member_lock",
+    "csis_set_set_size",
+    "csis_set_sirk",
+    "csis_set_sirk_type",
+]
+
 CSIS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_CSIS,
                             defs.BTP_CSIS_CMD_READ_SUPPORTED_COMMANDS,

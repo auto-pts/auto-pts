@@ -22,6 +22,18 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes
 
+__all__ = [
+    "MICS",
+    "MICS_EV",
+    "address_to_ba",
+    "mics_command_rsp_succ",
+    "mics_mute",
+    "mics_mute_disable",
+    "mics_mute_read",
+    "mics_mute_state_ev",
+    "mics_unmute",
+]
+
 MICS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_MICS,
                             defs.BTP_MICS_CMD_READ_SUPPORTED_COMMANDS,

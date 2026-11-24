@@ -25,6 +25,24 @@ from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.types import addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "RFCOMM",
+    "RFCOMM_EV",
+    "rfcomm_command_rsp_succ",
+    "rfcomm_connect",
+    "rfcomm_connected_ev",
+    "rfcomm_data_received_ev",
+    "rfcomm_data_sent_ev",
+    "rfcomm_disconnect",
+    "rfcomm_disconnected_ev",
+    "rfcomm_get_dlc_info",
+    "rfcomm_get_dlc_info_rsp",
+    "rfcomm_listen",
+    "rfcomm_send_data",
+    "rfcomm_send_rls",
+    "rfcomm_send_rpn",
+]
+
 RFCOMM = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_RFCOMM,
                        defs.BTP_RFCOMM_CMD_READ_SUPPORTED_COMMANDS,

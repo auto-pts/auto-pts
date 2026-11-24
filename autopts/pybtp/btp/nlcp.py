@@ -23,6 +23,17 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError
 
+__all__ = [
+    "NLCP",
+    "NLCP_EV",
+    "nlcp_exec_dimming_ctrl",
+    "nlcp_exec_scene_select",
+    "nlcp_process_node_reset",
+    "nlcp_read_identity_report",
+    "nlcp_read_profile_elem_addr",
+    "nlcp_read_scene_number",
+]
+
 log = logging.debug
 
 

@@ -22,6 +22,19 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes
 
+__all__ = [
+    "GMCS",
+    "GMCS_EV",
+    "address_to_ba",
+    "gmcs_command_rsp_succ",
+    "gmcs_control_point_cmd",
+    "gmcs_current_track_obj_id_get",
+    "gmcs_inactive_state_set",
+    "gmcs_next_track_obj_id_get",
+    "gmcs_parent_group_set",
+    "gmcs_player_name_set",
+]
+
 GMCS = {
     'read_supported_cmds':      (defs.BTP_SERVICE_ID_GMCS,
                                  defs.BTP_GMCS_CMD_READ_SUPPORTED_COMMANDS,

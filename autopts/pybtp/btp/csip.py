@@ -20,6 +20,20 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "CSIP",
+    "CSIP_EV",
+    "address_to_ba",
+    "csip_command_rsp_succ",
+    "csip_discover",
+    "csip_ev_discovery_completed",
+    "csip_lock_ev",
+    "csip_set_coordinator_lock",
+    "csip_set_coordinator_release",
+    "csip_sirk_ev",
+    "csip_start_ordered_access",
+]
+
 log = logging.debug
 
 

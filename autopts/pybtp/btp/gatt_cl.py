@@ -32,6 +32,51 @@ from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.common import gatt_cl
 from autopts.pybtp.types import Perm, addr_str_to_le_bytes, le_bytes_to_hex_str, le_bytes_to_uuid, uuid_to_le_bytes
 
+__all__ = [
+    "GATTC",
+    "GATTC_EV",
+    "att_rsp_str",
+    "gatt_cl_cfg_indicate",
+    "gatt_cl_cfg_notify",
+    "gatt_cl_command_rsp_succ",
+    "gatt_cl_dec_chrc_attr",
+    "gatt_cl_dec_desc_attr",
+    "gatt_cl_dec_disc_rsp",
+    "gatt_cl_dec_incl_attr",
+    "gatt_cl_dec_svc_attr",
+    "gatt_cl_disc_all_chrc",
+    "gatt_cl_disc_all_chrc_rsp_ev_",
+    "gatt_cl_disc_all_desc",
+    "gatt_cl_disc_all_desc_rsp_ev_",
+    "gatt_cl_disc_all_prim",
+    "gatt_cl_disc_all_prim_rsp_ev_",
+    "gatt_cl_disc_chrc_uuid",
+    "gatt_cl_disc_chrc_uuid_rsp_ev_",
+    "gatt_cl_disc_prim_uuid",
+    "gatt_cl_disc_prim_uuid_rsp_ev_",
+    "gatt_cl_exchange_mtu",
+    "gatt_cl_find_incld_rsp_ev_",
+    "gatt_cl_find_included",
+    "gatt_cl_mtu_exchanged_ev_",
+    "gatt_cl_notification_rxed_ev_",
+    "gatt_cl_read",
+    "gatt_cl_read_long",
+    "gatt_cl_read_long_rsp_ev_",
+    "gatt_cl_read_mult_rsp_ev_",
+    "gatt_cl_read_mult_var_rsp_ev_",
+    "gatt_cl_read_multiple",
+    "gatt_cl_read_multiple_var",
+    "gatt_cl_read_rsp_ev_",
+    "gatt_cl_read_uuid",
+    "gatt_cl_read_uuid_rsp_ev_",
+    "gatt_cl_signed_write",
+    "gatt_cl_write",
+    "gatt_cl_write_long",
+    "gatt_cl_write_reliable",
+    "gatt_cl_write_rsp_ev_",
+    "gatt_cl_write_without_rsp",
+]
+
 GATTC = gatt_cl
 
 

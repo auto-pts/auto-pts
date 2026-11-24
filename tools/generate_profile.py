@@ -189,6 +189,13 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, \
     btp_hdr_check
 from autopts.pybtp.types import BTPError, le_bytes_to_hex_str
 
+__all__ = [
+    "{profile_name_upper}",
+    "{profile_name_upper}_EV",
+    "{profile_name_lower}_command_rsp_succ",
+    "{profile_name_lower}_ev_dummy_completed",
+]
+
 log = logging.debug
 
 
@@ -333,6 +340,7 @@ changes_to_prepend = {
 """,
         2: f"        {profile_name_upper}_EV,\n",
         3: f"        defs.BTP_SERVICE_ID_{profile_name_upper}: ({profile_name_upper}_EV, stack.{profile_name_lower}),\n",
+        4: f'    "core_reg_svc_{profile_name_lower}",\n',
     },
     f'{AUTOPTS_REPO}/autopts/pybtp/btp/__init__.py': {1: f"from autopts.pybtp.btp.{profile_name_lower} import *"
     "  # noqa: F403 # used in many files : TODO import directly in files not with *\n"},

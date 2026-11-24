@@ -17,6 +17,11 @@
 
 from autopts.ptsprojects.stack import get_stack
 
+__all__ = [
+    "var_store_get_passkey",
+    "var_store_get_wrong_passkey",
+]
+
 
 def var_store_get_passkey(description):
     pk = get_stack().gap.get_passkey()
