@@ -21,3 +21,5 @@ preview = true
 "autopts/bot/common.py" = ["ALL"]
 "autopts/ptscontrol.py" = ["ALL"]
 "autoptsserver.py" = ["ALL"]
+# btp modules define __all__, star imports re-export them as one namespace
+"autopts/pybtp/btp/__init__.py" = ["F403"]
