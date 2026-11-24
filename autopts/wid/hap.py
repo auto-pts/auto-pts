@@ -611,7 +611,6 @@ def hdl_wid_20107(params: WIDParams):
     """
     addr = pts_addr_get()
     addr_type = pts_addr_type_get()
-    stack = get_stack()
 
     MMI.reset()
     MMI.parse_description(params.description)

@@ -1994,7 +1994,6 @@ def mmdl_dfu_info_get(limit):
     logging.debug("")
 
     iutctl = get_iut()
-    stack = get_stack()
 
     data = bytearray(struct.pack("<B", limit))
 

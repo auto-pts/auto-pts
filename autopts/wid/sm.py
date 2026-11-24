@@ -92,7 +92,6 @@ def hdl_wid_106(params: WIDParams):
 
 def hdl_wid_107(params: WIDParams):
     passkey = btp.parse_passkey_description(params.description)
-    stack = get_stack()
 
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()

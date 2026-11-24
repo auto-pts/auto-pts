@@ -731,7 +731,6 @@ def mesh_cfg_krp_set(net_idx, addr, net_key_idx, phase):
 def mesh_cfg_default_ttl_get(net_idx, addr):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HH", net_idx, addr))
@@ -1357,7 +1356,6 @@ def mesh_cfg_lpn_polltimeout_get(net_idx, addr, unicast_addr):
 def mesh_health_fault_get(addr, app_idx, cid):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HHH", addr, app_idx, cid))
@@ -1398,7 +1396,6 @@ def mesh_health_fault_test(addr, app_idx, cid, test_id, ack):
 def mesh_health_period_get(addr, app_idx):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HH", addr, app_idx))
@@ -1424,7 +1421,6 @@ def mesh_health_period_set(addr, app_idx, divisor, ack):
 def mesh_health_attention_get(addr, app_idx):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HH", addr, app_idx))
@@ -1465,7 +1461,6 @@ def mesh_proxy_connect(net_idx=None):
 def mesh_comp_change_prepare():
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray()
@@ -1476,7 +1471,6 @@ def mesh_comp_change_prepare():
 def mesh_priv_beacon_get(dst):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<H", dst))
@@ -1487,7 +1481,6 @@ def mesh_priv_beacon_get(dst):
 def mesh_priv_beacon_set(dst, enabled, rand_interval):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HBB", dst, enabled, rand_interval))
@@ -1498,7 +1491,6 @@ def mesh_priv_beacon_set(dst, enabled, rand_interval):
 def mesh_priv_gatt_proxy_get(dst):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<H", dst))
@@ -1509,7 +1501,6 @@ def mesh_priv_gatt_proxy_get(dst):
 def mesh_priv_gatt_proxy_set(dst, state):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HB", dst, state))
@@ -1520,7 +1511,6 @@ def mesh_priv_gatt_proxy_set(dst, state):
 def mesh_priv_node_id_get(dst, key_net_idx):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HH", dst, key_net_idx))
@@ -1531,7 +1521,6 @@ def mesh_priv_node_id_get(dst, key_net_idx):
 def mesh_priv_node_id_set(dst, net_idx, state):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HHB", dst, net_idx, state))
@@ -1634,7 +1623,6 @@ def mesh_rpr_reprov_remote(dst, addr, comp_change):
 def mesh_subnet_bridge_get(dst):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<H", dst))
@@ -1645,7 +1633,6 @@ def mesh_subnet_bridge_get(dst):
 def mesh_subnet_bridge_set(dst, val):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HB", dst, val))
@@ -1656,7 +1643,6 @@ def mesh_subnet_bridge_set(dst, val):
 def mesh_bridging_table_add(dst, direction, net_idx1, net_idx2, addr1, addr2):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HBHHHH", dst, direction, net_idx1, net_idx2, addr1, addr2))
@@ -1667,7 +1653,6 @@ def mesh_bridging_table_add(dst, direction, net_idx1, net_idx2, addr1, addr2):
 def mesh_bridging_table_remove(dst, net_idx1, net_idx2, addr1, addr2):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HHHHH", dst, net_idx1, net_idx2, addr1, addr2))
@@ -1678,7 +1663,6 @@ def mesh_bridging_table_remove(dst, net_idx1, net_idx2, addr1, addr2):
 def mesh_bridged_subnets_get(dst, filter_mesh, net_idx, start_idx):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HBHB", dst, filter_mesh, net_idx, start_idx))
@@ -1689,7 +1673,6 @@ def mesh_bridged_subnets_get(dst, filter_mesh, net_idx, start_idx):
 def mesh_bridging_table_get(dst, net_idx1, net_idx2, start_idx):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<HHHH", dst, net_idx1, net_idx2, start_idx))
@@ -1700,7 +1683,6 @@ def mesh_bridging_table_get(dst, net_idx1, net_idx2, start_idx):
 def mesh_bridge_capability_get(dst):
     logging.debug("")
 
-    stack = get_stack()
     iutctl = get_iut()
 
     data = bytearray(struct.pack("<H", dst))

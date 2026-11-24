@@ -91,7 +91,6 @@ def hdl_wid_10(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT)
     can send Discover All Primary Services.
     """
-    stack = get_stack()
     btp.gatt_cl_disc_all_prim(btp.pts_addr_type_get(),
                               btp.pts_addr_get())
     return True
@@ -117,7 +116,6 @@ def hdl_wid_12(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     Exchange MTU command to the tester.
     """
-    stack = get_stack()
     btp.gatt_cl_exchange_mtu(btp.pts_addr_type_get(), btp.pts_addr_get())
     return True
 
@@ -130,7 +128,6 @@ def hdl_wid_15(_: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     Discover all include services command.
     """
-    stack = get_stack()
     btp.gatt_cl_find_included(btp.pts_addr_type_get(), btp.pts_addr_get(),
                               '0001', 'FFFF')
 
@@ -178,7 +175,6 @@ def hdl_wid_18(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     Discover Primary Services UUID = '1800'O."
     """
-    stack = get_stack()
 
     MMI.reset()
     MMI.parse_description(params.description)
@@ -223,8 +219,6 @@ def hdl_wid_20(params: WIDParams):
     MMI.parse_description(params.description)
 
     uuid = MMI.args[0]
-
-    stack = get_stack()
 
     if not uuid:
         logging.error("%s parsing error", hdl_wid_20.__name__)
@@ -311,8 +305,6 @@ def hdl_wid_27(params: WIDParams):
     """
     MMI.reset()
     MMI.parse_description(params.description)
-
-    stack = get_stack()
 
     start_hdl = MMI.args[1]
     end_hdl = MMI.args[2]
