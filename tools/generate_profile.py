@@ -315,8 +315,6 @@ changes_to_prepend = {
             f"BTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n"
         ),
     },
-    f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *"
-    "  # noqa: F403 # used in many files : TODO import directly in files not with *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
         1: f"from autopts.ptsprojects.stack.layers.{profile_name_lower} import {profile_name_upper}\n",
         2: f"        self.{profile_name_lower} = None\n",

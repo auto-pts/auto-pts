@@ -13,8 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.stack.common import wait_for_event
-from autopts.ptsprojects.stack.layers import Property
+from autopts.ptsprojects.stack.common import Property, wait_for_event
 
 
 def is_procedure_done(lst, cnt):
