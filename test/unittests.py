@@ -13,6 +13,8 @@
 # more details.
 #
 
+import ast
+import importlib
 import os
 import shutil
 import struct
@@ -484,6 +486,69 @@ class MyTestCase(unittest.TestCase):
             assert cfg.streams_per_subgroup == 1
             bits = cfg.channel_allocation.bit_count()
             assert bits % cfg.streams_per_subgroup == 0
+
+
+def _btp_public_names(path: Path) -> set[str]:
+    """Return public names defined at the top level of a btp module.
+
+    path -- path to the module source
+
+    Names declared global in a function are left out, as they are set at
+    runtime. So is the log alias of logging.debug.
+    """
+    tree = ast.parse(path.read_text())
+    rebound = {name for node in ast.walk(tree) if isinstance(node, ast.Global) for name in node.names}
+    names = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names.add(node.name)
+        elif isinstance(node, (ast.Assign, ast.AnnAssign, ast.If, ast.Try)):
+            for sub in ast.walk(node):
+                if isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Store):
+                    names.add(sub.id)
+                elif isinstance(sub, (ast.FunctionDef, ast.ClassDef)) and sub is not node:
+                    names.add(sub.name)
+
+    return {name for name in names if not name.startswith('_')} - rebound - {'log'}
+
+
+BTP_DIR = Path(dirname(dirname(abspath(__file__)))) / 'autopts' / 'pybtp' / 'btp'
+
+
+def _btp_star_modules() -> list[str]:
+    """Return names of the modules star imported in btp/__init__.py.
+
+    Both absolute (from autopts.pybtp.btp.x) and relative (from .x) imports
+    are returned.
+    """
+    tree = ast.parse((BTP_DIR / '__init__.py').read_text())
+    modules = []
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom) and node.names[0].name == '*':
+            if node.level:
+                modules.append(node.module)
+            else:
+                modules.append(node.module.removeprefix('autopts.pybtp.btp.'))
+
+    return modules
+
+
+BTP_STAR_MODULES = _btp_star_modules()
+
+
+@pytest.mark.parametrize('name', BTP_STAR_MODULES)
+def test_btp_module_all(name: str):
+    """A module star imported in btp/__init__.py lists all its public names in __all__.
+
+    name -- btp module name, e.g. gap
+    """
+    module = importlib.import_module(f'autopts.pybtp.btp.{name}')
+    assert hasattr(module, '__all__'), f'{name}.py has no __all__'
+
+    exported = set(module.__all__)
+    defined = _btp_public_names(BTP_DIR / f'{name}.py')
+    assert not defined - exported, f'add to __all__ in {name}.py: {sorted(defined - exported)}'
+    assert not exported - defined, f'remove from __all__ in {name}.py: {sorted(exported - defined)}'
 
 
 if __name__ == '__main__':
