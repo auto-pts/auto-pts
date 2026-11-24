@@ -22,7 +22,7 @@ from autopts.ptsprojects.bluez.gap_wid import gap_wid_hdl
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, Perm, Prop
+from autopts.pybtp.types import UUID, Addr, AdType, IOCap, Perm, Prop
 from autopts.wid.gap import hdl_wid_161
 
 
@@ -138,10 +138,6 @@ def test_cases(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
-
-    ad_str_flags = str(AdType.flags).zfill(2) + \
-                   str(AdFlags.br_edr_not_supp).zfill(2)
-    ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
 
     ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
                                iut_manufacturer_data

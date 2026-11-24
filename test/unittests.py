@@ -250,10 +250,7 @@ class MyTestCase(unittest.TestCase):
         progresses = stats.get_progresses()
         new_cases = stats.get_new_cases()
 
-        start_timestamp = '30_08_2023_08_50_01'
         end_time = '30_08_2023_11_30_23'
-        repos_info = {'zephyr': {'commit': '123456', 'desc': 'zephyr'}}
-        pts_ver = '8_5_0'
 
         iut_logs = FILE_PATHS['IUT_LOGS_DIR']
         pts_logs = os.path.join(FILE_PATHS['TMP_DIR'], 'zephyr-master')

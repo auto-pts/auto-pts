@@ -44,7 +44,6 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     preset_indices = HAS_TSPX_available_presets_indices + HAS_TSPX_unavailable_presets_indices
-    max_index = max([0] + preset_indices)
     num_presets = len(preset_indices)
 
     pts = ptses[0]
