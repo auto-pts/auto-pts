@@ -42,6 +42,7 @@ from os.path import abspath, dirname
 from pathlib import Path
 from time import sleep, time
 
+import git
 import requests
 import schedule
 
@@ -69,6 +70,7 @@ if sys.platform == 'win32':
 
 log = logging.info
 CRON_CFG = {}
+UPDATE_REPOS_RETRY_DELAY = 600  # seconds
 mimetypes.add_type('text/plain', '.log')
 
 
@@ -975,7 +977,14 @@ def update_repos_job(cfg, **kwargs):
 
     config = get_cron_config(cfg, **kwargs)
 
-    update_repos('', config['git'])
+    # GitHub may refuse connections for a while, retry until it works
+    while True:
+        try:
+            update_repos('', config['git'])
+            break
+        except git.exc.GitCommandError as e:
+            log(f'{cfg} Job: updating repos failed, retrying in {UPDATE_REPOS_RETRY_DELAY} s: {e}')
+            sleep(UPDATE_REPOS_RETRY_DELAY)
 
     log(f'The {cfg} Job finished')
 
