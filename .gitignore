@@ -15,3 +15,6 @@ venv
 
 .vscode
 .idea
+
+# Generated when running pytest ./test/unittests.py
+test/mocks/bluetooth-qualification/
