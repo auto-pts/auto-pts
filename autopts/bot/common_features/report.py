@@ -401,6 +401,19 @@ def copy_server_log_file(tmp_dir, pts, ports):
         logging.exception(e)
 
 
+def is_workspace_copy_path(rel_path: str) -> bool:
+    """Check if a path belongs to a temporary workspace copy.
+
+    With copy_workspace enabled, each PTS instance works on a copy of the
+    workspace in a '_<PTS BD address>' subdirectory, e.g. '_C007E86015B9'.
+
+    :param rel_path: Path relative to the workspace directory, with '\\'
+        or '/' separators.
+    :return: True if the first path component is a workspace copy directory.
+    """
+    return re.split(r'[\\/]', rel_path)[0].startswith('_')
+
+
 def pull_server_logs(args, tmp_dir, xml_folder):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
     :param args: args
@@ -436,6 +449,12 @@ def pull_server_logs(args, tmp_dir, xml_folder):
         while len(file_list) > 0:
             file_path = file_list.pop(0)
             xml_file_path = file_path
+
+            # Logs of the original workspace (e.g. from runs with
+            # copy_workspace disabled or from PTS GUI) stay on the server.
+            if not is_workspace_copy_path(file_path[len(workspace_root) + 1:]):
+                continue
+
             try:
                 file_bin = _pts.copy_file(file_path)
 
