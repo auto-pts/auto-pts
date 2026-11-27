@@ -101,7 +101,7 @@ class RTT:
         except BaseException:
             pass  # JLink closed
 
-    def init_jlink(self, device_core, debugger_snr):
+    def init_jlink(self, device_core, debugger_snr, search_range=None):
         jlink, lib = RTT.jlink_instances.get(debugger_snr, (None, None))
         if jlink:
             jlink.refcount += 1
@@ -126,17 +126,22 @@ class RTT:
 
         status = jlink.rtt_get_status()
         if status.IsRunning == 0:
+            if search_range:
+                # J-Link finds the RTT control block by itself only in the RAM
+                # it knows for the device, e.g. not on nRF54H20.
+                address, size = (int(x, 0) for x in search_range.split(','))
+                jlink.exec_command(f'SetRTTSearchRanges {address:#x} {size:#x}')
             jlink.rtt_start()
 
         jlink.refcount += 1
         RTT.jlink_instances[debugger_snr] = (jlink, lib)
         return jlink
 
-    def start(self, buffer_name, device_core, debugger_snr, user_callback, user_data):
+    def start(self, buffer_name, device_core, debugger_snr, user_callback, user_data, search_range=None):
         log(f"{self.__class__}.{self.start.__name__}, {debugger_snr}, {device_core}, {buffer_name}")
 
         self.debugger_snr = debugger_snr
-        jlink = self.init_jlink(device_core, debugger_snr)
+        jlink = self.init_jlink(device_core, debugger_snr, search_range)
         try:
             buffer_index = self._get_buffer_index(jlink, buffer_name)
             if buffer_index is None:
@@ -242,7 +247,7 @@ class BTMON:
     def is_running(self):
         return not self.rtt_reader.stop_thread.is_set()
 
-    def start(self, buffer_name, log_file, device_core, debugger_snr, hci):
+    def start(self, buffer_name, log_file, device_core, debugger_snr, hci, search_range=None):
         log("%s.%s", self.__class__, self.start.__name__)
 
         self.log_filecwd = os.path.dirname(os.path.abspath(log_file))
@@ -296,12 +301,15 @@ class BTMON:
             server_address = ('localhost', port)
             sock.connect(server_address)
 
-            self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
+            self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,),
+                                  search_range)
         else:
             if hci is not None:
                 cmd = f"btmon -C 130 -i {hci} -w {self.log_filename}"
             else:
                 cmd = f"btmon -C 130 -J {device_core},{debugger_snr} -w {self.log_filename}"
+                if search_range:
+                    cmd += f" -R {search_range},{buffer_name}"
             self.btmon_process = subprocess.Popen(cmd, cwd=self.log_filecwd,
                                                   shell=True,
                                                   stdout=subprocess.DEVNULL,
@@ -361,10 +369,11 @@ class RTTLogger:
     def is_running(self):
         return not self.rtt_reader.stop_thread.is_set()
 
-    def start(self, buffer_name, log_filename, device_core, debugger_snr):
+    def start(self, buffer_name, log_filename, device_core, debugger_snr, search_range=None):
         log("%s.%s", self.__class__, self.start.__name__)
         self.log_file = open(log_filename, 'ab')
-        self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (self.log_file,))
+        self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (self.log_file,),
+                              search_range)
 
     def request_stop(self):
         self.rtt_reader.request_stop()

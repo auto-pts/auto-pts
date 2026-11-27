@@ -23,6 +23,9 @@ supported_projects = ['zephyr']
 
 board_type = 'nrf54h20dk/nrf54h20/cpuapp'
 
+# J-Link does not find the RTT control block by itself. Zephyr places it in the cpuapp TCM.
+rtt_search_range = '0x22000000,0x8000'
+
 
 def reset_cmd(iutctl):
     """Return reset command for nRF54H DUT
