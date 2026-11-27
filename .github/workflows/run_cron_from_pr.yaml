@@ -1,0 +1,50 @@
+name: Check for changes in autopts/wid
+
+on:
+  pull_request_target:
+    types: [ready_for_review, opened]
+    branches:
+      - master
+
+env:
+  PR_NUMBER: ${{ github.event.number }}
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check for changes in autopts/wid directory
+        id: check_changes
+        continue-on-error: true
+        run: |
+          python .github/check_for_changes.py
+          echo "Script exited with code $?"
+
+      - name: Set output
+        id: set_output
+        if: ${{ steps.check_changes.outcome == 'success' && success() || failure() }}
+        run: |
+          echo "changed_files=$(cat changed_files_formatted.txt)" >> $GITHUB_OUTPUT
+
+      - name: Post comment on PR
+        if: ${{ steps.check_changes.outcome == 'success' && success() || failure() }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            \#AutoPTS run mynewt ${{ steps.set_output.outputs.changed_files }} --test-case-limit 10
+
+      - name: Post comment on PR
+        if: ${{ steps.check_changes.outcome == 'success' && success() || failure()}}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            \#AutoPTS run zephyr ${{ steps.set_output.outputs.changed_files }} --test-case-limit 10
