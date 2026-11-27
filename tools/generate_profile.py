@@ -189,6 +189,13 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, \
     btp_hdr_check
 from autopts.pybtp.types import BTPError, le_bytes_to_hex_str
 
+__all__ = [
+    "{profile_name_upper}",
+    "{profile_name_upper}_EV",
+    "{profile_name_lower}_command_rsp_succ",
+    "{profile_name_lower}_ev_dummy_completed",
+]
+
 log = logging.debug
 
 
@@ -315,8 +322,6 @@ changes_to_prepend = {
             f"BTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n"
         ),
     },
-    f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *"
-    "  # noqa: F403 # used in many files : TODO import directly in files not with *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
         1: f"from autopts.ptsprojects.stack.layers.{profile_name_lower} import {profile_name_upper}\n",
         2: f"        self.{profile_name_lower} = None\n",
@@ -335,9 +340,9 @@ changes_to_prepend = {
 """,
         2: f"        {profile_name_upper}_EV,\n",
         3: f"        defs.BTP_SERVICE_ID_{profile_name_upper}: ({profile_name_upper}_EV, stack.{profile_name_lower}),\n",
+        4: f'    "core_reg_svc_{profile_name_lower}",\n',
     },
-    f'{AUTOPTS_REPO}/autopts/pybtp/btp/__init__.py': {1: f"from autopts.pybtp.btp.{profile_name_lower} import *"
-    "  # noqa: F403 # used in many files : TODO import directly in files not with *\n"},
+    f'{AUTOPTS_REPO}/autopts/pybtp/btp/__init__.py': {1: f"from autopts.pybtp.btp.{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/doc/overview.txt': {1: f" {hex(int(profile_id))} {profile_name_upper} Service\n"},
     f'{AUTOPTS_REPO}/autopts/pybtp/common.py': {
         1: f"""    "{profile_name_upper}": {'{'}

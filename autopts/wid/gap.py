@@ -103,7 +103,7 @@ def hdl_wid_14(_: WIDParams):
 
 
 def hdl_wid_20(_: WIDParams):
-    stack = btp.get_stack()
+    stack = get_stack()
     btp.gap_set_non_connectable()
     btp.gap_start_advertising(ad=stack.gap.ad)
     return True

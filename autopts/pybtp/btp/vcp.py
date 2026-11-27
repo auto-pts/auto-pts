@@ -22,6 +22,27 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "VCP",
+    "VCP_EV",
+    "address_to_ba",
+    "vcp_command_rsp_succ",
+    "vcp_discover",
+    "vcp_ev_discovery_completed_",
+    "vcp_flags_ev",
+    "vcp_mute",
+    "vcp_procedure_ev",
+    "vcp_set_vol",
+    "vcp_state_ev",
+    "vcp_state_read",
+    "vcp_unmute",
+    "vcp_unmute_vol_down",
+    "vcp_unmute_vol_up",
+    "vcp_volume_down",
+    "vcp_volume_flags_read",
+    "vcp_volume_up",
+]
+
 VCP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_VCP,
                             defs.BTP_VCP_CMD_READ_SUPPORTED_COMMANDS,

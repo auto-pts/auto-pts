@@ -20,6 +20,13 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 
+__all__ = [
+    "OTS",
+    "OTS_EV",
+    "otc_register_object",
+    "ots_command_rsp_succ",
+]
+
 log = logging.debug
 
 

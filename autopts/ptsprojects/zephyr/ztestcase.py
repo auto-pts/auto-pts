@@ -17,7 +17,7 @@
 
 from autopts.config import IUTMode
 from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestCaseLT3, TestFunc, TestFuncCleanUp
-from autopts.pybtp.btp import get_iut
+from autopts.pybtp.btp import get_iut_method as get_iut
 
 
 class ZTestCase(TestCaseLT1):

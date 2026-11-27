@@ -22,6 +22,23 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, le_bytes_to_hex_str
 
+__all__ = [
+    "PACS",
+    "PACS_EV",
+    "pacs_command_rsp_succ",
+    "pacs_ev_characteristic_subscribed_",
+    "pacs_set_available_contexts",
+    "pacs_set_location",
+    "pacs_set_supported_contexts",
+    "pacs_update_available_audio_contexts",
+    "pacs_update_characteristic",
+    "pacs_update_sink_audio_locations",
+    "pacs_update_sink_pac",
+    "pacs_update_source_audio_locations",
+    "pacs_update_source_pac",
+    "pacs_update_supported_audio_contexts",
+]
+
 PACS = {
     'update_char': (defs.BTP_SERVICE_ID_PACS, defs.BTP_PACS_CMD_UPDATE_CHARACTERISTIC,
                     CONTROLLER_INDEX),

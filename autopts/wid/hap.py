@@ -648,7 +648,7 @@ def hdl_wid_20121(params: WIDParams):
 
     # XXX: The description is quite general, thus let's make this handler conditional
     if params.test_case_name == 'HAP/IAC/CGGIT/CHA/BV-01-C':
-        btp.hap_iac_set_alert(addr_type, addr, btp.defs.HAP_IAC_ALERT_LEVEL_MILD)
+        btp.hap_iac_set_alert(addr_type, addr, defs.HAP_IAC_ALERT_LEVEL_MILD)
 
     return True
 

@@ -21,6 +21,17 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, le_bytes_to_hex_str
 
+__all__ = [
+    "PBP",
+    "PBP_EV",
+    "pbp_broadcast_scan_start",
+    "pbp_broadcast_scan_stop",
+    "pbp_command_rsp_succ",
+    "pbp_ev_public_broadcast_announcement_found",
+    "pbp_set_broadcast_name",
+    "pbp_set_public_broadcast_announcement",
+]
+
 log = logging.debug
 
 PBP = {

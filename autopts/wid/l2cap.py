@@ -72,7 +72,7 @@ def hdl_wid_15(_: WIDParams):
     Implements: TSC_MMI_tester_enable_connection
     description: Action: Place the IUT in connectable mode.
     """
-    stack = btp.get_stack()
+    stack = get_stack()
     btp.gap_set_connectable()
     btp.gap_set_general_discoverable()
     btp.gap_start_advertising(ad=stack.gap.ad)
@@ -307,7 +307,7 @@ def hdl_wid_56(_: WIDParams):
     Implements: TSC_MMI_tester_enable_connection
     description: Action: Place the IUT in connectable mode.
     """
-    stack = btp.get_stack()
+    stack = get_stack()
     btp.gap_set_connectable()
     btp.gap_set_general_discoverable()
     btp.gap_start_advertising(ad=stack.gap.ad)
@@ -714,7 +714,7 @@ def hdl_wid_2000(_: WIDParams):
 
 
 def hdl_wid_20001(_: WIDParams):
-    stack = btp.get_stack()
+    stack = get_stack()
     btp.gap_set_connectable()
     btp.gap_set_general_discoverable()
     btp.gap_start_advertising(ad=stack.gap.ad)
@@ -746,7 +746,7 @@ def hdl_wid_49(params: WIDParams):
     '''
     btp.gap_connect(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     btp.gap_wait_for_connection()
-    l2cap = btp.get_stack().l2cap
+    l2cap = get_stack().l2cap
 
     if params.test_case_name in ['L2CAP/COS/CFD/BV-08-C', 'L2CAP/COS/CFD/BV-09-C',
                                  'L2CAP/COS/CED/BV-01-C']:
@@ -781,7 +781,7 @@ def hdl_wid_116(params: WIDParams):
     Please send Configure Response.
     '''
     btp.gap_wait_for_connection()
-    l2cap = btp.get_stack().l2cap
+    l2cap = get_stack().l2cap
 
     for channel in l2cap.channels:
         if params.test_case_name in ['L2CAP/EWC/BV-02-C']:
@@ -1028,7 +1028,7 @@ def hdl_wid_6(params: WIDParams):
     '''
     Did the Implementation Under Test(IUT) inform the Upper Tester the connection attempt failed?
     '''
-    l2cap = btp.get_stack().l2cap
+    l2cap = get_stack().l2cap
     try:
         if params.test_case_name in ['L2CAP/CMC/BV-13-C']:
             btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,

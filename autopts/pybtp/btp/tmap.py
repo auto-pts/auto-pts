@@ -21,6 +21,16 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "TMAP",
+    "TMAP_EV",
+    "address_to_ba",
+    "tmap_command_rsp_succ",
+    "tmap_discover",
+    "tmap_ev_discovery_completed",
+    "tmap_read_supported_cmds",
+]
+
 log = logging.debug
 
 

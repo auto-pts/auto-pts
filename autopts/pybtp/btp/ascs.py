@@ -22,6 +22,28 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
+__all__ = [
+    "ASCS",
+    "ASCS_EV",
+    "address_to_ba",
+    "ascs_add_ase_to_cis",
+    "ascs_command_rsp_succ",
+    "ascs_config_codec",
+    "ascs_config_qos",
+    "ascs_disable",
+    "ascs_enable",
+    "ascs_ev_ase_state_changed_",
+    "ascs_ev_characteristic_subscribed_",
+    "ascs_ev_cis_connected_",
+    "ascs_ev_cis_disconnected_",
+    "ascs_ev_operation_completed_",
+    "ascs_preconfig_qos",
+    "ascs_receiver_start_ready",
+    "ascs_receiver_stop_ready",
+    "ascs_release",
+    "ascs_update_metadata",
+]
+
 ASCS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_ASCS,
                             defs.BTP_ASCS_CMD_READ_SUPPORTED_COMMANDS,

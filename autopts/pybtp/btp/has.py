@@ -22,6 +22,17 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get,
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import addr_str_to_le_bytes
 
+__all__ = [
+    "HAS",
+    "address_to_ba",
+    "has_add_preset",
+    "has_command_rsp_succ",
+    "has_remove_preset",
+    "has_set_active_index",
+    "has_set_preset_name",
+    "has_set_properties",
+]
+
 HAS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_READ_SUPPORTED_COMMANDS,

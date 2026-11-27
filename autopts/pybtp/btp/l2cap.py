@@ -26,6 +26,33 @@ from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.types import L2CAPConnectionResponse, addr_str_to_le_bytes
 
+__all__ = [
+    "L2CAP",
+    "L2CAP_EV",
+    "l2cap_br_listen",
+    "l2cap_br_listen_v2",
+    "l2cap_cls_send",
+    "l2cap_command_rsp_succ",
+    "l2cap_conn",
+    "l2cap_conn_rsp",
+    "l2cap_conn_v2",
+    "l2cap_conn_v2_rsp",
+    "l2cap_connected_ev",
+    "l2cap_credits",
+    "l2cap_data_rcv_ev",
+    "l2cap_disconn",
+    "l2cap_disconn_eatt_chans",
+    "l2cap_disconnected_ev",
+    "l2cap_echo_req",
+    "l2cap_le_listen",
+    "l2cap_le_listen_v2",
+    "l2cap_listen",
+    "l2cap_listen_v2",
+    "l2cap_reconfigure",
+    "l2cap_reconfigured_ev",
+    "l2cap_send_data",
+]
+
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,
                        defs.BTP_L2CAP_CMD_READ_SUPPORTED_COMMANDS,
