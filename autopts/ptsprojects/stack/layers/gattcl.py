@@ -13,6 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+
 from autopts.ptsprojects.stack.common import wait_for_event
 from autopts.ptsprojects.stack.layers import Property
 
@@ -42,6 +43,7 @@ class GattCl:
         self.dscs = []
         self.notifications = []
         self.write_status = None
+        self.write_long_completed = False
         self.event_to_await = None
 
     def set_event_to_await(self, event):
@@ -100,6 +102,27 @@ class GattCl:
 
     def wait_for_write_rsp(self, timeout=30):
         return wait_for_event(timeout, self.is_write_completed)
+
+    def is_write_long_completed(self) -> bool:
+        """
+        Checks 'write_long_completed' flag that indicates write long operation has completed.
+
+        Returns:
+            bool: True if write long operation is complete, False otherwise.
+        """
+        return self.write_long_completed
+
+    def wait_for_write_long_rsp(self, timeout: int = 30) -> bool:
+        """
+        Waits for Write Long Response event to occur.
+
+        Args:
+            timeout (int, optional): The maximum amount of time to wait in seconds.
+
+        Returns:
+            bool: True if the event occurred within the time limit, or False if the wait timed out.
+        """
+        return wait_for_event(timeout, self.is_write_long_completed)
 
     def is_verified_val_rxed(self, expected_count):
         if expected_count > 0:
