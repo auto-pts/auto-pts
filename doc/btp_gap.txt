@@ -782,6 +782,13 @@ Commands and responses:
                         1 - The BIS will be encrypted.
                             The Broadcast_Code parameter should be existing and the length should
                             be 16 octets.
+                        2 - The BIS will be encrypted with a Broadcast_Code obtained with an
+                            authenticated method (LE Security Mode 3 Level 3).
+                            The Broadcast_Code parameter should be existing and the length should
+                            be 16 octets.
+                            A Broadcast_Code provided in this command is not obtained with an
+                            authenticated method. The IUT shall reject the command if it has not
+                            obtained this Broadcast_Code with an authenticated method.
 
                 In case of an error, the error response will be returned.
                 In case of a success, the IUT continues processing the command asynchronously.
