@@ -54,7 +54,12 @@ class RTT:
         self.drain_deadline = 0.0
         pylink.logger.setLevel(logging.WARNING)
 
-    def _get_buffer_index(self, jlink, buffer_name):
+    def _get_buffer_index(self, jlink, buffer_name: str | tuple[str, ...]) -> int | None:
+        """Find an RTT up-buffer by name.
+
+        buffer_name -- the buffer name, or names in order of preference
+        """
+        names = (buffer_name,) if isinstance(buffer_name, str) else buffer_name
         timeout = time.time() + 10
         num_up = 0
         while True:
@@ -66,10 +71,12 @@ class RTT:
                     break
                 time.sleep(0.1)
 
+        indexes = {}
         for buf_index in range(num_up):
             buf = jlink.rtt_get_buf_descriptor(buf_index, True)
-            if buf.name == buffer_name:
-                return buf_index
+            indexes.setdefault(buf.name, buf_index)
+
+        return next((indexes[name] for name in names if name in indexes), None)
 
     def _read_from_buffer(self, jlink, buffer_index, stop_thread, user_callback, user_data):
         idle_since = None

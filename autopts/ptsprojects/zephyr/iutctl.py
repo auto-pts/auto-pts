@@ -34,7 +34,8 @@ def create_zephyr_ctl_class(use_wrapper: bool):
 
         def __init__(self, args):
             super().__init__(args)
-            self._rtt_logger_name = "Logger"
+            # Zephyr names the log buffer "Logger" only with CONFIG_LOG_BACKEND_RTT_BUFFER > 0
+            self._rtt_logger_name = ("Logger", "Terminal")
             self.boot_log = "Booting Zephyr OS build"
 
         def remove_flash_bin(self):
