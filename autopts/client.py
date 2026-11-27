@@ -21,6 +21,7 @@
 import copy
 import datetime
 import errno
+import http.client
 import json
 import logging
 import os
@@ -39,7 +40,6 @@ import xmlrpc.client
 from argparse import Namespace
 from collections.abc import Callable
 from os.path import dirname
-from xmlrpc.server import SimpleXMLRPCServer
 
 from termcolor import colored
 
@@ -82,6 +82,10 @@ SERVER_CALL_TIMEOUT = 600
 # case if it has not responded for SERVER_UNREACHABLE_TIMEOUT seconds.
 SERVER_CHECK_INTERVAL = 10
 SERVER_UNREACHABLE_TIMEOUT = 60
+
+# The event stream is reopened if nothing comes for EVENT_STREAM_TIMEOUT
+# seconds, autoptsserver sends an empty line every 5 seconds.
+EVENT_STREAM_TIMEOUT = 20
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -356,52 +360,78 @@ class ClientCallback(PTSCallback):
             self._results[key] = ResultWithFlag()
 
 
-class ClientCallbackServer(threading.Thread):
-    """Thread for XML-RPC callback server
+class EventStreamReader(threading.Thread):
+    """Thread that reads the PTS callbacks from the event stream of
+    autoptsserver ('GET /events') and passes them to ClientCallback.
+    Reconnects if the stream is lost.
 
-    To prevent SimpleXMLRPCServer blocking whole app it is started in a thread
-
+    Args:
+        host: autoptsserver address
+        port: autoptsserver XML-RPC port
+        name: thread name
     """
 
-    def __init__(self, port, name):
-        log("%s.%s port=%r", self.__class__.__name__, self.__init__.__name__, port)
-        super().__init__()
-        self.name = name
-        self.server = None
-        self.callback = ClientCallback()
-        self.port = port
-        self.current_test_case = None
-        self.end = False
+    def __init__(self, host: str, port: int, name: str) -> None:
+        super().__init__(name=name, daemon=True)
+        self.host: str = host
+        self.port: int = port
+        self.callback: ClientCallback = ClientCallback()
+        # Own connection, ServerProxy is not thread safe
+        self.proxy: xmlrpc.client.ServerProxy = xmlrpc.client.ServerProxy(uri=f"http://{host}:{port}/", allow_none=True,
+                                               transport=TimeoutTransport(SERVER_CHECK_INTERVAL))
+        # Set while the stream is open
+        self.connected: threading.Event = threading.Event()
+        # The reason the stream was lost
+        self.error: Exception | None = None
+        self.end: bool = False
 
-    def safe_handle_request(self):
-        """Calls handle_request and logs exceptions."""
+    def run(self) -> None:
+        """Reads the event stream, reopens it 1 second after it was lost"""
+        while not self.end:
+            try:
+                self._read_events()
+            except Exception as e:
+                log(f'Event stream of {self.host}:{self.port} lost: {e!r}')
+                self.error = e
+            self.connected.clear()
+            if not self.end:
+                time.sleep(1)
+
+    def _read_events(self) -> None:
+        """Opens the event stream and handles its events until it is lost"""
+        conn = http.client.HTTPConnection(self.host, self.port, timeout=EVENT_STREAM_TIMEOUT)
         try:
-            self.server.handle_request()
+            conn.request('GET', '/events')
+            resp = conn.getresponse()
+            if resp.status != 200:
+                raise ConnectionError(f'Event stream not supported by autoptsserver: HTTP {resp.status}')
+
+            self.connected.set()
+            for line in resp:
+                if self.end:
+                    break
+                self._handle(line)
+        finally:
+            conn.close()
+
+    def _handle(self, line: bytes) -> None:
+        """Passes a JSON line event to ClientCallback, skips empty lines"""
+        if not line.strip():
+            return
+
+        try:
+            event = json.loads(line)
+            method = event['method']
+            if method not in ('log', 'on_implicit_send', 'set_result'):
+                raise ValueError(f'Unknown event {event}')
+            result = getattr(self.callback, method)(*event['args'])
+            if method == 'on_implicit_send' and result != 'WAIT':
+                self.proxy.set_wid_response(result)
         except Exception as e:
             logging.exception(e)
 
-    def run(self):
-        """Starts the xmlrpc callback server"""
-        log("%s.%s", self.__class__.__name__, self.run.__name__)
-        log("Client callback serving on port %s ...", self.port)
-
-        self.server = SimpleXMLRPCServer(("", self.port),
-                                         allow_none=True, logRequests=False)
-        self.server.register_instance(self.callback)
-        self.server.register_introspection_functions()
-        self.server.timeout = 1.0
-
-        try:
-            while not self.end and not get_global_end():
-                self.safe_handle_request()
-        except BaseException as e2:
-            logging.exception(e2)
-        finally:
-            log("Client callback finishing...")
-            self.server.server_close()
-
-    def stop(self):
-        log("%s.%s", self.__class__.__name__, self.stop.__name__)
+    def stop(self) -> None:
+        """Stops reading, at the latest after the next line"""
         self.end = True
 
 
@@ -580,8 +610,6 @@ class PTSProxyFactory:
     def _create_tcp_proxy(_id, args):
         server_address = args.ip_addr[_id]
         server_port = args.srv_port[_id]
-        client_address = args.local_addr[_id]
-        client_port = args.cli_port[_id]
         timeout = args.max_server_restart_time
 
         proxy = PtsServerProxy(server_address, server_port)
@@ -600,11 +628,13 @@ class PTSProxyFactory:
         result.wait(timeout=timeout, predicate=wait_for)
 
         log("Server methods: %s", proxy.system.listMethods())
-        proxy.callback_thread = ClientCallbackServer(client_port, f'LT{_id + 1}-callback')
+        proxy.callback_thread = EventStreamReader(server_address, server_port, f'LT{_id + 1}-callback')
         proxy.callback = proxy.callback_thread.callback
         proxy.callback_thread.start()
-        proxy.register_client_callback({'xmlrpc_address': client_address, 'xmlrpc_port': client_port})
-        log("Client IP Address: %s", client_address)
+        if not proxy.callback_thread.connected.wait(timeout):
+            proxy.callback_thread.stop()
+            raise Exception(f'Failed to open the event stream of autoptsserver {proxy.info}: '
+                            f'{proxy.callback_thread.error!r}')
         print(f"({id(proxy)}) OK")
 
         return proxy
