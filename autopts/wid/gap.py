@@ -1445,7 +1445,7 @@ def hdl_wid_236(_: WIDParams):
     gatt = stack.gatt
 
     if stack.is_svc_supported('GATT_CL'):
-        return not stack.gatt_cl.wait_for_notifications(expected_count=1)
+        return not stack.gatt_cl.wait_for_notifications(timeout=5, expected_count=1)
 
     gatt.wait_notification_ev(timeout=5)
 
