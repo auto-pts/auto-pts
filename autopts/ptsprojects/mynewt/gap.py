@@ -191,6 +191,14 @@ def test_cases(ptses):
                    TestFunc(lambda:
                             stack.gap.gap_set_pair_user_interaction(False))],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/AUT/BV-29-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/AUT/BV-30-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_capability, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-27-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(

@@ -242,6 +242,12 @@ def test_cases(ptses):
     ]
 
     custom_test_cases = [
+        ZTestCase("GAP", "GAP/SEC/AUT/BV-29-C",
+                  cmds=pre_conditions + init_gatt_db + [
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_gap_iut_role", "Central")),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/MOD/NBON/BV-03-C",
                   cmds=br_pre_cond,
                   generic_wid_hdl=gap_wid_hdl),
